@@ -1,0 +1,9 @@
+.gridBodyNotifyOver {
+	border-color: #00cc33 !important;
+}
+.gridRowInsertBottomLine { 
+	border-bottom:1px dashed #00cc33;
+}
+.gridRowInsertTopLine { 
+	border-top:1px dashed #00cc33;
+}

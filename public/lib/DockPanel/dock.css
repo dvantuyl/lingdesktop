@@ -1,0 +1,23 @@
+	html, body {
+        font:normal 12px verdana;
+        margin:0;
+        padding:0;
+        border:0 none;
+        overflow:hidden;
+        height:100%;
+    }
+	ul.x-tab-strip {
+		height: 21px !important;
+		height: 23px;
+	}
+	.x-dock-highlight {
+//		border: 1px dashed #99BBE8;
+		background:#CBDDF3 none repeat scroll 0% 50%;
+		opacity:0.45;
+		FILTER: alpha(opacity=45);
+	}
+	.x-dock-tab-drop-highlight {
+		position: absolute;
+		z-index: 9999;
+		top:0px;
+	}

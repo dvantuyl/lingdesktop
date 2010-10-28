@@ -1,0 +1,21 @@
+.docktoolbar .x-panel-body, .expand-bar{
+	background-color: #99BBE8;
+}
+
+.docktoolbar .x-box-item, .expand-bar{
+	font-weight: bold;
+	color: white;
+	padding: 0 4px 0 4px;
+	cursor: pointer;
+}
+
+.docktoolbar .x-box-item:hover, .expand-bar:hover{
+	padding: 0 3px 0 3px;
+	border-left: solid 1px #59718F;
+	border-right: solid 1px #59718F;
+	color: #59718F;
+}
+
+.expand-bar{
+	text-align: right;
+}

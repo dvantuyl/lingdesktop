@@ -1,0 +1,1 @@
+GOLD = RDF::Vocabulary.new("http://purl.org/linguistics/gold/")
