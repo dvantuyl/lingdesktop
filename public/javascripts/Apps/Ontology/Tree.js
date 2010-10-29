@@ -18,7 +18,7 @@ Ontology.Tree = Ext.extend(Ext.tree.TreePanel, {
 		
 		//init tree loader
 		var loader = new Ext.tree.TreeLoader({
-			url: 'gold/'+ic.localname+'.json',
+			url: 'gold/'+ic.localname+'/subclasses.json',
 			requestMethod: 'GET'
 		});
 		
@@ -85,7 +85,7 @@ Ontology.Tree = Ext.extend(Ext.tree.TreePanel, {
 		
 		//set the tree base params to the node attributes
 		loader.on("beforeload", function(treeLoader, node) {
-			treeLoader.url = 'gold/'+node.attributes.localname+'.json'
+			treeLoader.url = 'gold/'+node.attributes.localname+'/subclasses.json'
 			treeLoader.baseParams.sid = node.attributes.sid;
     	}, this);
 		

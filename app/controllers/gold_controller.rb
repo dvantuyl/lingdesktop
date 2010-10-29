@@ -13,6 +13,7 @@ class GoldController < ApplicationController
            :RDF_type => {:first => true, :args => {:localname => {}}},
            :RDFS_label => {:first => true, :in_contexts => @contexts},
            :RDFS_comment => {:all => true, :in_contexts => @contexts})
+           
       end
     end
   end

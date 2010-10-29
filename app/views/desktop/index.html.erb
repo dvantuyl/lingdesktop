@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+	
+  <%# Make IE run in Google Chrome Frame %>
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <%= javascript_include_tag "http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js" %>
+
+  <meta charset="UTF-8">
+  <title>Lingdesktop</title>
+  
+  <%# EXT JS %>
+  <%= stylesheet_link_tag "/lib/extjs/resources/css/ext-all.css" %>
+  <%= javascript_include_tag "/lib/extjs/adapter/ext/ext-base-debug" if ENV['RAILS_ENV'] == 'development' %>
+  <%= javascript_include_tag "/lib/extjs/adapter/ext/ext-base" if ENV['RAILS_ENV'] == 'production' %>
+  <%= javascript_include_tag "/lib/extjs/ext-all-debug" if ENV['RAILS_ENV'] == 'development' %>
+  <%= javascript_include_tag "/lib/extjs/ext-all" if ENV['RAILS_ENV'] == 'production' %>
+
+  <%# EXT JS PLUGINS %>
+  <%= stylesheet_link_tag "/lib/DockPanel/dock.css" %>
+  <%= javascript_include_tag "/lib/DockPanel/Ext.ux.DockPanel.js" %>
+
+  <%# DESKTOP %>
+  <%= stylesheet_link_tag :all, 
+                          :recursive => true	, 
+                          :cache => ((ENV['RAILS_ENV'] == 'production') ? 'apps' : false) %>
+
+  <%= javascript_include_tag "/lib/Desktop/workspace", 
+                             "/lib/Desktop/App",
+                             "/lib/Desktop/AppMgr",
+                             "/lib/Desktop/Toolbar",
+                             "/lib/Desktop/dock/FullScreen",
+                             "/lib/Desktop/dock/Toolbar",
+                             "/lib/Desktop/dock/Panel", 
+                             :cache => ((ENV['RAILS_ENV'] == 'production') ? 'apps' : false) %>
+  
+  <%# APPS %>
+  <%= javascript_include_tag :all, 
+                             :recursive => true, 
+                             :cache => ((ENV['RAILS_ENV'] == 'production') ? 'apps' : false) %>
+
+
+  
+  
+</head>
+<body>
+	<% if ENV['RAILS_ENV'] == 'production' then %>
+	<script>
+		window.onbeforeunload = confirmBrowseAway;
+
+		function confirmBrowseAway(){
+			return "Warning: Selecting OK will LEAVE LingDesktop.";
+		}
+	</script>
+	<% end %>
+</body>
+</html>
