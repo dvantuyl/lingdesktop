@@ -11,8 +11,8 @@ class GoldController < ApplicationController
       format.json do
         render :json => @resource.to_hash(
            :RDF_type => {:first => true, :args => {:localname => {}}},
-           :RDFS_label => {:first => true, :in_contexts => @contexts},
-           :RDFS_comment => {:all => true, :in_contexts => @contexts})
+           :RDFS_label => {:lang => @lang, :first => true, :in_contexts => @contexts},
+           :RDFS_comment => {:lang => @lang, :in_contexts => @contexts})
            
       end
     end
@@ -22,21 +22,19 @@ class GoldController < ApplicationController
   def subclasses
     find_resource
 
-    subs = @resource.get(:RDFS_subClassOf => {:subjects => true})
+    @subclasses = @resource.get_subjects(:RDFS_subClassOf => {:in_contexts => @contexts})
 
     respond_to do |format|
-      format.html #show.html.erb
+      format.html #subclasses.html.erb
       format.json do
-        render :json => (subs.collect do |sc|
+        render :json => (@subclasses.collect do |sc|
           sc.to_hash(
            :RDF_type => {:first => true, :simple_value => :uri, :in_contexts => @contexts},
-           :RDFS_label => {:first => true, :simple_value => :value, :in_contexts => @contexts},
-           :RDFS_label => {:first => true, :rename => "text", :simple_value => :value, :in_contexts => @contexts},
-           :RDFS_subClassOf => {:boolean => true, :rename => "leaf", :in_contexts => @contexts},
+           :RDFS_label => {:lang => @lang, :first => true, :simple_value => :value, :in_contexts => @contexts},
+           :RDFS_label => {:lang => @lang, :first => true, :rename => "text", :simple_value => :value, :in_contexts => @contexts},
+           :RDFS_subClassOf => {:subjects => true, :boolean => false, :rename => "leaf", :in_contexts => @contexts},
            :localname => {})
-          end
-        )
-
+          end)
       end
     end
   end
@@ -53,11 +51,9 @@ class GoldController < ApplicationController
 
     @resource = RDF_Resource.find(:uri => GOLD[params[:id]].to_s).first
 
-    if @resource then
-
-    else
+    if !@resource then
       respond_to do |format|
-        format.html #show.html.erb
+        format.html #error.html.erb
         format.json do
           render :json => {:error => "Resource '#{params[:id]}' not found."}
         end
@@ -67,6 +63,7 @@ class GoldController < ApplicationController
 
 
   def init_contexts
+    @lang = "en"
     @contexts = [CTX_Context.find(:uri => "http://purl.org/linguistics/gold").first]
   end
 

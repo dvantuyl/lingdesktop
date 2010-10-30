@@ -1,0 +1,18 @@
+.resource-show{
+	padding: 20px;
+}
+
+.resource-show h2{
+	font-size: 1.5em;
+}
+
+.resource-show .label{
+	font-family: Verdana, "Bitstream Vera Sans", Arial, Helvetica, sans-serif;
+	font-size: 0.9em;
+	font-weight: bold;
+}
+
+.resource-show .indent{
+	margin-top: 0;
+	padding-left: 30px;
+}

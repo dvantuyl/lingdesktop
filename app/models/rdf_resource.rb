@@ -9,50 +9,20 @@ class RDF_Resource
     return RDF_Resource.find(:uri => uri).first || RDF_Resource.new(:uri => uri)
   end
 
-  def get(predicate_and_args)
-    predicate, args = predicate_and_args.first
-
-    #get subjects
-    if args[:subjects] then
-      if args[:first] then
-         return CTX_Statement.find([nil, predicate, self], args[:contexts]).first.subject
-      elsif args[:boolean] then
-         return CTX_Statement.find([nil, predicate, self], args[:contexts]).empty?
-      else
-        return CTX_Statement.find([nil, predicate, self], args[:contexts]).collect do |st|
-          st.subject
-        end
-      end
-
-    #get objects
-    else
-      if args[:first] then
-         return CTX_Statement.find([self, predicate, nil], args[:contexts]).first.object
-      elsif args[:boolean] then
-         return  CTX_Statement.find([nil, predicate, self], args[:contexts]).empty?
-      else
-        return CTX_Statement.find([self, predicate, nil], args[:contexts]).collect do |st|
-          st.object
-        end
-      end
-    end
-
-  end
-
-
   def to_hash(args = [])
     resource_hash = {:uri => self.uri}
 
     args.each do |predicate_and_args|
       predicate, args = predicate_and_args
-
+      result = nil
+      
       # handle local values
       if predicate == :localname then
         result = self.uri.gsub(/([^\/]*\/|[^#]*#)/, "")
 
-      # traverse surounding nodes
+      # traverse subject or objects
       else
-        result = self.get(predicate => args)
+        result = (args[:subjects] ? self.get_subjects(predicate => args) : self.get_objects(predicate => args))
       end
 
       #set the name or rename the key of the hash
@@ -71,16 +41,64 @@ class RDF_Resource
         resource_hash.merge!({name => result})
 
       # handle rdf result
-      else
-        if args[:simple_value] then
-          resource_hash.merge!({name => result[args[:simple_value]]})
-        else
-          resource_hash.merge!({name => result.to_hash(args[:args])})
-        end
+      elsif !result.nil?
+        resource_hash.merge!({name => result.to_hash(args[:args])})
       end
     end
 
     return resource_hash
+  end
+  
+  def get_subjects(predicate_and_args)
+    predicate, args = predicate_and_args.first
+    
+    #collect subjects
+    result = CTX_Statement.find([nil, predicate, self], args[:in_contexts]).collect do |st| 
+      st.subject
+    end
+    
+    #process
+    self.process_args(result, args)
+  end
+
+  def get_objects(predicate_and_args)
+    predicate, args = predicate_and_args.first
+    
+    #collect objects
+    result = CTX_Statement.find([self, predicate, nil], args[:in_contexts]).collect do |st| 
+      st.object
+    end
+    
+    #process
+    self.process_args(result, args)
+  end
+  
+  def process_args(result, args)
+    #filter by lang
+    if args.has_key?(:lang) then
+      result = result.delete_if{|node| !node.property?("lang") || (node.lang != args[:lang])}
+    end
+
+    #filter simple values
+    if args.has_key?(:simple_value) then
+      result = result.delete_if do |node| 
+        !node.property?(args[:simple_value].to_s)
+      end
+      result = result.collect{|node| node[args[:simple_value]]}
+      puts result
+    end
+    
+    #filter first
+    if args.has_key?(:first) then
+      result = result.first
+
+    #filter boolean
+    elsif args.has_key?(:boolean) then
+      result = (result.empty? ^ args[:boolean])
+    end
+
+    
+    return result
   end
 
 end
