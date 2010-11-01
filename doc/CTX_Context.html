@@ -1,0 +1,272 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <meta name="Content-Type" content="text/html; charset=utf-8" />
+<title>Class: CTX_Context</title>
+<link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="css/common.css" type="text/css" media="screen" charset="utf-8" />
+
+<script type="text/javascript" charset="utf-8">
+  relpath = '';
+  if (relpath != '') relpath += '/';
+</script>
+<script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+<script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+  </head>
+  <body>
+    <script type="text/javascript" charset="utf-8">
+      if (window.top.frames.main) document.body.className = 'frames';
+    </script>
+    
+    <div id="header">
+      <div id="menu">
+  
+    <a href="_index.html">Index (C)</a> &raquo; 
+    
+    
+    <span class="title">CTX_Context</span>
+  
+  
+  <div class="noframes"><span class="title">(</span><a href="." target="_top">no frames</a><span class="title">)</span></div>
+</div>
+
+      <div id="search">
+  <a id="class_list_link" href="#">Class List</a>
+  <a id="method_list_link" href="#">Method List</a>
+  <a id ="file_list_link" href="#">File List</a>
+</div>
+
+      <div class="clear"></div>
+    </div>
+    
+    <iframe id="search_frame"></iframe>
+    
+    <div id="content"><h1>Class: CTX_Context
+  
+  
+  
+</h1>
+
+<dl class="box">
+  
+    <dt class="r1">Inherits:</dt>
+    <dd class="r1">
+      <span class="inheritName"><span class='object_link'><a href="Neo4jNode.html" title="Neo4jNode (class)">Neo4jNode</a></span></span>
+      
+        <ul class="fullTree">
+          <li>Object</li>
+          
+            <li class="next"><span class='object_link'><a href="Neo4jNode.html" title="Neo4jNode (class)">Neo4jNode</a></span></li>
+          
+            <li class="next">CTX_Context</li>
+          
+        </ul>
+        <a href="#" class="inheritanceTree">show all</a>
+      
+      </dd>
+    
+  
+  
+    
+  
+    
+  
+  
+  
+    <dt class="r2 last">Defined in:</dt>
+    <dd class="r2 last">app/models/ctx_context.rb</dd>
+  
+</dl>
+<div class="clear"></div>
+
+<h2>Overview</h2><div class="docstring">
+  <div class="discussion">
+    <p>
+Context reference node for a named RDF graph
+</p>
+<p>
+Public methods that should NEVER be called:
+</p>
+<ul>
+<li><p>
+CTX_Context.new(). Use the singleton method CTX_Context.find_or_create(:uri
+=> uri) instead.
+</p>
+</li>
+</ul>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <h3>Examples:</h3>
+    
+      <h4><div class='inline'><p>
+Creating a context while making sure one with the same URI doesn&#8217;t
+already exist
+</p>
+</div></h4>
+      <pre class="example code"><span class='context_node identifier id'>context_node</span> <span class='assign token'>=</span> <span class='CTX_Context constant id'>CTX_Context</span><span class='dot token'>.</span><span class='find_or_create identifier id'>find_or_create</span><span class='lparen token'>(</span><span class='symbol val'>:uri</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='string val'>&quot;http://purl.org/linguistics/gold&quot;</span><span class='rparen token'>)</span>
+</pre>
+    
+      <h4><div class='inline'><p>
+Finding a context node by it&#8217;s URI
+</p>
+</div></h4>
+      <pre class="example code"><span class='context_node identifier id'>context_node</span> <span class='assign token'>=</span> <span class='CTX_Context constant id'>CTX_Context</span><span class='dot token'>.</span><span class='find identifier id'>find</span><span class='lparen token'>(</span><span class='symbol val'>:uri</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='string val'>&quot;http://purl.org/linguistics/gold&quot;</span><span class='rparen token'>)</span><span class='dot token'>.</span><span class='first identifier id'>first</span>
+</pre>
+    
+      <h4><div class='inline'><p>
+Get all CTX_Statement nodes in this context.
+</p>
+</div></h4>
+      <pre class="example code"><span class='context_node identifier id'>context_node</span><span class='dot token'>.</span><span class='rels identifier id'>rels</span><span class='dot token'>.</span><span class='incoming identifier id'>incoming</span><span class='lparen token'>(</span><span class='symbol val'>:CTX_in</span><span class='rparen token'>)</span><span class='dot token'>.</span><span class='nodes identifier id'>nodes</span>
+</pre>
+    
+  </div>
+
+</div>
+
+  
+  
+  
+  
+  
+
+  
+    <h2>
+      Class Method Summary
+      <small>(<a href="#" class="summary_toggle">collapse</a>)</small>
+    </h2>
+
+    <ul class="summary">
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
+      <a href="#find_or_create-class_method" title="find_or_create (class method)">+ (CTX_Context) <strong>find_or_create</strong>(uri) </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'><p>
+Singleton method for creating a context only if one isn&#8217;t found.
+</p>
+</div></span>
+  
+</li>
+
+      
+    </ul>
+  
+
+
+  
+  
+  
+  
+  
+  
+
+  <div id="class_method_details" class="method_details_list">
+    <h2>Class Method Details</h2>
+    
+    
+      <div class="method_details first">
+  <p class="signature first" id="find_or_create-class_method">
+  
+    + (<tt><span class='object_link'><a href="" title="CTX_Context (class)">CTX_Context</a></span></tt>) <strong>find_or_create</strong>(uri) 
+  
+
+  
+</p><div class="docstring">
+  <div class="discussion">
+    <p>
+Singleton method for creating a context only if one isn&#8217;t found.
+</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  <h3>Parameters:</h3>
+<ul class="param">
+  
+    <li>
+      
+        <span class='type'>(<tt>String</tt>)</span>
+      
+      
+        <span class='name'>URI</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'><p>
+of the context
+</p>
+</div>
+      
+    </li>
+  
+</ul>
+<h3>Returns:</h3>
+<ul class="return">
+  
+    <li>
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="CTX_Context (class)">CTX_Context</a></span></tt>)</span>
+      
+      
+      
+      
+    </li>
+  
+</ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+29
+30
+31</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'app/models/ctx_context.rb', line 29</span>
+
+<span class='def def kw'>def</span> <span class='self self kw'>self</span><span class='dot token'>.</span><span class='find_or_create identifier id'>find_or_create</span><span class='lparen token'>(</span><span class='uri identifier id'>uri</span><span class='rparen token'>)</span>
+  <span class='return return kw'>return</span> <span class='CTX_Context constant id'>CTX_Context</span><span class='dot token'>.</span><span class='find identifier id'>find</span><span class='lparen token'>(</span><span class='symbol val'>:uri</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='uri identifier id'>uri</span><span class='rparen token'>)</span><span class='dot token'>.</span><span class='first identifier id'>first</span> <span class='orop op'>||</span> <span class='CTX_Context constant id'>CTX_Context</span><span class='dot token'>.</span><span class='new identifier id'>new</span><span class='lparen token'>(</span><span class='symbol val'>:uri</span> <span class='assign token'>=</span><span class='gt op'>&gt;</span> <span class='uri identifier id'>uri</span><span class='rparen token'>)</span>
+<span class='end end kw'>end</span>
+</pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+  </div>
+
+</div>
+    
+    <div id="footer">
+  Generated on Sun Oct 31 18:09:18 2010 by 
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.6.1 (ruby-1.8.7).
+</div>
+
+  </body>
+</html>

@@ -1,3 +1,9 @@
+##
+# Test Comment for Gold Controller
+#
+# @example Do something
+#   Gold Controller
+#
 class GoldController < ApplicationController
 
   around_filter :neo4j_transaction, :only => [:show, :subclasses, :instances]
@@ -48,8 +54,8 @@ class GoldController < ApplicationController
   private
 
   def find_resource
-
-    @resource = RDF_Resource.find(:uri => GOLD[params[:id]].to_s).first
+    gold_ns = RDF::Vocabulary.new("http://purl.org/linguistics/gold/")
+    @resource = RDF_Resource.find(:uri => gold_ns[params[:id]].to_s).first
 
     if !@resource then
       respond_to do |format|

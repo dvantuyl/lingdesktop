@@ -13,27 +13,10 @@ gem 'jruby-openssl'
 gem 'jruby-rack'
 gem 'warbler'
 gem 'neo4j', "0.4.6"
+gem 'neo4j-rails'
 gem 'rdf'
 gem 'rdf-raptor'
-gem 'neo4j-rails'
 
-
-
-
-# Use unicorn as the web server
-# gem 'unicorn'
-
-# Deploy with Capistrano
-# gem 'capistrano'
-
-# To use debugger
-# gem 'ruby-debug'
-
-# Bundle the extra gems:
-# gem 'bj'
-# gem 'nokogiri'
-# gem 'sqlite3-ruby', :require => 'sqlite3'
-# gem 'aws-s3', :require => 'aws/s3'
 
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators

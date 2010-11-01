@@ -1,19 +1,55 @@
-class CTX_Statement
-  include Neo4j::NodeMixin
+##
+# RDF Named Graph Statement Node
+#
+#                           [CTX_Context context_one]       [CTX_Context context_two]
+#                                     ^                               ^
+#                                     \                             /
+#                                      \                          / 
+#                                   :CTX_in                 :CTX_in
+#                                        \                    /
+#                                         \                 /
+#                                          \              /
+#                                           \           /
+#  [RDF_Resource subject]---:RDFS_label--->[CTX_Statement]---:RDFS_label--->[RDF_Literal object]
+#
+# Public methods that should NEVER be called:
+# * CTX_Statement.new(). Use the singleton method CTX_Statement.find_or_create(triple, contexts=[]) instead.
+#
+# @example Creating an RDF statement while making sure one with the same URI doesn't already exist
+#   CTX_Statement.find_or_create([subject_node, :RDF_predicate, object_node], [ctx_node])
+#
+# @example Retrieving an array of statements with object as wildcard
+#   CTX_Statement.find([subject_node, :RDF_predicate, nil])
+#
+# @example Retrieving an array of statements with subject as wildcard in contexts
+#   CTX_Statement.find([nil, :RDF_predicate, object_node], [ctx_node_1, ctx_node_2])
+#
+class CTX_Statement < Neo4jNode
 
   attr_accessor :subject, :predicate, :object
 
-
+  # Singleton method for creating a RDF triple statement only if one isn't first found.
+  # 
+  # @param [Array(RDF_Resource, Symbol, RDF_Resource), Array(RDF_Resource, Symbol, RDF_Literal)]
+  #   the rdf triple statement to either find or create.
+  # @param [Array(CTX_Context,...)] the contexts to either find the statement in or add the statement to.
+  # @return [CTX_Statement]
+  #
   def self.find_or_create( triple, contexts=[] )
-    statements = CTX_Statement.find( triple, contexts ) #find
-    statements = [CTX_Statement.create( triple, contexts )] if statements.empty?   #or create
-    return statements
+    statement = CTX_Statement.find( triple, contexts ).first #find
+    statement = CTX_Statement.create( triple, contexts ) if statement.nil?   #or create
+    return statement
   end
 
-
+  # Finds statements. Subject or Object can be wildcard by replacing with nil.
+  # 
+  # @param [Array(RDF_Resource, Symbol, nil), Array(nil, Symbol, RDF_Literal)]
+  #   the rdf triple statements to find.
+  # @param [Array(CTX_Context,...)] the contexts to find the statement in.
+  # @return [Array(CTX_Statement,...)]
+  #
   def self.find( triple, contexts=[] )
     s, p, o = triple
-
     statements = []
 
     #find [s, p, o]
@@ -65,28 +101,7 @@ class CTX_Statement
 
     return statements
   end
-
-
-  def self.create( triple, contexts=[] )
-    s, p, o = triple
-
-    raise "Can not create statement with nil in triple" if s.nil? or p.nil? or o.nil?
-
-    #create statement and connect to subject and object
-    statement = CTX_Statement.new() do |st|
-      s.rels.outgoing(p) << st
-      o.rels.incoming(p) << st
-    end
-
-    # add statement to contexts
-    contexts.each{|context| statement.add_context(context)} unless contexts.nil?
-
-    #store triple nodes in statement instance
-    statement.from_hash({:subject => s, :predicate => p, :object => o})
-
-    return statement
-  end
-
+  
 
   def add_context( context )
     self.rels.outgoing(:CTX_in) << context
@@ -120,12 +135,32 @@ class CTX_Statement
        end
     end
   end
-
   
   def from_hash(triple)
     self.subject = triple[:subject]
     self.predicate = triple[:predicate]
     self.object = triple[:object]
+  end
+   
+  
+  def self.create( triple, contexts=[] )
+    s, p, o = triple
+
+    raise "Can not create statement with nil in triple" if s.nil? or p.nil? or o.nil?
+
+    #create statement and connect to subject and object
+    statement = CTX_Statement.new() do |st|
+      s.rels.outgoing(p) << st
+      o.rels.incoming(p) << st
+    end
+
+    # add statement to contexts
+    contexts.each{|context| statement.add_context(context)} unless contexts.nil?
+
+    #store triple nodes in statement instance
+    statement.from_hash({:subject => s, :predicate => p, :object => o})
+
+    return statement
   end
 
 end

@@ -1,5 +1,4 @@
-class RDF_Literal
-  include Neo4j::NodeMixin
+class RDF_Literal < Neo4jNode
 
   property :value, :lang
 

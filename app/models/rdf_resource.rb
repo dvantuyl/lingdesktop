@@ -1,5 +1,4 @@
-class RDF_Resource
-  include Neo4j::NodeMixin
+class RDF_Resource < Neo4jNode
 
   property :uri
 
