@@ -60,7 +60,7 @@ Lingdesktop::Application.routes.draw do
   
   resources :gold do
     member do
-      get 'subclasses', 'instances'
+      get 'subclasses', 'individuals'
     end
   end
 end

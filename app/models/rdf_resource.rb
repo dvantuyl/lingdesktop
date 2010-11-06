@@ -68,11 +68,13 @@ class RDF_Resource < Neo4jNode
       st.object
     end
     
+    
     #process
     self.process_args(result, args)
   end
   
   def process_args(result, args)
+
     #filter by lang
     if args.has_key?(:lang) then
       result = result.delete_if{|node| !node.property?("lang") || (node.lang != args[:lang])}
@@ -84,7 +86,6 @@ class RDF_Resource < Neo4jNode
         !node.property?(args[:simple_value].to_s)
       end
       result = result.collect{|node| node[args[:simple_value]]}
-      puts result
     end
     
     #filter first
@@ -96,7 +97,6 @@ class RDF_Resource < Neo4jNode
       result = (result.empty? ^ args[:boolean])
     end
 
-    
     return result
   end
 

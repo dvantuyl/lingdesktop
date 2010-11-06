@@ -16,7 +16,6 @@ Desktop.AppMgr = function(){
          */
         registerApp : function(app, config){
 			//set defaults
-			console.log("got here");
 			config.title=(config.title?config.title:'Untitled');
 			config.iconCls=(config.iconCls?config.iconCls:'dt-icon-cog');
 			config.displayMenu = (config.displayMenu?config.displayMenu:null); //optional (null to not display in any menus
