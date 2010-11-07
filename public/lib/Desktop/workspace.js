@@ -40,10 +40,10 @@ Desktop.workspace = function(){
 		},
 		
 		checkAuthenticated : function(){
-			var loginCookie = cookieUtil.get('loginCookie');
+			var session = cookieUtil.get('_Lingdesktop_session');
 			var userid = cookieUtil.get('userid');
 			var is_admin = cookieUtil.get('is_admin')
-			if(loginCookie && userid){
+			if(session && userid){
 				toolbar.displayUser(userid, is_admin);
 				return loginCookie;
 			}else{

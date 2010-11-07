@@ -58,6 +58,8 @@ Lingdesktop::Application.routes.draw do
 
   root :to => "desktop#index"
   
+  match '/auth/:provider/callback', :to => 'sessions#create'
+  
   resources :gold do
     member do
       get 'subclasses', 'individuals'

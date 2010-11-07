@@ -44,3 +44,5 @@ module Lingdesktop
     config.lucene.storage_path = "#{config.root}/db/neo4j-#{Rails.env}/lucene/lucene-store.db"
   end
 end
+
+

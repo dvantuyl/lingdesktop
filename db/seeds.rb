@@ -9,13 +9,10 @@
 require "rdf/raptor"
 
 GOLD = "http://purl.org/linguistics/gold"
-graph = RDF::Graph.load("http://github.com/sofarrar/e-linguistics/raw/master/goldcomm/gold/slash_gold-2009.owl", {:format => :rdfxml})
-#RDF::Reader.for(:rdfxml
-#            ).open("http://github.com/sofarrar/e-linguistics/raw/master/goldcomm/gold/slash_gold-2009.owl"
-#            ).each_statement do |statement| 
-#              graph.insert_statement(statement)
-#            end
-
+graph = RDF::Graph.load(
+  "http://github.com/sofarrar/e-linguistics/raw/master/goldcomm/gold/slash_gold-2009.owl", 
+  {:format => :rdfxml}
+)
 
 #find all owl classes
 graph.query([nil, RDF.type, RDF::OWL.Class]).each_subject do |gold_class_uri|

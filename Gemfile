@@ -16,7 +16,7 @@ gem 'neo4j', "0.4.6"
 gem 'neo4j-rails'
 gem 'rdf'
 gem 'rdf-raptor'
-
+gem 'omniauth'
 
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators
