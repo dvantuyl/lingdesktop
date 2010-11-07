@@ -17,7 +17,7 @@ Ontology.DropGrid = Ext.extend(Ext.grid.GridPanel, {
 			iconCls: 'dt-icon-view',
 			handler: function(){
 				var record = selectionModel.getSelected();
-				var label = record.get('label');
+				var label = record.get('RDF_label');
 				var sid = record.get('sid');
 				var localname = record.get('localname');
 		
@@ -46,7 +46,7 @@ Ontology.DropGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.on('rowdblclick', function(g, index){
 			var record = g.getStore().getAt(index);
-			var label = record.get('label');
+			var label = record.get('RDFS_label');
 			var sid = record.get('sid');
 			var localname = record.get('localname');
 	
