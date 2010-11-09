@@ -17,7 +17,7 @@ Desktop.authenticated = false;
 
 Desktop.workspace = function(){
 	Ext.QuickTips.init();
-	var viewport, viewPanel, borderPanel, fullScreenPanel, loginWindow, toolbar,
+	var viewport, viewPanel, borderPanel, fullScreenPanel, loginWindow, toolbar, currentUser,
 		cookieUtil = Ext.util.Cookies;
 	
 	return {
@@ -37,20 +37,18 @@ Desktop.workspace = function(){
 				}
 				
 			}
-		},
+		},		
+		
 		
 		checkAuthenticated : function(){
-			var session = cookieUtil.get('_Lingdesktop_session');
-			var userid = cookieUtil.get('userid');
-			var is_admin = cookieUtil.get('is_admin')
-			if(session && userid){
-				toolbar.displayUser(userid, is_admin);
-				return loginCookie;
-			}else{
-				cookieUtil.set('userid', 'guest');
-				cookieUtil.set('is_admin', 'false');
-				return false;
-			}
+  		  Ext.Ajax.request({
+  		     url: 'users/current.json',
+  		     success :  function(response, opts){
+  		       current_user = Ext.decode(response.responseText);
+  		       toolbar.displayUser(current_user.user_info.email, current_user.user_info.is_admin);  
+  		     },
+  		     failure : function(){ console.log("ERROR: retrieve User failure.")}
+  		  });
 		},
 		
 		checkTestBit : function(){
@@ -119,28 +117,35 @@ Desktop.workspace = function(){
                 height    : 140,
                 modal     : true,
                 draggable : false,
-                title     : 'Login to LingDesktop',
-                layout    : 'fit',
+                title     : 'Select a service to Login through:',
+                layout    : 'hbox',
+                layoutConfig : {pack: 'center'},
                 center    : true,
                 closable  : false,
                 resizable : false,
                 border    : false,
-                items     : {
-                    xtype       : 'form',
-                    defaultType : 'textfield',
-                    labelWidth  : 70,
-                    frame       : true,
-                    url         : 'login_handler',
-                    labelAlign  : 'right',
-                    defaults    : formItemDefaults,
-                    items       : formLoginItems
-                },
-                buttons : [
+                items     : [
                     {
-                        text    : 'Login',
-                        handler : this.doLogin,
-                        scope   : this
-                    },'->',{
+                        xtype : 'box',
+                        html :  "<a href='/auth/google'>" +
+                                    "<img src='images/authbuttons/google_64.png'/>" +
+                                "</a>"
+                    },
+                    {
+                        xtype : 'box',
+                        html :  "<a href='/auth/yahoo'>" +
+                                    "<img src='images/authbuttons/yahoo_64.png'/>" +
+                                "</a>"
+                    },
+                    {
+                        xtype : 'box',
+                        html :  "<a href='/auth/open_id'>" +
+                                    "<img src='images/authbuttons/openid_64.png'/>" +
+                                "</a>"
+                    }
+                ],
+                buttons : [
+                    '->',{
 						text	: 'Cancel',
 						handler : function(){
 							loginWindow.destroy();
@@ -149,46 +154,6 @@ Desktop.workspace = function(){
 					}
                 ]
             });
-        },
-
-        doLogin :  function() {
-            var form = loginWindow.get(0);
-            if (form.getForm().isValid()) {
-                loginWindow.el.mask('Please wait...', 'x-mask-loading');
-				
-				form.getForm().submit({
-					success : function(f,a){ 
-						var userid = a.result.userid;
-						var is_admin = a.result.is_admin;
-						cookieUtil.set('userid',userid);
-						cookieUtil.set('is_admin',is_admin);
-						this.onLoginSuccess();
-					},
-					failure : function(f,a){ 
-						this.onLoginFailure();
-					},
-					scope : this
-				});
-            }
-        },
-
-        onLoginSuccess : function() {
-			loginWindow.el.unmask();
-            var loginCookie = cookieUtil.get('loginCookie');
-			var userid = cookieUtil.get('userid');
-			var is_admin = cookieUtil.get('is_admin');
-            if (loginCookie && userid) {
-				toolbar.displayUser(userid, is_admin);
-				loginWindow.destroy();
-                loginWindow = null;
-            }
-            else {
-                this.onLoginFailure();
-            }
-        },
-
-        onLoginFailure : function() {
-           loginWindow.el.unmask();
         },
 
         showViewport : function() {
@@ -248,12 +213,13 @@ Desktop.workspace = function(){
 
         onLogOut : function() {
             toolbar.displayGuest();
-            	Ext.Ajax.request({
-						url: 'logout_handler',
-						method: 'POST'
-					});
-				cookieUtil.set('is_admin', null, new Date("January 1, 1970"), '/');
-				cookieUtil.set('userid', null, new Date("January 1, 1970"), '/');
+    		
+			cookieUtil.set(
+			    '_Lingdesktop_session', 
+			    null, 
+			    new Date("January 1, 1970"), 
+			    '/'
+			);
 			
 			if(Desktop.test){
 				Desktop.AppMgr.initApps('test');

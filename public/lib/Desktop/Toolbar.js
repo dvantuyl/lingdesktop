@@ -75,7 +75,7 @@ Ext.ns("Desktop");
 			'-',{xtype: 'tbtext', text: '', itemId: 'current'},
         	'->',
 			{ text: 'Login', itemId: 'login', handler: function(){this.ownerCt.fireEvent('login');}},
-			{ text: 'Account', id: 'accountBtn', itemId: 'account', hidden:true, handler: function(){this.ownerCt.fireEvent('account');}},
+			{ text: 'Account', id: 'accountBtn', itemId: 'account', hidden:true}, //, handler: function(){this.ownerCt.fireEvent('account');}},
  			{ text: 'Logout', itemId: 'logout', hidden:true, handler: function(){this.ownerCt.fireEvent('logout');}},
 			{ text: 'Help', menu: helpMenu}
  		];
