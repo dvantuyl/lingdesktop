@@ -194,7 +194,7 @@ Desktop.AppMgr = function(){
 				});
 			}else{
 				Desktop.AppMgr.display('ontology_gold');
-				//Desktop.AppMgr.display('desktop_welcome');
+				Desktop.AppMgr.display('desktop_welcome');
 			}
 		}
 
