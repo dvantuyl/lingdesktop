@@ -1,0 +1,36 @@
+.help-show{
+	padding: 20px;
+}
+
+.help-show h2{
+	font-size: 1.7em;
+	color: #3B3D3F;
+	padding-top: 10px;
+	text-decoration: underline;
+}
+
+.help-show legend{
+	font-family: Verdana, "Bitstream Vera Sans", Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	color: White;
+	font-weight: bold;
+	background-color: #777A7F;
+	padding: 1px 3px;
+}
+
+.help-show fieldset{
+	margin: 0 0 10px 0;
+	padding: 8px 10px 10px 10px;
+	border: thin solid #777A7F;
+	background-color: White;
+}
+
+.help-show ul{
+	list-style-type: disc;
+	list-style-position: inside;
+	margin-left: 10px;
+}
+
+.underline{
+	text-decoration: underline;
+}
