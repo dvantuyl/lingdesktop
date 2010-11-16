@@ -24,7 +24,9 @@
 # @example Retrieving an array of statements with subject as wildcard in contexts
 #   CTX_Statement.find([nil, :RDF_predicate, object_node], [ctx_node_1, ctx_node_2])
 #
-class CTX_Statement < Neo4jNode
+class RDF_Statement < Neo4j::Model
+
+  property :created_at, :type => DateTime
 
   attr_accessor :subject, :predicate, :object
 
@@ -35,9 +37,9 @@ class CTX_Statement < Neo4jNode
   # @param [Array(CTX_Context,...)] the contexts to either find the statement in or add the statement to.
   # @return [CTX_Statement]
   #
-  def self.find_or_create( triple, contexts=[] )
-    statement = CTX_Statement.find( triple, contexts ).first #find
-    statement = CTX_Statement.create( triple, contexts ) if statement.nil?   #or create
+  def self.find_or_create( args )
+    statement = RDF_Statement.find_by_quad( args ).first #find
+    statement = RDF_Statement.create_by_quad( args ) if statement.nil?   #or create
     return statement
   end
 
@@ -48,51 +50,69 @@ class CTX_Statement < Neo4jNode
   # @param [Array(CTX_Context,...)] the contexts to find the statement in.
   # @return [Array(CTX_Statement,...)]
   #
-  def self.find( triple, contexts=[] )
-    s, p, o = triple
+  def self.find_by_quad( args )
+    s = args[:subject]
+    p = args[:predicate]
+    o = args[:object]
+    c = args[:context]
+    
     statements = []
 
     #find [s, p, o]
     if !s.nil? && !p.nil? && !o.nil? then
-      s.outgoing(p).depth(2).each_with_position do |n, tp|
+      previous_node = nil
+      
+      s.outgoing(p).depth(2).each do |n|
           if n.neo_id == o.neo_id then
-            statement = tp.previous_node
+            statement = previous_node
             statement.from_hash({:subject => s, :predicate => p, :object => o})
             statements.push(statement)
           end
+          
+          previous_node = n
       end
     
     #find [s, p, nil]
     elsif !s.nil? && !p.nil? then
-      s.outgoing(p).depth(2).each_with_position do |n, tp|
-          if tp.previous_node.kind_of?(CTX_Statement) then
-            statement = tp.previous_node
+      previous_node = nil
+      
+      s.outgoing(p).depth(2).each do |n|
+      
+          if previous_node.kind_of?(RDF_Statement) then
+            statement = previous_node
             statement.from_hash({:subject => s, :predicate => p, :object => n})
             statements.push(statement)
           end
+          
+          previous_node = n
       end
 
     #find [nil, p, o]
     elsif !p.nil? && !o.nil? then
-      o.incoming(p).depth(2).each_with_position do |n, tp|
-        if tp.previous_node.kind_of?(CTX_Statement) then
-          statement = tp.previous_node
+      previous_node = nil
+      
+      o.incoming(p).depth(2).each do |n|
+        
+        if previous_node.kind_of?(RDF_Statement) then
+          statement = previous_node
           statement.from_hash({:subject => n, :predicate => p, :object => o})
           statements.push(statement)
         end
+        
+        previous_node = n
       end
     else
       raise "Can not find statement with nil value in [#{s}, #{p}, #{o}]"
     end
 
     #filter statements in contexts
-    if !contexts.nil? && !contexts.empty? then
+    if !c.nil? then
       statements_in_contexts = []
 
       #check each statement
       statements.each do |statement|
-        statement.outgoing(:CTX_in).each do |context|
-            statements_in_contexts.push(statement)  if contexts.include?(context)
+        statement.outgoing(:IN_CONTEXT).each do |context|
+            statements_in_contexts.push(statement)  if c == context
         end
       end
 
@@ -102,19 +122,43 @@ class CTX_Statement < Neo4jNode
     return statements
   end
   
+  
+  def self.create_by_quad( args )
+    s = args[:subject]
+    p = args[:predicate]
+    o = args[:object]
+    c = args[:context]
+
+    raise "Can not create statement with nil in triple" if s.nil? or p.nil? or o.nil?
+
+    #create statement and connect to subject and object
+    statement = RDF_Statement.create() do |st|
+      s.outgoing(p) << st
+      o.incoming(p) << st
+    end
+
+    # add statement to contexts
+    statement.add_context(c) unless c.nil?
+
+    #store triple nodes in statement instance
+    statement.from_hash({:subject => s, :predicate => p, :object => o})
+
+    return statement
+  end
+  
 
   def add_context( context )
-    self.rels.outgoing(:CTX_in) << context
+    self.outgoing(:IN_CONTEXT) << context
   end
 
 
   def remove_context( context )
 
     #delete rel to context from statement
-    self.rels.outgoing(:CTX_in)[context].delete
+    self.rels.outgoing(:IN_CONTEXT)[context].delete
 
     #delete statement if it's not in any context
-    if self.rels.outgoing(:CTX_in).empty? then
+    if self.rels.outgoing(:IN_CONTEXT).empty? then
 
        #delete incoming rels
        self.rels.incomming.each do |rel|
@@ -143,24 +187,6 @@ class CTX_Statement < Neo4jNode
   end
    
   
-  def self.create( triple, contexts=[] )
-    s, p, o = triple
 
-    raise "Can not create statement with nil in triple" if s.nil? or p.nil? or o.nil?
-
-    #create statement and connect to subject and object
-    statement = CTX_Statement.new() do |st|
-      s.rels.outgoing(p) << st
-      o.rels.incoming(p) << st
-    end
-
-    # add statement to contexts
-    contexts.each{|context| statement.add_context(context)} unless contexts.nil?
-
-    #store triple nodes in statement instance
-    statement.from_hash({:subject => s, :predicate => p, :object => o})
-
-    return statement
-  end
 
 end

@@ -6,9 +6,6 @@
 #
 class UsersController < ApplicationController
 
-  around_filter :neo4j_transaction, :only => [:show]
-
-
   def show
     find_user
 
@@ -29,7 +26,7 @@ class UsersController < ApplicationController
       @user = current_user
     # find user by id
     else
-      @user = User.find(:uri => params[:id]).first
+      @user = User.find(:uri => User.escape_uri(params[:id]))
     end
 
     if !@user then
@@ -42,10 +39,4 @@ class UsersController < ApplicationController
     end
   end
 
-
-  def neo4j_transaction
-    Neo4j::Transaction.new
-      yield
-    Neo4j::Transaction.finish
-  end
 end
