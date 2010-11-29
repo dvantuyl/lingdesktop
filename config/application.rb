@@ -6,7 +6,6 @@ require 'rails/all'
 #require 'active_resource/railtie'
 #require 'rails/test_unit/railtie'
 require 'neo4j'
-require 'lib/neo4j/uri_converter'
 
 # If you have a Gemfile, require the gems listed there, including any gems
 # you've limited to :test, :development, or :production.
@@ -46,10 +45,6 @@ module Lingdesktop
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
     config.neo4j.storage_path = "#{config.root}/db/neo4j-#{Rails.env}"
-    config.neo4j.converters = {DateTime => Neo4j::TypeConverters::DateTimeConverter}
-    #config.neo4j.timestamps = false
-    #config.lucene.store_on_file = true
-    #config.lucene.storage_path = "#{config.root}/db/neo4j-#{Rails.env}/lucene/lucene-store.db"
   end
 end
 

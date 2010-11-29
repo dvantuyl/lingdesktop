@@ -1,41 +1,32 @@
 require "spec_helper"
 
 describe RDF_Context do
-  before(:each) do
-    @test_uri = "http://test.com"
-    @context = RDF_Context.new(:uri => @test_uri)
-  end
   
+  describe "#find_or_create" do
 
-  it "is valid with a uri" do
-    @context.should be_valid
-  end  
-  
-  it "is not valid without a uri" do
-    @context.uri = nil
-    @context.should_not be_valid
-  end
-  
-  it "has an unencoded uri"
-  
-  
-  
-  describe "#create" do
-    it "creates a new context with a uri" do
-      context = RDF_Context.create(:uri => "")
+    context "when there is no other with uri" do
+      
+      it "creates and returns node" do
+        node = RDF_Context.find_or_create(:uri => "http://test.com".uri_encode)
+        
+        RDF_Context.all.first.should == node
+      end
+      
     end
-  end
-  
-  
-  describe "#find" do
-    #before(:each) do
-    #  @context = RDF_Context.create(:uri => "http://test.com")
-    #end
     
-    #it "finds the node based on a uri" do
-    #  RDF_Context.find(:uri => "http://test.com").should == @context
-    #end
+    context "when there is one with same uri" do
+      before(:each) do
+        @test = RDF_Context.create(:uri => "http://test.com".uri_encode)
+      end
+      
+      it "should only have one" do
+        node = RDF_Context.find_or_create(:uri => "http://test.com".uri_encode)
+        
+        RDF_Context.all.first.should == @test
+      end
+      
+    end
+       
   end
-
-  
+ 
 end

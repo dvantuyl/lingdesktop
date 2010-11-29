@@ -1,20 +1,18 @@
-class RDF_Resource < Neo4j::Model
+class RDF_Resource < Neo4j::Rails::Model
 
   property :uri
-  property :created_at, :type => DateTime
+  property :created_at
 
   index :uri
   
-  validates_presence_of :uri 
-  validates_uniqueness_of :uri
+  validates :uri, :presence => true, :uniqueness => true
 
   def self.find_or_create(args)
-    uri =  RDF_Context.escape_uri(args[:uri])
-    return RDF_Resource.find(:uri => uri) || RDF_Resource.create(:uri => uri)
+    return RDF_Resource.find(args) || RDF_Resource.create(args)
   end
 
   def to_hash(args = [])
-    resource_hash = {:uri => URI.unescape(self.uri)}
+    resource_hash = {:uri => self.uri.unescape}
 
     args.each do |predicate_and_args|
       predicate, args = predicate_and_args
@@ -22,7 +20,7 @@ class RDF_Resource < Neo4j::Model
       
       # handle local values
       if predicate == :localname then
-        result = URI.unescape(self.uri).gsub(/([^\/]*\/|[^#]*#)/, "")
+        result = self.uri.unescape.gsub(/([^\/]*\/|[^#]*#)/, "")
 
       # traverse subject or objects
       else
@@ -113,10 +111,6 @@ class RDF_Resource < Neo4j::Model
     end
 
     return result
-  end
-  
-  def self.escape_uri(uri)
-    URI.escape(uri, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))
   end
 
 end

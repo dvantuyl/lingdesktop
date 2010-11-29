@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rails', '>= 3.0.1'
+gem 'rails', '>= 3.0.3'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -11,7 +11,7 @@ gem 'activerecord-jdbcsqlite3-adapter'
 gem 'jruby-openssl'
 gem 'jruby-rack'
 gem 'warbler'
-# gem 'neo4j', '>= 1.0.0.beta.19'
+# gem 'neo4j', '>= 1.0.0.beta.22'
 gem 'neo4j', :git => 'git://github.com/andreasronge/neo4j.git'
 gem 'rdf'
 gem 'rdf-raptor'
