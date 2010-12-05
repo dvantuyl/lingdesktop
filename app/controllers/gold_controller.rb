@@ -5,6 +5,7 @@
 #   Gold Controller
 #
 class GoldController < ApplicationController
+  before_filter :init_contexts
 
   def show
     find_resource
@@ -13,16 +14,16 @@ class GoldController < ApplicationController
       format.html #show.html.erb
       format.json do
         render :json => @resource.to_hash(
-         :RDF_type => {
-           :first => true, 
-           :args => {:localname => {}}},
+         "RDF.type" => {
+           :first => true,
+           :context => @context},
            
-         :RDFS_label => {
+         "RDF::RDFS.label" => {
            :lang => @lang, 
            :first => true, 
            :context => @context},
            
-         :RDFS_comment => {
+         "RDF::RDFS.comment" => {
            :lang => @lang, 
            :context => @context})
       end
@@ -33,38 +34,36 @@ class GoldController < ApplicationController
   def subclasses
     find_resource
 
-    @subclasses = @resource.get_subjects(:RDFS_subClassOf => {:context => @context})
+    @subclasses = @resource.get_subjects(RDF::RDFS.subClassOf => {:context => @context})
 
     respond_to do |format|
       format.html #subclasses.html.erb
       format.json do
         render :json => (@subclasses.collect do |sc|
           sc.to_hash(
-           :RDF_type => {
+           "RDF.type" => {
              :first => true, 
              :simple_value => :uri, 
              :context => @context},
              
-           :RDFS_label => {
+           "RDF::RDFS.label" => {
              :lang => @lang, 
              :first => true, 
              :simple_value => :value, 
              :context => @context},
              
-           :RDFS_label => {
-             :rename_key => "text", 
+           "text"=> {
+             :predicate => RDF::RDFS.label,
              :lang => @lang, 
              :first => true, 
              :simple_value => :value, 
              :context => @context},
              
-           :RDFS_subClassOf => {
-             :rename_key => "leaf", 
+           "leaf" => {
+             :predicate => RDF::RDFS.subClassOf,
              :subjects => true, 
              :empty_xor => false, 
-             :context => @context},
-             
-           :localname => {})
+             :context => @context})
         end)
       end
     end
@@ -74,7 +73,7 @@ class GoldController < ApplicationController
   def individuals
     find_resource
     
-    @individuals = @resource.get_subjects(:RDF_type => {:context => @context})
+    @individuals = @resource.get_subjects(RDF.type => {:context => @context})
     
     respond_to do |format|
       format.html #individuals.html.erb
@@ -82,24 +81,22 @@ class GoldController < ApplicationController
         render :json => ({
           :data => (@individuals.collect do |ind|
             ind.to_hash(
-              :RDF_type => {
+              RDF.type => {
                 :first => true, 
                 :simple_value => :uri, 
                 :context => @context},
                 
-              :RDFS_label => {
+              RDF::RDFS.label => {
                 :lang => @lang, 
                 :first => true, 
                 :simple_value => :value, 
                 :context => @context},
                 
-              :RDFS_comment => {
+              RDF::RDFS.comment => {
                 :first => true, 
                 :simple_value => :value, 
                 :lang => @lang, 
-                :context => @context},
-                
-              :localname => {})
+                :context => @context})
           end),
           :total => @individuals.length
         })
@@ -112,13 +109,12 @@ class GoldController < ApplicationController
 
   def init_contexts
     @lang = "en"
-    @context = RDF_Context.find(:uri => RDF_Context.escape_uri("http://purl.org/linguistics/gold")).first
+    @context = RDF_Context.find(:uri_esc =>"http://purl.org/linguistics/gold".uri_esc)
   end
 
   def find_resource
     gold_ns = RDF::Vocabulary.new("http://purl.org/linguistics/gold/")
-    uri = RDF_Resource.escape_uri(gold_ns[params[:id]].to_s)
-    @resource = RDF_Resource.find(:uri => uri)
+    @resource = RDF_Resource.find(:uri_esc => gold_ns[params[:id]].uri_esc)
 
     if @resource.nil? then
       respond_to do |format|

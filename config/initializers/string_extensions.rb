@@ -14,3 +14,10 @@ class String
   end
   
 end
+
+class RDF::URI
+  
+  def uri_esc
+   self.to_s.uri_esc 
+  end
+end

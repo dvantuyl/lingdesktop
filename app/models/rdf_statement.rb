@@ -19,13 +19,21 @@ class RDF_Statement < Neo4j::Rails::Model
   
   index :predicate_uri_esc
   
-  has_one(:subject)
-  has_one(:object)
   has_n(:contexts).to(RDF_Context)
+  
+  def subject
+    self.outgoing(:subject).first
+  end
+  
+  def object
+    self.outgoing(:object).first
+  end
   
   def predicate_uri
     self[:predicate_uri_esc].uri_unesc
   end
+  
+  
   
   
   def self.create_by_quad( args )
@@ -37,8 +45,8 @@ class RDF_Statement < Neo4j::Rails::Model
 
     #create statement and connect to subject and object
     statement = RDF_Statement.new(:predicate_uri_esc => p)
-    statement.subject = s
-    statement.object = o
+    statement.outgoing(:subject) << s
+    statement.outgoing(:object) << o
     statement.contexts << c
     statement.save
 
@@ -49,15 +57,27 @@ class RDF_Statement < Neo4j::Rails::Model
   def self.find_by_quad( args )
     s, p, o, c = args[:subject], args[:predicate_uri_esc], args[:object], args[:context]
     
-    statements = []   
-    RDF_Statement.all(:predicate_uri_esc => p).each do |statement|
-      next unless s.nil? || statement.subject == s
-      next unless o.nil? || statement.object == o
-      next unless c.nil? || statement.contexts.to_a.include?(c)
-      
-      statements.push(statement)
-    end 
-    
+    statements = []
+    if !s.nil? then
+      s.incoming(:subject).each do |statement|
+        next unless p.nil? || statement.predicate_uri_esc == p
+        next unless o.nil? || statement.object == o
+        next unless c.nil? || statement.contexts.to_a.include?(c)
+        statements.push(statement)
+      end
+    elsif !o.nil? then
+      o.incoming(:object).each do |statement|
+        next unless p.nil? || statement.predicate_uri_esc == p
+        next unless c.nil? || statement.contexts.to_a.include?(c)
+        statements.push(statement)        
+      end
+    elsif !p.nil? then
+      RDF_Statement.all(:predicate_uri_esc => p).each do |statement|
+        next unless c.nil? || statement.contexts.to_a.include?(c)
+        statements.push(statement)
+      end    
+    end
+
     return statements 
 
   end

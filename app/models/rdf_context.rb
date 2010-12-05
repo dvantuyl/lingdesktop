@@ -21,6 +21,8 @@ class RDF_Context < Neo4j::Rails::Model
   property :uri_esc
   index :uri_esc
   
+  has_n(:statements).from(RDF_Statement, :contexts)
+  
   validates :uri_esc, :presence => true, :uniqueness => true
 
   def uri

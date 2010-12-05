@@ -15,21 +15,26 @@ graph = RDF::Graph.load(
   {:format => :rdfxml}
 )
 
+
+
+
+
 #find all owl classes
 graph.query([nil, RDF.type, RDF::OWL.Class]).each_subject do |gold_class_uri|
+
 
   Neo4j::Transaction.run do
     
     if gold_class_uri.uri? then
-      ctx_node = RDF_Context.find_or_create(:uri => "http://purl.org/linguistics/gold")
-      gold_class_node = RDF_Resource.find_or_create(:uri => gold_class_uri.to_s)
+      ctx_node = RDF_Context.find_or_create(:uri_esc => "http://purl.org/linguistics/gold".uri_esc)
+      gold_class_node = RDF_Resource.find_or_create(:uri_esc => gold_class_uri.uri_esc)
       print "LOAD owl:Class => #{gold_class_node.uri}\n\n"
 
       #load type
-      owl_class_node = RDF_Resource.find_or_create(:uri => RDF::OWL.Class.to_s)
+      owl_class_node = RDF_Resource.find_or_create(:uri_esc => RDF::OWL.Class.uri_esc)
       RDF_Statement.find_or_create(
         :subject => gold_class_node,
-        :predicate => :RDF_type,
+        :predicate_uri_esc => RDF.type.uri_esc,
         :object => owl_class_node, 
         :context => ctx_node)
       print "LOAD rdf:type => #{owl_class_node.uri}\n\n"
@@ -39,7 +44,7 @@ graph.query([nil, RDF.type, RDF::OWL.Class]).each_subject do |gold_class_uri|
       label_node = RDF_Literal.find_or_create(:value => label, :lang => "en")
       RDF_Statement.find_or_create(
         :subject => gold_class_node, 
-        :predicate => :RDFS_label,
+        :predicate_uri_esc => RDF::RDFS.label.uri_esc,
         :object => label_node,
         :context => ctx_node)
       print "LOAD rdfs:label => #{label_node.value}\n\n"
@@ -50,7 +55,7 @@ graph.query([nil, RDF.type, RDF::OWL.Class]).each_subject do |gold_class_uri|
         comment_node = RDF_Literal.find_or_create(:value => comment, :lang => "en")
         RDF_Statement.find_or_create(
           :subject => gold_class_node,
-          :predicate => :RDFS_comment, 
+          :predicate_uri_esc => RDF::RDFS.comment.uri_esc, 
           :object => comment_node,
           :context => ctx_node)
         print "LOAD rdfs:comment => #{comment_node.value}\n\n"
@@ -58,10 +63,10 @@ graph.query([nil, RDF.type, RDF::OWL.Class]).each_subject do |gold_class_uri|
 
       #load subClassOf
       graph.query([gold_class_uri, RDF::RDFS.subClassOf, nil]).each_object do |subClassOf_uri|
-        subClassOf_node = RDF_Resource.find_or_create(:uri => subClassOf_uri.to_s)
+        subClassOf_node = RDF_Resource.find_or_create(:uri_esc => subClassOf_uri.uri_esc)
         RDF_Statement.find_or_create(
           :subject => gold_class_node, 
-          :predicate => :RDFS_subClassOf, 
+          :predicate_uri_esc => RDF::RDFS.subClassOf.uri_esc, 
           :object => subClassOf_node, 
           :context => ctx_node)
         print "LOAD rdfs:subClassOf => #{subClassOf_node.uri}\n\n"
@@ -70,12 +75,12 @@ graph.query([nil, RDF.type, RDF::OWL.Class]).each_subject do |gold_class_uri|
       #load instances
       graph.query([nil, RDF.type, gold_class_uri]).each_subject do |instance_uri|
 
-        instance_node = RDF_Resource.find_or_create(:uri => instance_uri.to_s)
+        instance_node = RDF_Resource.find_or_create(:uri_esc => instance_uri.uri_esc)
 
         #load type
         RDF_Statement.find_or_create(
           :subject => instance_node, 
-          :predicate => :RDF_type, 
+          :predicate_uri_esc => RDF.type.uri_esc, 
           :object => gold_class_node, 
           :context => ctx_node)
 
@@ -84,7 +89,7 @@ graph.query([nil, RDF.type, RDF::OWL.Class]).each_subject do |gold_class_uri|
         label_node = RDF_Literal.find_or_create(:value => label, :lang => "en")
         RDF_Statement.find_or_create(
           :subject => instance_node, 
-          :predicate => :RDFS_label, 
+          :predicate_uri_esc => RDF::RDFS.label.uri_esc, 
           :object => label_node, 
           :context => ctx_node)
 
@@ -94,7 +99,7 @@ graph.query([nil, RDF.type, RDF::OWL.Class]).each_subject do |gold_class_uri|
           comment_node = RDF_Literal.find_or_create(:value => comment, :lang => "en")
           RDF_Statement.find_or_create(
             :subject => instance_node, 
-            :predicate => :RDFS_comment, 
+            :predicate_uri_esc => RDF::RDFS.comment.uri_esc, 
             :object => comment_node,
             :context => ctx_node)
         end

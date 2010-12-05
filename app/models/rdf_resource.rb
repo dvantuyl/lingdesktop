@@ -7,7 +7,7 @@ class RDF_Resource < Neo4j::Rails::Model
   
   validates :uri_esc, :presence => true, :uniqueness => true
 
-  def self.find_or_create(args)
+  def self.find_or_create(args) 
     return RDF_Resource.find(args) || RDF_Resource.create(args)
   end
 
@@ -26,20 +26,19 @@ class RDF_Resource < Neo4j::Rails::Model
       :uri => self.uri,
       :localname => self.localname}
 
-    predicates.each do |predicate, args|
+    predicates.each do |key, args|
       result = nil
       
+      predicate = (args.has_key?(:predicate) ? args[:predicate] : eval(key))
+    
       # get subjects
       if args[:subjects] then
         result =  self.get_subjects(predicate => args)
       
-      # get subjects
+      # get objects
       else
         result = self.get_objects(predicate => args)
       end
-
-      #set the key or rename the key of the hash
-      key = args[:rename_key] || predicate
 
       # handle array result
       if result.kind_of?(Array) then
@@ -68,7 +67,7 @@ class RDF_Resource < Neo4j::Rails::Model
     #collect subjects
     result = RDF_Statement.find_by_quad(
       :subject => nil, 
-      :predicate_uri_esc => predicate, 
+      :predicate_uri_esc => predicate.uri_esc, 
       :object => self,
       :context => args[:context]
     ).collect {|st| st.subject}
@@ -89,11 +88,10 @@ class RDF_Resource < Neo4j::Rails::Model
     #collect objects
     result = RDF_Statement.find_by_quad(
       :subject => self, 
-      :predicate_uri_esc => predicate, 
+      :predicate_uri_esc => predicate.uri_esc, 
       :object => nil, 
       :context => args[:context]
     ).collect {|st| st.object}
-    
     
     #filter
     RDF_Resource.filter_results(result, args)
@@ -118,6 +116,7 @@ class RDF_Resource < Neo4j::Rails::Model
   #
   # @return [mixed]
   def self.filter_results(result, args)
+    
     result = self.filter_by_lang(result, args[:lang]) if args.has_key?(:lang)
     result = self.filter_simple_value(result, args[:simple_value]) if args.has_key?(:simple_value)
     result = self.filter_first(result) if args.has_key?(:first)
@@ -126,14 +125,14 @@ class RDF_Resource < Neo4j::Rails::Model
     return result
   end
   
-  def self.filter_by_lang(result = [], lang = "")
-    result.delete_if{|node| !node.property?("lang") || (node.lang != lang)}
+  def self.filter_by_lang(result = [], lang = "")    
+    result.delete_if{|node| !node.property?(:lang) || (node.lang != lang)}.compact
   end
   
   def self.filter_simple_value(result = [], property = nil)
     result.delete_if do |node| 
       !node.property?(property.to_s)
-    end.collect{|node| node[property]}    
+    end.compact.collect{|node| node[property]}  
   end
   
   def self.filter_first(result = [])

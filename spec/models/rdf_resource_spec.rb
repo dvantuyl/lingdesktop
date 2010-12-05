@@ -90,17 +90,17 @@ describe RDF_Resource do
       @resource_one = RDF_Resource.create(:uri_esc => "http://test.one".uri_esc)
       @resource_two = RDF_Resource.create(:uri_esc => "http://test.two".uri_esc)
       @context = RDF_Context.create(:uri_esc => "http://context.test".uri_esc)
-      @predicate_one = "http://predicate.one".uri_esc
+      @predicate_one = "http://predicate.one"
       @predicate_two = "http://predicate.two".uri_esc
       @statement_one = RDF_Statement.create_by_quad(
         :subject => @resource_one,
-        :predicate_uri_esc => @predicate_one,
+        :predicate_uri_esc => @predicate_one.uri_esc,
         :object => @resource_two,
         :context => @context
       )
       @statement_two = RDF_Statement.create_by_quad(
         :subject => @resource_one,
-        :predicate_uri_esc => @predicate_two,
+        :predicate_uri_esc => @predicate_two.uri_esc,
         :object => @literal,
         :context => @context
       )
@@ -139,6 +139,8 @@ describe RDF_Resource do
         hash[@predicate_one].should include(@resource_two.to_hash)
         hash[@predicate_two].should include(@literal.to_hash)
       end
+      
+      
     end
   end
  

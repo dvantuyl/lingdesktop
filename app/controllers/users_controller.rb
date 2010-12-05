@@ -26,7 +26,7 @@ class UsersController < ApplicationController
       @user = current_user
     # find user by id
     else
-      @user = User.find(:uri => User.escape_uri(params[:id]))
+      @user = User.find(:uri_esc => params[:id].uri_esc)
     end
 
     if !@user then
