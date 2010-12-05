@@ -138,9 +138,7 @@ describe RDF_Resource do
         
         hash["RDF.type"].should include(@resource_two.to_hash)
         hash["RDF::RDFS.label"].should include(@literal.to_hash)
-      end
-      
-      
+      end 
     end
   end
  

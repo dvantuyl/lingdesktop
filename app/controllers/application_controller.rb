@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
     if session[:user_uri].nil? then
       @current_user = nil
     else
-      @current_user ||= User.find(:uri => session[:user_uri]).first
+      @current_user ||= User.find(:uri_esc => session[:user_uri].uri_esc)
     end
     
     @current_user
