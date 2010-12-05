@@ -13,10 +13,18 @@ class GoldController < ApplicationController
       format.html #show.html.erb
       format.json do
         render :json => @resource.to_hash(
-           :RDF_type => {:first => true, :args => {:localname => {}}},
-           :RDFS_label => {:lang => @lang, :first => true, :in_context => @context},
-           :RDFS_comment => {:lang => @lang, :in_context => @context})
+         :RDF_type => {
+           :first => true, 
+           :args => {:localname => {}}},
            
+         :RDFS_label => {
+           :lang => @lang, 
+           :first => true, 
+           :context => @context},
+           
+         :RDFS_comment => {
+           :lang => @lang, 
+           :context => @context})
       end
     end
   end
@@ -25,17 +33,37 @@ class GoldController < ApplicationController
   def subclasses
     find_resource
 
-    @subclasses = @resource.get_subjects(:RDFS_subClassOf => {:in_context => @context})
+    @subclasses = @resource.get_subjects(:RDFS_subClassOf => {:context => @context})
 
     respond_to do |format|
       format.html #subclasses.html.erb
       format.json do
         render :json => (@subclasses.collect do |sc|
           sc.to_hash(
-           :RDF_type => {:first => true, :simple_value => :uri, :in_context => @context},
-           :RDFS_label => {:lang => @lang, :first => true, :simple_value => :value, :in_context => @context},
-           :RDFS_label => {:lang => @lang, :first => true, :rename => "text", :simple_value => :value, :in_context => @context},
-           :RDFS_subClassOf => {:subjects => true, :boolean => false, :rename => "leaf", :in_context => @context},
+           :RDF_type => {
+             :first => true, 
+             :simple_value => :uri, 
+             :context => @context},
+             
+           :RDFS_label => {
+             :lang => @lang, 
+             :first => true, 
+             :simple_value => :value, 
+             :context => @context},
+             
+           :RDFS_label => {
+             :rename_key => "text", 
+             :lang => @lang, 
+             :first => true, 
+             :simple_value => :value, 
+             :context => @context},
+             
+           :RDFS_subClassOf => {
+             :rename_key => "leaf", 
+             :subjects => true, 
+             :empty_xor => false, 
+             :context => @context},
+             
            :localname => {})
         end)
       end
@@ -46,7 +74,7 @@ class GoldController < ApplicationController
   def individuals
     find_resource
     
-    @individuals = @resource.get_subjects(:RDF_type => {:in_context => @context})
+    @individuals = @resource.get_subjects(:RDF_type => {:context => @context})
     
     respond_to do |format|
       format.html #individuals.html.erb
@@ -54,9 +82,23 @@ class GoldController < ApplicationController
         render :json => ({
           :data => (@individuals.collect do |ind|
             ind.to_hash(
-              :RDF_type => {:first => true, :simple_value => :uri, :in_context => @context},
-              :RDFS_label => {:lang => @lang, :first => true, :simple_value => :value, :in_context => @context},
-              :RDFS_comment => {:first => true, :simple_value => :value, :lang => @lang, :in_context => @context},
+              :RDF_type => {
+                :first => true, 
+                :simple_value => :uri, 
+                :context => @context},
+                
+              :RDFS_label => {
+                :lang => @lang, 
+                :first => true, 
+                :simple_value => :value, 
+                :context => @context},
+                
+              :RDFS_comment => {
+                :first => true, 
+                :simple_value => :value, 
+                :lang => @lang, 
+                :context => @context},
+                
               :localname => {})
           end),
           :total => @individuals.length
@@ -86,6 +128,7 @@ class GoldController < ApplicationController
         end
       end
     end
+    
   end
 
 

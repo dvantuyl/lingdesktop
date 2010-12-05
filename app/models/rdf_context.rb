@@ -18,11 +18,14 @@ class RDF_Context < Neo4j::Rails::Model
   #
   # @return [String]  context uri of a named graph
   property :created_at
-  property :uri
-  index :uri
+  property :uri_esc
+  index :uri_esc
   
-  validates :uri, :presence => true, :uniqueness => true
+  validates :uri_esc, :presence => true, :uniqueness => true
 
+  def uri
+    self[:uri_esc].uri_unesc
+  end
 
   # Singleton method for creating a context only if one isn't found.
   # 
