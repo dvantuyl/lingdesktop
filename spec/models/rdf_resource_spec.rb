@@ -90,8 +90,8 @@ describe RDF_Resource do
       @resource_one = RDF_Resource.create(:uri_esc => "http://test.one".uri_esc)
       @resource_two = RDF_Resource.create(:uri_esc => "http://test.two".uri_esc)
       @context = RDF_Context.create(:uri_esc => "http://context.test".uri_esc)
-      @predicate_one = "http://predicate.one"
-      @predicate_two = "http://predicate.two".uri_esc
+      @predicate_one = RDF.type
+      @predicate_two = RDF::RDFS.label
       @statement_one = RDF_Statement.create_by_quad(
         :subject => @resource_one,
         :predicate_uri_esc => @predicate_one.uri_esc,
@@ -129,15 +129,15 @@ describe RDF_Resource do
       end
       
       it "with predicate_one should include resource_two" do
-        hash = @resource_one.to_hash(@predicate_one => {})
-        hash[@predicate_one].should include(@resource_two.to_hash)
+        hash = @resource_one.to_hash("RDF.type" => {})
+        hash["RDF.type"].should include(@resource_two.to_hash)
       end
       
       it "with predicate_one and predicate_two should include resource_two and literal" do
-        hash = @resource_one.to_hash(@predicate_one => {}, @predicate_two => {})
+        hash = @resource_one.to_hash("RDF.type" => {}, "RDF::RDFS.label" => {})
         
-        hash[@predicate_one].should include(@resource_two.to_hash)
-        hash[@predicate_two].should include(@literal.to_hash)
+        hash["RDF.type"].should include(@resource_two.to_hash)
+        hash["RDF::RDFS.label"].should include(@literal.to_hash)
       end
       
       
