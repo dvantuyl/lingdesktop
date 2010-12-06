@@ -29,7 +29,15 @@ class RDF_Resource < Neo4j::Rails::Model
     predicates.each do |key, args|
       result = nil
       
-      predicate = (args.has_key?(:predicate) ? args[:predicate] : eval(key))
+      # use predicate option if given
+      if args.has_key?(:predicate) then
+        predicate = args[:predicate]
+      
+      # else extract predicate from key
+      else
+        ns, val = key.split(':')
+        predicate = eval("RDF" + (ns == "rdf" ? ".#{val}" : "::#{ns.upcase}.#{val}")) #note that the eval string calls the RDF.rb lib
+      end
     
       # get subjects
       if args[:subjects] then

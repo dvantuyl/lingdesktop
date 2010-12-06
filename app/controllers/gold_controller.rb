@@ -14,16 +14,16 @@ class GoldController < ApplicationController
       format.html #show.html.erb
       format.json do
         render :json => @resource.to_hash(
-         "RDF.type" => {
+         "rdf:type" => {
            :first => true,
            :context => @context},
            
-         "RDF::RDFS.label" => {
+         "rdfs:label" => {
            :lang => @lang, 
            :first => true, 
            :context => @context},
            
-         "RDF::RDFS.comment" => {
+         "rdfs:comment" => {
            :lang => @lang, 
            :context => @context})
       end
@@ -41,12 +41,12 @@ class GoldController < ApplicationController
       format.json do
         render :json => (@subclasses.collect do |sc|
           sc.to_hash(
-           "RDF.type" => {
+           "rdf:type" => {
              :first => true, 
              :simple_value => :uri, 
              :context => @context},
              
-           "RDF::RDFS.label" => {
+           "rdfs:label" => {
              :lang => @lang, 
              :first => true, 
              :simple_value => :value, 
@@ -81,18 +81,18 @@ class GoldController < ApplicationController
         render :json => ({
           :data => (@individuals.collect do |ind|
             ind.to_hash(
-              RDF.type => {
+              "rdf:type" => {
                 :first => true, 
                 :simple_value => :uri, 
                 :context => @context},
                 
-              RDF::RDFS.label => {
+              "rdfs:label" => {
                 :lang => @lang, 
                 :first => true, 
                 :simple_value => :value, 
                 :context => @context},
                 
-              RDF::RDFS.comment => {
+              "rdfs:comment" => {
                 :first => true, 
                 :simple_value => :value, 
                 :lang => @lang, 

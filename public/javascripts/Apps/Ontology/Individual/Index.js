@@ -13,7 +13,7 @@ Ontology.Individual.Index = Ext.extend(Desktop.App, {
             url: 'gold/' + ic.instanceId + '/individuals.json',
             // reader configs
             root: 'data',
-            fields: ['RDF_type', 'sid', 'uri', 'RDFS_label', 'localname']
+            fields: ["rdfs:label", "rdfs:comment","rdf:type", "uri","localname"]
         });
 
         //setup grid
@@ -27,10 +27,10 @@ Ontology.Individual.Index = Ext.extend(Desktop.App, {
                 columns: [
                     {
                         header: 'Label',
-                        dataIndex: 'RDFS_label'
+                        dataIndex: "rdfs:label"
                     },{
-                        header: 'URI',
-                        dataIndex: 'uri'
+                        header: 'Definition',
+                        dataIndex: "rdfs:comment"
                     }
                 ]
             }),
@@ -46,15 +46,15 @@ Ontology.Individual.Index = Ext.extend(Desktop.App, {
                 },
                 rowdblclick: function(g, index) {
                     var record = g.getStore().getAt(index);
-                    var label = record.get('RDFS_label');
-                    var sid = record.get('sid');
+                    var label = record.get('rdfs:label');
+                    //var sid = record.get('sid');
                     var localname = record.get('localname');
 
                     Desktop.AppMgr.display(
                         'ontology_class_view',
                         localname,
                         {
-                            sid: sid,
+                            //sid: sid,
                             title: label
                         }
                     );
@@ -88,15 +88,16 @@ Ontology.Individual.Index = Ext.extend(Desktop.App, {
         this.on('view',
         function() {
             var record = grid.getSelectionModel().getSelected();
-            var label = record.get('RDFS_label');
-            var sid = record.get('sid');
-            var localname = record.get('localname');
+            var label = record.get("rdfs:label");
+            
+            //var sid = record.get('sid');
+            var localname = record.get("localname");
 
             Desktop.AppMgr.display(
                 'ontology_class_view',
                 localname,
                 {
-                    sid: sid,
+                    //sid: sid,
                     title: label
                 }
             );
@@ -105,7 +106,7 @@ Ontology.Individual.Index = Ext.extend(Desktop.App, {
 
         this.on('render',
         function() {
-            store.reload();
+            store.load();
         });
     }
 });
