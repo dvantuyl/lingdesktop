@@ -1,8 +1,5 @@
 ##
-# Test Comment for Gold Controller
-#
-# @example Do something
-#   Gold Controller
+# Gold Controller
 #
 class GoldController < ApplicationController
   before_filter :init_contexts
@@ -113,8 +110,8 @@ class GoldController < ApplicationController
   end
 
   def find_resource
-    gold_ns = RDF::Vocabulary.new("http://purl.org/linguistics/gold/")
-    @resource = RDF_Resource.find(:uri_esc => gold_ns[params[:id]].uri_esc)
+    
+    @resource = RDF_Resource.find(:uri_esc => RDF::GOLD[params[:id]].uri_esc)
 
     if @resource.nil? then
       respond_to do |format|

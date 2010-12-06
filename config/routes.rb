@@ -60,7 +60,7 @@ Lingdesktop::Application.routes.draw do
   
   match '/auth/:provider/callback', :to => 'sessions#create'
   
-  resources :users, :help
+  resources :users, :help, :termsets
   
   resources :gold do
     member do

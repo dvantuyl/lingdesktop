@@ -31,7 +31,6 @@ Term.Set.Form = Ext.extend(Desktop.App, {
 			labelAlign: 'top',
 	    	frame: true,
 			width: 700,
-	    	url:'users',
 	    	baseParams: {format:'json'},
 	    	items: [{
 		  	  layout: 'column',
@@ -61,10 +60,10 @@ Term.Set.Form = Ext.extend(Desktop.App, {
 
 			//Load server -> form values if we have the ic.instance_id
 			var id = ic.instanceId;
-			this.form.form.url = 'data/termsets/'+id+'.json';
+			this.form.form.url = 'termsets/'+id+'.json';
 		    this.form.load({method: 'GET'});
 		}else{
-			this.form.form.url = 'data/termsets'; 
+			this.form.form.url = 'termsets'; 
 		}
 		
 		
@@ -100,7 +99,7 @@ Term.Set.Form = Ext.extend(Desktop.App, {
 				if (btn == 'yes') {
 					var id = ic.instanceId;
 					Ext.Ajax.request({
-						url: 'data/termsets/' + id + '.json',
+						url: 'termsets/' + id + '.json',
 						method: 'POST',
 						success: function(){
 							if (ic.node.getOwnerTree()) {ic.node.reload();} //check to make sure the term nav is still open before refreshing

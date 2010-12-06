@@ -38,7 +38,7 @@ Term.Form = Ext.extend(Desktop.App, {
 		    store: new Ext.data.JsonStore({
 			    // store configs
 			    autoDestroy: true,
-			    url: 'data/terms/'+ic.instanceId+'/hasMeaning.json',
+			    url: 'terms/'+ic.instanceId+'/hasMeaning.json',
 			    // reader configs
 			    root: 'data',
 				idProperty: 'uri',
@@ -93,12 +93,12 @@ Term.Form = Ext.extend(Desktop.App, {
 
 			//Load server -> form values if we have the ic.instance_id
 			var id = ic.instanceId;
-			this.form.form.url = 'data/terms/'+id+'.json';
+			this.form.form.url = 'terms/'+id+'.json';
 		    this.form.load({method: 'GET'});
 			
 			hasMeaningGrid.getStore().load({method: 'GET'});
 		}else{
-			this.form.form.url = 'data/terms.json'; 
+			this.form.form.url = 'terms.json'; 
 		}
 
 		//apply all components to this app instance
@@ -136,7 +136,7 @@ Term.Form = Ext.extend(Desktop.App, {
 				if (btn == 'yes') {
 					var userid = ic.instanceId;
 					Ext.Ajax.request({
-						url: 'data/terms/' + userid + '.json',
+						url: 'terms/' + userid + '.json',
 						method: 'POST',
 						success: function(){
 							if (ic.node && ic.node.getOwnerTree()) {ic.node.reload();} //check to make sure the term nav is still open before refreshing

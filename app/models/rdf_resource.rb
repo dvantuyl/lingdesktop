@@ -150,5 +150,7 @@ class RDF_Resource < Neo4j::Rails::Model
   def self.filter_empty_xor(result = [], empty_xor = true)
     result.empty? ^ empty_xor
   end
+  
+
 
 end
