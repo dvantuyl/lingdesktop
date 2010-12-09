@@ -8,7 +8,7 @@ class RDF_Resource < Neo4j::Rails::Model
   validates :uri_esc, :presence => true, :uniqueness => true
 
   def self.find_or_create(args) 
-    return RDF_Resource.find(args) || RDF_Resource.create(args)
+    return self.find(args) || self.create(args)
   end
 
   def localname

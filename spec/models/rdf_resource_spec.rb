@@ -129,15 +129,15 @@ describe RDF_Resource do
       end
       
       it "with predicate_one should include resource_two" do
-        hash = @resource_one.to_hash("RDF.type" => {})
-        hash["RDF.type"].should include(@resource_two.to_hash)
+        hash = @resource_one.to_hash("rdf:type" => {})
+        hash["rdf:type"].should include(@resource_two.to_hash)
       end
       
       it "with predicate_one and predicate_two should include resource_two and literal" do
-        hash = @resource_one.to_hash("RDF.type" => {}, "RDF::RDFS.label" => {})
+        hash = @resource_one.to_hash("rdf:type" => {}, "rdfs:label" => {})
         
-        hash["RDF.type"].should include(@resource_two.to_hash)
-        hash["RDF::RDFS.label"].should include(@literal.to_hash)
+        hash["rdf:type"].should include(@resource_two.to_hash)
+        hash["rdfs:label"].should include(@literal.to_hash)
       end 
     end
   end
