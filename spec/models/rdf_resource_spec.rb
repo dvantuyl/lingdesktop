@@ -6,7 +6,7 @@ describe RDF_Resource do
   
     it "creates and returns node" do
       node = RDF_Resource.find_or_create(:uri_esc => "http://test.com".uri_esc)
-      
+
       RDF_Resource.all.first.should be node
     end  
 
@@ -92,18 +92,21 @@ describe RDF_Resource do
       @context = RDF_Context.create(:uri_esc => "http://context.test".uri_esc)
       @predicate_one = RDF.type
       @predicate_two = RDF::RDFS.label
-      @statement_one = RDF_Statement.create_by_quad(
+      @statement_one = RDF_Statement.init_by_quad(
         :subject => @resource_one,
         :predicate_uri_esc => @predicate_one.uri_esc,
         :object => @resource_two,
         :context => @context
       )
-      @statement_two = RDF_Statement.create_by_quad(
+      @statement_two = RDF_Statement.init_by_quad(
         :subject => @resource_one,
         :predicate_uri_esc => @predicate_two.uri_esc,
         :object => @literal,
         :context => @context
       )
+      
+      @statement_one.save
+      @statement_two.save
     end
     
     describe "#get_objects" do

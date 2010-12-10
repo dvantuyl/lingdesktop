@@ -7,6 +7,7 @@ class RDF_Resource < Neo4j::Rails::Model
   
   validates :uri_esc, :presence => true, :uniqueness => true
 
+
   def self.find_or_create(args) 
     return self.find(args) || self.create(args)
   end
@@ -102,7 +103,7 @@ class RDF_Resource < Neo4j::Rails::Model
     ).collect {|st| st.object}
     
     #filter
-    RDF_Resource.filter_results(result, args)
+    self.class.filter_results(result, args)
   end
   
   

@@ -7,7 +7,7 @@ describe RDF_Literal do
     context "when there is no other with lang and value" do
       
       it "creates and returns node" do
-        node = RDF_Literal.find_or_create(:lang => 'en', :value => 'test one')
+        node = RDF_Literal.find_or_create(:lang => 'en', :value => 'testone')
         
         RDF_Literal.all.first.should == node
       end
