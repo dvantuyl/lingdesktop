@@ -13,15 +13,19 @@ class GoldController < ApplicationController
         render :json => @resource.to_hash(
          "rdf:type" => {
            :first => true,
+           :simple_value => :uri,
            :context => @context},
            
          "rdfs:label" => {
            :lang => @lang, 
-           :first => true, 
+           :first => true,
+           :simple_value => :value,
            :context => @context},
            
          "rdfs:comment" => {
-           :lang => @lang, 
+           :lang => @lang,
+           :first => true,
+           :simple_value => :value,
            :context => @context})
       end
     end

@@ -66,8 +66,9 @@ Term.Nav = Ext.extend(Desktop.App, {
 
             var selected = tree.getSelectionModel().getSelectedNode();
             var node = null;
-
-            if (selected && selected.attributes.rdf_type == 'http://purl.org/linguistics/gold/Term') {
+            
+            
+            if (selected && selected.attributes["rdf:type"] == 'http://purl.org/linguistics/gold/Term') {
                 node = selected.parentNode;
             } else {
                 node = selected
@@ -81,15 +82,12 @@ Term.Nav = Ext.extend(Desktop.App, {
             }
             //give tree's root node so that the form can refresh the entire tree on save
             );
-
-
         });
 
         this.on('edit',
         function(node, e) {
             var selected = tree.getSelectionModel().getSelectedNode();
-
-            if (selected.attributes.rdf_type == 'http://purl.org/linguistics/gold/TermSet') {
+            if (selected.attributes["rdf:type"] == 'http://purl.org/linguistics/gold/Termset') {
                 Desktop.AppMgr.display('term_set_form', selected.attributes.localname, {
                     title: selected.attributes.label,
                     node: tree.getRootNode()

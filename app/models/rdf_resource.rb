@@ -29,21 +29,21 @@ class RDF_Resource < Neo4j::Rails::Model
 
     predicates.each do |key, args|
       result = nil
-      
+
       # use predicate option if given
       if args.has_key?(:predicate) then
         predicate = args[:predicate]
-      
+    
       # else extract predicate from key
       else
         ns, val = key.split(':')
         predicate = eval("RDF" + (ns == "rdf" ? ".#{val}" : "::#{ns.upcase}.#{val}")) #note that the eval string calls the RDF.rb lib
       end
-    
+  
       # get subjects
       if args[:subjects] then
         result =  self.get_subjects(predicate => args)
-      
+    
       # get objects
       else
         result = self.get_objects(predicate => args)
@@ -146,9 +146,12 @@ class RDF_Resource < Neo4j::Rails::Model
   end
   
   def self.filter_simple_value(result = [], property = nil)
-    result.delete_if do |node| 
-      !node.property?(property.to_s)
-    end.compact.collect{|node| node[property]}  
+    result.delete_if do |node|
+      !node.respond_to?(property) && !node.property?(property.to_s)
+    end
+    result.compact.collect do |node| 
+      eval "node.#{property}"
+    end  
   end
   
   def self.filter_first(result = [])

@@ -62,8 +62,8 @@ Term.Tree = Ext.extend(Ext.tree.TreePanel, {
         //set the tree base params to the node attributes
         loader.on("beforeload",
         function(treeLoader, node) {
-            if (node.attributes.rdf_type == 'http://purl.org/linguistics/gold/TermSet') {
-                treeLoader.url = 'data/termsets/' + node.attributes.localname + '/terms.json';
+            if (node.attributes["rdf:type"] == 'http://purl.org/linguistics/gold/Termset') {
+                treeLoader.url = 'termsets/' + node.attributes.localname + '/terms.json';
             }
             else {
                 treeLoader.url = 'termsets.json';
