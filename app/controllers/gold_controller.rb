@@ -2,7 +2,7 @@
 # Gold Controller
 #
 class GoldController < ApplicationController
-  before_filter :init_contexts
+  before_filter :init_context
 
   def show
     find_resource
@@ -104,7 +104,7 @@ class GoldController < ApplicationController
 
   private
 
-  def init_contexts
+  def init_context
     @lang = "en"
     @context = RDF_Context.find(:uri_esc =>"http://purl.org/linguistics/gold".uri_esc)
   end

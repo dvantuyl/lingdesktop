@@ -8,17 +8,19 @@ class Termset < RDF_Resource
     "http://purl.org/linguistics/lingdesktop/termsets/#{uuid}".uri_esc
   end  
   
+  def self.type
+    RDF_Resource.find_or_create(:uri_esc => RDF::GOLD.Termset.uri_esc)
+  end
   
   def self.create_in_context(context_node)
 
     # find or create supporting graph
     ts_node = Termset.create(:uri_esc => Termset.gen_uri_esc)
-    type_node = RDF_Resource.find_or_create(:uri_esc => RDF::GOLD.Termset.uri_esc)
     
     RDF_Statement.find_or_init(
       :subject => ts_node,
       :predicate_uri_esc => RDF.type.uri_esc,
-      :object => type_node,
+      :object => self.type,
       :context => context_node
     ).save
     

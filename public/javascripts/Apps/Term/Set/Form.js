@@ -13,7 +13,7 @@ Term.Set.Form = Ext.extend(Desktop.App, {
 	      fieldLabel: 'What do you want to call your termset?',
 		  allowBlank: false,
 		  requiredField: true,
-	      name: 'label',
+	      name: 'rdfs:label',
 	      width: 165,
 	    });
 		
@@ -22,7 +22,7 @@ Term.Set.Form = Ext.extend(Desktop.App, {
 			height: 100,
 			width: 685,
 			fieldLabel: 'Comment',
-			name: 'comment'
+			name: 'rdfs:comment'
 		});
 		
 	 	
@@ -88,6 +88,7 @@ Term.Set.Form = Ext.extend(Desktop.App, {
 				save_config.params = {'_method':'PUT'};
 			}
 			save_config.success = function(form,action){
+			  console.log("SUCCESS");
 				if (ic.node.getOwnerTree()) {ic.node.reload();} //check to make sure the term nav is still open before refreshing
 				this.destroy();		
 			}

@@ -1,3 +1,8 @@
+.help-img{
+  float: left;
+	margin: 0 10px 10px 0;
+}
+
 .help-show{
 	padding: 20px;
 }
@@ -33,4 +38,8 @@
 
 .underline{
 	text-decoration: underline;
+}
+
+.help-show strong{
+  font-weight: bold;
 }

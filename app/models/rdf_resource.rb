@@ -51,7 +51,14 @@ class RDF_Resource < Neo4j::Rails::Model
 
       # handle array result
       if result.kind_of?(Array) then
-        resource_hash.merge!({key => result.collect{|r| r.to_hash(args[:args])}})
+        result = result.collect do |r|
+          if r.respond_to?('to_hash') then
+            r.to_hash(args[:args])
+          else
+            r
+          end
+        end
+        resource_hash.merge!({key => result})
 
       # handle boolean result
       elsif result.kind_of?(TrueClass) || result.kind_of?(FalseClass) then

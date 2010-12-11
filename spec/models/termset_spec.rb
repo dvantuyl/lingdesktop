@@ -90,6 +90,7 @@ describe Termset do
         "rdfs:comment" => "comment"
       }, @context)
       
+      finish_tx
       hash = termset.to_hash(
         "rdfs:label" => {
           :first => true,
