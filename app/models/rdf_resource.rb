@@ -19,6 +19,44 @@ class RDF_Resource < Neo4j::Rails::Model
   def uri
     self[:uri_esc].uri_unesc
   end
+  
+  def set_label(label, context_node)
+    label_node = RDF_Literal.find_or_create(:value => label, :lang => "en")
+    
+    old = RDF_Statement.find_by_quad(
+      :subject => self,
+      :predicate_uri_esc => RDF::RDFS.label.uri_esc,
+      :context => context_node
+    ).first   
+    old.remove_context(context_node, {:object => true}) unless old.nil?
+     
+    RDF_Statement.find_or_init(
+      :subject => self,
+      :predicate_uri_esc => RDF::RDFS.label.uri_esc,
+      :object => label_node,
+      :context => context_node
+    ).save 
+  end
+
+  
+  def set_comment(comment, context_node)
+    comment_node = RDF_Literal.find_or_create(:value => comment, :lang => "en")
+    
+    old = RDF_Statement.find_by_quad(
+      :subject => self,
+      :predicate_uri_esc => RDF::RDFS.comment.uri_esc,
+      :context => context_node
+    ).first  
+    old.remove_context(context_node, {:object => true}) unless old.nil?
+    
+    RDF_Statement.find_or_init(
+      :subject => self,
+      :predicate_uri_esc => RDF::RDFS.comment.uri_esc,
+      :object => comment_node,
+      :context => context_node
+    ).save
+  end
+
 
   def to_hash(predicates = [])
     predicates = [] if predicates.nil?
@@ -39,8 +77,8 @@ class RDF_Resource < Neo4j::Rails::Model
         ns, val = key.split(':')
         predicate = eval("RDF" + (ns == "rdf" ? ".#{val}" : "::#{ns.upcase}.#{val}")) #note that the eval string calls the RDF.rb lib
       end
-  
-      # get subjects
+      
+      # get subjects  
       if args[:subjects] then
         result =  self.get_subjects(predicate => args)
     
@@ -77,6 +115,7 @@ class RDF_Resource < Neo4j::Rails::Model
     return resource_hash
   end
   
+  
   def get_subjects(predicate_and_args)
     predicate, args = predicate_and_args.first
     
@@ -91,6 +130,7 @@ class RDF_Resource < Neo4j::Rails::Model
     #filter
     RDF_Resource.filter_results(result, args)
   end
+
 
   # Finds objects where self is subject and matches against arg conditions
   # 
@@ -111,6 +151,37 @@ class RDF_Resource < Neo4j::Rails::Model
     
     #filter
     self.class.filter_results(result, args)
+  end
+  
+  protected
+  
+  def copy_context!(from_context, to_context)
+    # copy context to graph
+    RDF_Statement.find_by_quad(
+      :subject => self,
+      :context => from_context
+    ).each {|st| st.contexts << to_context}
+  end
+  
+  def remove_context!(context)
+    
+    # remove context from subjects
+    RDF_Statement.find_by_quad(
+      :object => self,
+      :context => context
+      
+    ).each do |st| 
+      st.remove_context(context, {:subject => true, :object => true})
+    end   
+    
+    # remove context from objects
+    RDF_Statement.find_by_quad(
+      :subject => self,
+      :context => context
+      
+    ).each do |st| 
+      st.remove_context(context, {:subject => true, :object => true})
+    end   
   end
   
   
@@ -161,7 +232,5 @@ class RDF_Resource < Neo4j::Rails::Model
   def self.filter_empty_xor(result = [], empty_xor = true)
     result.empty? ^ empty_xor
   end
-  
-
 
 end

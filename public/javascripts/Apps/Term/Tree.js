@@ -35,7 +35,6 @@ Term.Tree = Ext.extend(Ext.tree.TreePanel, {
                 'term_set_form',
                 node.attributes.localname,
                 {
-                    sid: sid,
                     title: text
                 }
                 );
@@ -68,7 +67,7 @@ Term.Tree = Ext.extend(Ext.tree.TreePanel, {
             else {
                 treeLoader.url = 'termsets.json';
             }
-            treeLoader.baseParams.sid = node.attributes.sid;
+            //treeLoader.baseParams.sid = node.attributes.sid;
         },
         this);
 

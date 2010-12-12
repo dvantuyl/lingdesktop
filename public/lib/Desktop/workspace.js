@@ -17,14 +17,39 @@ Desktop.authenticated = false;
 
 Desktop.workspace = function() {
     Ext.QuickTips.init();
-    var viewport,
-    viewPanel,
-    borderPanel,
-    fullScreenPanel,
-    loginWindow,
-    toolbar,
-    currentUser,
-    cookieUtil = Ext.util.Cookies;
+    var viewport;
+    var viewPanel;
+    var borderPanel;
+    var fullScreenPanel;
+    var loginWindow;
+    var toolbar;
+    var currentUser;
+    var cookieUtil = Ext.util.Cookies;
+    
+    var googleLoginBtn = {
+        xtype: 'box',
+        cls: 'dt-auth-google',       
+        html: "<a href='/auth/google'><img src='images/authbuttons/google_64.png'/></a>",
+        flex: 1
+    };
+    
+    var yahooLoginBtn = {
+        xtype: 'box',
+        cls: 'dt-auth-yahoo',  
+        html: "<a href='/auth/yahoo'>" +
+        "<img src='images/authbuttons/yahoo_64.png'/>" +
+        "</a>",
+        flex: 1
+    };
+    
+    var openIdLoginBtn = {
+        xtype: 'box',
+        cls: 'dt-auth-openid',  
+        html: "<a href='/auth/open_id'>" +
+        "<img src='images/authbuttons/openid_64.png'/>" +
+        "</a>",
+        flex: 1
+    };
 
     return {
         init: function() {
@@ -131,31 +156,17 @@ Desktop.workspace = function() {
                 title: 'Select a service to Login through:',
                 layout: 'hbox',
                 layoutConfig: {
-                    pack: 'center'
+                    pack: 'center',
+                    align: 'stretch'
                 },
                 center: true,
                 closable: false,
                 resizable: false,
                 border: false,
                 items: [
-                {
-                    xtype: 'box',
-                    html: "<a href='/auth/google'>" +
-                    "<img src='images/authbuttons/google_64.png'/>" +
-                    "</a>"
-                },
-                {
-                    xtype: 'box',
-                    html: "<a href='/auth/yahoo'>" +
-                    "<img src='images/authbuttons/yahoo_64.png'/>" +
-                    "</a>"
-                },
-                {
-                    xtype: 'box',
-                    html: "<a href='/auth/open_id'>" +
-                    "<img src='images/authbuttons/openid_64.png'/>" +
-                    "</a>"
-                }
+                  googleLoginBtn,
+                  yahooLoginBtn,
+                  openIdLoginBtn
                 ],
                 buttons: [
                 '->', {
@@ -256,11 +267,14 @@ Desktop.workspace = function() {
             toolbar.displayGuest();
 
             cookieUtil.set(
-            '_Lingdesktop_session',
-            null,
-            new Date("January 1, 1970"),
-            '/'
-            );
+              '_Lingdesktop_session',
+              null,
+              new Date("January 1, 1970"),
+              '/');
+            
+            Ext.Ajax.request({
+                url: 'signout'
+            });
 
             if (Desktop.test) {
                 Desktop.AppMgr.initApps('test');

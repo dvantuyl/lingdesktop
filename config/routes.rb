@@ -59,8 +59,19 @@ Lingdesktop::Application.routes.draw do
   root :to => "desktop#index"
   
   match '/auth/:provider/callback', :to => 'sessions#create'
+  match '/signout', :to => 'sessions#destroy', :as => :signout
   
-  resources :users, :help, :termsets
+  resources :users, :help
+  
+  resources :termsets do
+    resources :terms, :only => [:index]
+  end
+  
+  resources :terms, :except => [:index] do
+    member do
+      get 'hasMeaning'
+    end
+  end
   
   resources :gold do
     member do

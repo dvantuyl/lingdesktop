@@ -81,7 +81,7 @@ class RDF_Statement < Neo4j::Rails::Model
     statement = RDF_Statement.new(:predicate_uri_esc => p)
     statement.outgoing(:subject) << s
     statement.outgoing(:object) << o
-    statement.contexts << c
+    statement.outgoing(:contexts) << c
 
     return statement
   end
@@ -94,10 +94,11 @@ class RDF_Statement < Neo4j::Rails::Model
     
     #find by traversing from subject
     if !s.nil? then
-      s.incoming(:subject).each do |statement|
+      s.incoming(:subject).each do |statement|     
         next unless p.nil? || statement.predicate_uri_esc == p
         next unless o.nil? || statement.object == o
         next unless c.nil? || statement.contexts.to_a.include?(c)
+
         statements.push(statement)
       end
       
@@ -106,6 +107,7 @@ class RDF_Statement < Neo4j::Rails::Model
       o.incoming(:object).each do |statement|
         next unless p.nil? || statement.predicate_uri_esc == p
         next unless c.nil? || statement.contexts.to_a.include?(c)
+
         statements.push(statement)        
       end
       
@@ -122,10 +124,17 @@ class RDF_Statement < Neo4j::Rails::Model
   
   
   def remove_context(context_node, cleanup = {})
+    puts self.subject.uri
+    puts self.predicate_uri
+    puts self.object.to_hash.to_json
+    puts "------------------------"
+    
+    
+    # Security precaution
+    raise "Can not remove without context" if context_node.nil?
     
     #remove context from statement 
     self.rels.to_other(context_node).del
-    self.save
     
     # if this statement has no contexts
     if self.contexts.empty? then

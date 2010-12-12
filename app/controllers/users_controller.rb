@@ -29,7 +29,7 @@ class UsersController < ApplicationController
       @user = User.find(:uri_esc => params[:id].uri_esc)
     end
 
-    if !@user then
+    if @user.nil? then
       respond_to do |format|
         format.html #error.html.erb
         format.json do

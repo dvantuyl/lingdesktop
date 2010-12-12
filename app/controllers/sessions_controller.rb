@@ -6,4 +6,10 @@ class SessionsController < ApplicationController
 
     redirect_to "/"
   end
+  
+  def destroy
+    @current_user = nil
+    session[:user_uri] = nil
+    render :json => {:success => true}
+  end
 end

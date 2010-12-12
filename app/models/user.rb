@@ -28,8 +28,9 @@ class User < RDF_Context
     user.email = hash['user_info']['email'] if hash['user_info'].has_key?('email')
     user.name = hash['user_info']['name'] if hash['user_info'].has_key?('name')
     user.is_admin = false
+    user.save
     
-    return user.save
+    return user
   end
   
   def to_hash

@@ -34,7 +34,8 @@ class GoldController < ApplicationController
 
   def subclasses
     find_resource
-
+    
+   
     @subclasses = @resource.get_subjects(RDF::RDFS.subClassOf => {:context => @context})
 
     respond_to do |format|
