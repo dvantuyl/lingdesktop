@@ -37,6 +37,10 @@ class RDF_Statement < Neo4j::Rails::Model
     self.outgoing(:contexts)
   end
   
+  def created_by
+    self.outgoing(:created_by).first
+  end
+  
   
   
   # Singleton method for initializing a RDF triple statement only if one isn't first found.
@@ -82,6 +86,7 @@ class RDF_Statement < Neo4j::Rails::Model
     statement.outgoing(:subject) << s
     statement.outgoing(:object) << o
     statement.outgoing(:contexts) << c
+    statement.outgoing(:created_by) << c
 
     return statement
   end
