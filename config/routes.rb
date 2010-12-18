@@ -58,8 +58,7 @@ Lingdesktop::Application.routes.draw do
 
   root :to => "desktop#index"
   
-  match '/auth/:provider/callback', :to => 'sessions#create'
-  match '/signout', :to => 'sessions#destroy', :as => :signout
+  devise_for :authentication
   
   resources :users, :help
   

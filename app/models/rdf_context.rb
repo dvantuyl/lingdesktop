@@ -28,6 +28,31 @@ class RDF_Context < Neo4j::Rails::Model
   def uri
     self[:uri_esc].uri_unesc
   end
+  
+  
+  def followers
+    self.incoming(:follows).to_a
+  end
+
+  
+  def following
+    self.outgoing(:follows).to_a
+  end
+
+
+  def follow(context_node)
+    self.outgoing(:follows) << context_node unless self.following.include?(context_node)
+  end
+  
+  def unfollow(context_node)
+    self.rels(:follows).outgoing.to_other(context_node).del
+  end
+
+
+  def statements
+    self.incoming(:contexts).to_a
+  end
+
 
   # Singleton method for creating a context only if one isn't found.
   # 
@@ -35,6 +60,13 @@ class RDF_Context < Neo4j::Rails::Model
   # @return [CTX_Context]
   def self.find_or_create(args)
     RDF_Context.find(args) || RDF_Context.create(args)
+  end
+    
+  
+  def copy_from_context(context_node)
+    context_node.statements.each do |statement|
+      statement.add_context(self)
+    end
   end
   
 end

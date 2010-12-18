@@ -15,8 +15,7 @@ gem 'warbler'
 gem 'neo4j', :git => 'git://github.com/andreasronge/neo4j.git'
 gem 'rdf'
 gem 'rdf-raptor'
-gem 'omniauth'
-gem 'uuidtools'
+gem 'devise-neo4j', :git => 'git://github.com/benjackson/devise-neo4j.git'
 
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators

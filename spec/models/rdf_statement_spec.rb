@@ -25,7 +25,7 @@ describe RDF_Statement do
      node.subject.should == @subject
      node.predicate_uri.should == @predicate
      node.object.should == @object
-     node.contexts.to_a.should include(@context)    
+     node.contexts.should include(@context)    
    end    
   end
   
@@ -146,8 +146,8 @@ describe RDF_Statement do
         finish_tx
         @new_statement.should == @statement
         RDF_Statement.all.size.should == 1
-        @new_statement.contexts.to_a.should include(@context)
-        @new_statement.contexts.to_a.should include(@context_two)
+        @new_statement.contexts.should include(@context)
+        @new_statement.contexts.should include(@context_two)
       end
       
     end
@@ -184,21 +184,21 @@ describe RDF_Statement do
           :object => @object,
           :context => @context
        )
-       @statement_one.contexts << @context_two
+       @statement_one.add_context @context_two
        @statement_one.save
     end
 
     it "should not include context" do
-      @statement_one.contexts.to_a.should include(@context)
+      @statement_one.contexts.should include(@context)
       @statement_one.remove_context(@context)
-
-      @statement_one.contexts.to_a.should_not include(@context)
+      
+      @statement_one.contexts.should_not include(@context)
     end
     
     it "should not be destroyed if has at least one context" do
       @statement_one.remove_context(@context)
       
-      @statement_one.contexts.to_a.size.should == 1
+      @statement_one.contexts.size.should == 1
       Neo4j::Node.load(@statement_one.neo_id).should_not be nil      
     end
     
@@ -207,7 +207,7 @@ describe RDF_Statement do
       @statement_one.remove_context(@context)
       @statement_one.remove_context(@context_two)
       
-      @statement_one.contexts.to_a.size.should == 0
+      @statement_one.contexts.size.should == 0
       Neo4j::Node.load(@statement_one.neo_id).should be nil
     end
     

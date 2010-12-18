@@ -78,7 +78,7 @@ Desktop.workspace = function() {
                 url: 'users/current.json',
                 success: function(response, opts) {
                     current_user = Ext.decode(response.responseText);
-                    toolbar.displayUser(current_user.user_info.email, current_user.user_info.is_admin);
+                    toolbar.displayUser(current_user.email, current_user.is_admin);
                 },
                 failure: function() {
                     console.log("ERROR: retrieve User failure.")

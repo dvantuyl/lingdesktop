@@ -34,7 +34,7 @@ class RDF_Statement < Neo4j::Rails::Model
   end
   
   def contexts
-    self.outgoing(:contexts)
+    self.outgoing(:contexts).to_a
   end
   
   def created_by
@@ -62,8 +62,8 @@ class RDF_Statement < Neo4j::Rails::Model
     # first try to find the statement
     statement = RDF_Statement.find_by_quad( args ).first
     if !statement.nil? then    
-      # add context to found statement if it's not already there
-      statement.contexts << context unless statement.contexts.to_a.include?(context)
+      # add context to found statement
+      statement.add_context context
       
     # if not found then create the statement
     else     
@@ -85,8 +85,10 @@ class RDF_Statement < Neo4j::Rails::Model
     statement = RDF_Statement.new(:predicate_uri_esc => p)
     statement.outgoing(:subject) << s
     statement.outgoing(:object) << o
-    statement.outgoing(:contexts) << c
+    statement.add_context c
     statement.outgoing(:created_by) << c
+    
+    
 
     return statement
   end
@@ -102,7 +104,7 @@ class RDF_Statement < Neo4j::Rails::Model
       s.incoming(:subject).each do |statement|     
         next unless p.nil? || statement.predicate_uri_esc == p
         next unless o.nil? || statement.object == o
-        next unless c.nil? || statement.contexts.to_a.include?(c)
+        next unless c.nil? || statement.contexts.include?(c)
 
         statements.push(statement)
       end
@@ -111,7 +113,7 @@ class RDF_Statement < Neo4j::Rails::Model
     elsif !o.nil? then
       o.incoming(:object).each do |statement|
         next unless p.nil? || statement.predicate_uri_esc == p
-        next unless c.nil? || statement.contexts.to_a.include?(c)
+        next unless c.nil? || statement.contexts.include?(c)
 
         statements.push(statement)        
       end
@@ -119,7 +121,7 @@ class RDF_Statement < Neo4j::Rails::Model
     #find all statements with predicate
     elsif !p.nil? then
       RDF_Statement.all(:predicate_uri_esc => p).each do |statement|
-        next unless c.nil? || statement.contexts.to_a.include?(c)
+        next unless c.nil? || statement.contexts.include?(c)
         statements.push(statement)
       end    
     end
@@ -127,31 +129,42 @@ class RDF_Statement < Neo4j::Rails::Model
     return statements 
   end
   
+  def add_context(context_node)
+
+    # add context if not already added 
+    if !self.contexts.include?(context_node) then
+         
+      self.outgoing(:contexts) << context_node
+      
+      #recursivily add followers contexts
+      context_node.followers.each {|follower| self.add_context(follower)}
+    end  
+  end
   
-  def remove_context(context_node, cleanup = {})
-    puts self.subject.uri
-    puts self.predicate_uri
-    puts self.object.to_hash.to_json
-    puts "------------------------"
-    
-    
-    # Security precaution
-    raise "Can not remove without context" if context_node.nil?
-    
-    #remove context from statement 
-    self.rels.to_other(context_node).del
-    
-    # if this statement has no contexts
-    if self.contexts.empty? then
-      s = self.subject
-      o = self.object
+  def remove_context(context_node, cleanup = {})    
+
+    # remove context if not already removed 
+    if self.contexts.include?(context_node) then
       
-      #destroy this statement
-      self.destroy
+      #remove context from statement 
+      self.rels.to_other(context_node).del
+    
+      # if this statement has no contexts
+      if self.contexts.empty? then
+        s = self.subject
+        o = self.object
       
-      # destroy subject and object if they don't have any statements
-      s.destroy if (s.rels.empty? && cleanup.has_key?(:subject) && cleanup[:subject])
-      o.destroy if (o.rels.empty? && cleanup.has_key?(:object) && cleanup[:object])
+        #destroy this statement
+        self.destroy
+      
+        # destroy subject and object if they don't have any statements
+        s.destroy if (s.rels.empty? && cleanup.has_key?(:subject) && cleanup[:subject])
+        o.destroy if (o.rels.empty? && cleanup.has_key?(:object) && cleanup[:object])
+        
+      #recursivily remove followers contexts  
+      else
+        context_node.followers.each {|follower| self.remove_context(follower, cleanup)}
+      end
     end
   end
 end

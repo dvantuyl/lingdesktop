@@ -6,6 +6,21 @@
 #
 class UsersController < ApplicationController
 
+  def index
+    
+    @users = User.find(:all, :sort => {:name => :asc})
+    
+    respond_to do |format|
+      format.html #index.html.erb
+      format.json do
+        render :json => {
+          :data => @users.collect {|user| user.to_hash},
+          :total => @users.length
+        }
+      end
+    end
+  end
+
   def show
     find_user
 

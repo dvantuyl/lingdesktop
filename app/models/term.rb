@@ -14,7 +14,7 @@ class Term < RDF_Resource
   end
   
   
-  def self.create_in_context(context_node)
+  def self.create_in_context(context_node, args = {})
 
     # find or create supporting graph
     term_node = Term.create(:uri_esc => self.gen_uri_esc)
@@ -26,7 +26,7 @@ class Term < RDF_Resource
       :context => context_node
     ).save
     
-    return term_node
+    return term_node.set(args, context_node)
   end
   
   
@@ -42,6 +42,13 @@ class Term < RDF_Resource
   
   def set_abbreviation(abbreviation, context_node)
     abbrv_node = RDF_Literal.find_or_create(:value => abbreviation, :lang => "en")
+    
+    old = RDF_Statement.find_by_quad(
+      :subject => self,
+      :predicate_uri_esc => RDF::GOLD.abbreviation.uri_esc,
+      :context => context_node
+    ).first   
+    old.remove_context(context_node, {:object => true}) unless old.nil?
     
     RDF_Statement.find_or_init(
       :subject => self,
@@ -84,16 +91,6 @@ class Term < RDF_Resource
         :context => context_node
       ).save
     end
-  end
-  
-  
-  def copy_context(from_context, to_context)
-    self.copty_context!(from_context, to_context)
-  end
-  
-  
-  def remove_context(context_node) 
-    self.remove_context!(context_node)  
   end
   
 end

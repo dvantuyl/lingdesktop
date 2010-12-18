@@ -24,21 +24,6 @@ describe Termset do
     end
   end
   
-  describe "#copy_context", :type => :transactional do
-    
-    it "should be found by the to_context" do
-      termset = Termset.create_in_context(@context)
-      
-      @to_context = RDF_Context.create(:uri_esc => "http://other.text".uri_esc)      
-      termset.copy_context(@context, @to_context)
-      
-      finish_tx
-      RDF_Statement.find_by_quad(
-        :subject => termset,
-        :context => @to_context
-      ).size.should_not == 0
-    end  
-  end
   
   describe "#set_label", :type => :transactional  do
    
@@ -109,27 +94,5 @@ describe Termset do
       hash["rdfs:comment"].should == "comment"
     end
   end
-  
-  
-  describe "#remove_context", :type => :transactional do
-    
-    it "should not have context" do
-      termset = Termset.create_in_context(@context)
-      termset.set({
-          "rdfs:label" => "label",
-          "rdfs:comment" => "comment"
-      }, @context)
-      
-      @to_context = RDF_Context.create(:uri_esc => "http://other.text".uri_esc)
-      termset.copy_context(@context, @to_context)
-      
-      termset.remove_context(@context)
-      
-      RDF_Statement.find_by_quad(
-        :subject => termset,
-        :context => @context
-      ).size.should == 0
-      
-    end
-  end  
+
 end

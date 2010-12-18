@@ -14,7 +14,7 @@ class Termset < RDF_Resource
   end
   
   
-  def self.create_in_context(context_node)
+  def self.create_in_context(context_node, args = {})
 
     # find or create supporting graph
     ts_node = Termset.create(:uri_esc => self.gen_uri_esc)
@@ -26,7 +26,7 @@ class Termset < RDF_Resource
       :context => context_node
     ).save
     
-    return ts_node
+    return ts_node.set(args, context_node)
   end
   
   
@@ -41,21 +41,18 @@ class Termset < RDF_Resource
     return self
   end
   
-  
   def copy_context(from_context, to_context)
-
+    super
+    
     # copy context to terms
-    self.terms(from_context).each{|term| term.copy_context(from_context, to_context)}
-   
-    self.copy_context!(from_context, to_context)
+    self.terms(from_context).each {|term| term.copy_context(from_context, to_context)}
   end
   
-  
   def remove_context(context_node)
+    super
     
     # remove context from terms
-    self.terms(context_node).each{|term| term.remove_context(context_node)}
-    
-    self.remove_context!(context_node)   
+    self.terms(context_node).each {|term| term.remove_context(context_node)}
+   
   end
 end

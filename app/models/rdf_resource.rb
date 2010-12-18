@@ -153,34 +153,35 @@ class RDF_Resource < Neo4j::Rails::Model
     self.class.filter_results(result, args)
   end
   
-  protected
   
-  def copy_context!(from_context, to_context)
-    # copy context to graph
+  def copy_context(from_context, to_context)
     RDF_Statement.find_by_quad(
       :subject => self,
       :context => from_context
-    ).each {|st| st.contexts << to_context}
+    ).each do |st|
+      st.add_context(to_context)
+    end
   end
   
-  def remove_context!(context)
+  
+  def remove_context(context_node)
     
     # remove context from subjects
     RDF_Statement.find_by_quad(
       :object => self,
-      :context => context
+      :context => context_node
       
     ).each do |st| 
-      st.remove_context(context, {:subject => true, :object => true})
+      st.remove_context(context_node, {:subject => true, :object => true})
     end   
     
     # remove context from objects
     RDF_Statement.find_by_quad(
       :subject => self,
-      :context => context
+      :context => context_node
       
     ).each do |st| 
-      st.remove_context(context, {:subject => true, :object => true})
+      st.remove_context(context_node, {:subject => true, :object => true})
     end   
   end
   
