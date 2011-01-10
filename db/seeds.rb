@@ -5,11 +5,16 @@
 ##   cities = City.create([{ :name => 'Chicago' }, { :name => 'Copenhagen' }])
 #   Mayor.create(:name => 'Daley', :city => cities.first)
 
-##IMPORT GOLD##
+# Setup raptor #
 require "rdf/raptor"
+raise "RDF::Raptor needs to be installed" unless RDF::Raptor.available?
 
+
+## Set GOLD URL ##
 GOLD = "http://purl.org/linguistics/gold"
 
+
+## IMPORT GOLD ##
 graph = RDF::Graph.load(
   File.expand_path('../slash_gold-2009.owl', __FILE__), 
   {:format => :rdfxml}
@@ -36,7 +41,7 @@ graph.query([nil, RDF.type, RDF::OWL.Class]).each_subject do |gold_class_uri|
         :subject => gold_class_node,
         :predicate_uri_esc => RDF.type.uri_esc,
         :object => owl_class_node, 
-        :context => ctx_node).save
+        :context => ctx_node)
       print "LOAD rdf:type => #{owl_class_node.uri}\n\n"
 
       #load label

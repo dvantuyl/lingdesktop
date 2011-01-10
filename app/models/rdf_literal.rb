@@ -1,4 +1,4 @@
-class RDF_Literal < Neo4j::Rails::Model
+class RDF_Literal < Neo4j::Model
 
   property :value
   property :lang

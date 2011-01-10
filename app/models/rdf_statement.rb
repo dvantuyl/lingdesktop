@@ -12,7 +12,7 @@
 #                                           \           /
 #  [RDF_Resource subject]<---:subject---[RDF_Statement predicate]---:object--->[RDF_Literal object]
 #
-class RDF_Statement < Neo4j::Rails::Model
+class RDF_Statement < Neo4j::Model
   
   property :predicate_uri_esc
   property :created_at
@@ -64,9 +64,8 @@ class RDF_Statement < Neo4j::Rails::Model
     if !statement.nil? then    
       # add context to found statement
       statement.add_context context
-      
     # if not found then create the statement
-    else     
+    else   
       statement = RDF_Statement.init_by_quad( args.merge({:context => context}) )
     end
 
@@ -76,7 +75,7 @@ class RDF_Statement < Neo4j::Rails::Model
   
   def self.init_by_quad( args )
     s, p, o, c = args[:subject], args[:predicate_uri_esc], args[:object], args[:context]
-
+    
     if s.nil? || p.nil? || o.nil? || c.nil? then
       raise "Can not init statement with nil in quad"
     end
@@ -87,8 +86,6 @@ class RDF_Statement < Neo4j::Rails::Model
     statement.outgoing(:object) << o
     statement.add_context c
     statement.outgoing(:created_by) << c
-    
-    
 
     return statement
   end

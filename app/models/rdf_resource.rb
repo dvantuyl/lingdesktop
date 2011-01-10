@@ -1,4 +1,4 @@
-class RDF_Resource < Neo4j::Rails::Model
+class RDF_Resource < Neo4j::Model
 
   property :uri_esc
   property :created_at

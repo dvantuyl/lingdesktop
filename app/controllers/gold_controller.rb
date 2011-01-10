@@ -54,7 +54,7 @@ class GoldController < ApplicationController
              :simple_value => :value, 
              :context => @context},
              
-           "text"=> {
+           "text" => {
              :predicate => RDF::RDFS.label,
              :lang => @lang, 
              :first => true, 
