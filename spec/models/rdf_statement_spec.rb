@@ -2,7 +2,6 @@ require "spec_helper"
 
 describe RDF_Statement do
 
-  
   describe "#init_by_quad" do
     before(:each) do
       @subject = RDF_Resource.create(:uri_esc => "http://test.subject".uri_esc)

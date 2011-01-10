@@ -41,7 +41,7 @@ graph.query([nil, RDF.type, RDF::OWL.Class]).each_subject do |gold_class_uri|
         :subject => gold_class_node,
         :predicate_uri_esc => RDF.type.uri_esc,
         :object => owl_class_node, 
-        :context => ctx_node)
+        :context => ctx_node).save
       print "LOAD rdf:type => #{owl_class_node.uri}\n\n"
 
       #load label

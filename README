@@ -1,5 +1,50 @@
 == Lingdesktop
 
+LingDesktop is a rich Internet application and collection of web services which allows users to create, share and edit linguistic data. 
+
+== Installation
+
+ 1. Install Jruby. http://jruby.org
+ 2. Install required ruby gems:
+   > jruby -S gem install bundler
+   > jruby -S gem install neo4j
+   
+ 3. cd path_to/lingdesktop
+   > jruby -S bundle
+   
+== Seed neo4j store with GOLD
+
+Seeding requires the rdf-raptor libraries installed on your system.  To install the required Raptor command-line tools themselves, look for a raptor or raptor-utils package in your platform's package management system. Here follow installation instructions for the Mac and the most common Linux and BSD distributions:
+
+ [sudo] port install raptor # Mac OS X with MacPorts
+ [sudo] fink install raptor-bin # Mac OS X with Fink
+ [sudo] aptitude install raptor-utils # Ubuntu / Debian
+ [sudo] yum install raptor # Fedora / CentOS / RHEL
+ [sudo] zypper install raptor # openSUSE
+ [sudo] emerge raptor # Gentoo Linux
+ [sudo] pacman -S raptor # Arch Linux
+ [sudo] pkg_add -r raptor # FreeBSD
+ [sudo] pkg_add raptor # OpenBSD / NetBSD
+ 
+Note: you may also need to add the libraptor.lib path to the LD_LIBRARY_PATH if ldopen has problems finding it. Example
+ 
+ LD_LIBRARY_PATH=/opt/local/lib
+ export LD_LIBRARY_PATH
+ 
+...then
+  > jruby -S rake neo4j:seed
+  
+== Starting the server
+
+ > jruby -S glassfish
+ 
+ Open your browser to http:0.0.0.0:3000
+ 
+== Production Server Setup
+
+ see: http://kenai.com/projects/jruby/pages/JRubyOnRailsWithGlassfishGem
+   
+
 
 
 

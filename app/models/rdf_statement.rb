@@ -17,6 +17,11 @@ class RDF_Statement < Neo4j::Model
   property :predicate_uri_esc
   property :created_at
   
+  has_n :contexts
+  has_n :subject
+  has_n :object
+  has_n :created_by
+  
   index :predicate_uri_esc
   
   def subject
@@ -132,7 +137,7 @@ class RDF_Statement < Neo4j::Model
     if !self.contexts.include?(context_node) then
          
       self.outgoing(:contexts) << context_node
-      
+      self.save
       #recursivily add followers contexts
       context_node.followers.each {|follower| self.add_context(follower)}
     end  
