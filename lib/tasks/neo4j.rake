@@ -2,15 +2,11 @@ namespace :neo4j do
   
   desc "Seed Neo4j store with GOLD ontology"
   task :gold => :environment do
-    require "rdf/raptor"
-    
-    ## Set GOLD URL ##
-    GOLD = "http://purl.org/linguistics/gold"
+    require "rdf/ntriples"
 
     ## IMPORT GOLD ##
     graph = RDF::Graph.load(
-      File.expand_path('../../../db/slash_gold-2009.owl', __FILE__), 
-      {:format => :rdfxml}
+      File.expand_path('../../../db/slash_gold-2009.nt', __FILE__)
     )
 
     #find all owl classes

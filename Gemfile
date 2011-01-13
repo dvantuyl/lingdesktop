@@ -9,9 +9,7 @@ gem 'neo4j', :git => 'git://github.com/andreasronge/neo4j.git'
 gem 'devise-neo4j', :git => 'git://github.com/benjackson/devise-neo4j.git'
 gem 'jruby-openssl'
 gem 'jruby-rack'
-gem 'warbler'
 gem 'rdf'
-gem 'rdf-raptor'
 gem 'glassfish'
 
 # Bundle gems for the local environment. Make sure to
@@ -20,5 +18,5 @@ gem 'glassfish'
 group :development, :test do
   gem 'rspec-rails'
   gem "cucumber-rails"
-  gem "capybara"
+  gem 'rdf-raptor'
 end
