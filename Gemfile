@@ -11,6 +11,7 @@ gem 'jruby-openssl'
 gem 'jruby-rack'
 gem 'rdf'
 gem 'glassfish'
+gem 'omniauth'
 
 # Bundle gems for the local environment. Make sure to
 # put test-only gems in this group so their generators

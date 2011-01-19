@@ -56,6 +56,13 @@ Lingdesktop::Application.routes.draw do
   # Note: This route will make all actions in every controller accessible via GET requests.
   # match ':controller(/:action(/:id(.:format)))'
   
+  devise_for :users, :controllers => {:registrations => "registrations"}
+  devise_scope :user do
+    get "/admin", :to => "devise/sessions#new"
+  end
+  
+  root :to => "desktop#index"
+  
   resources :help
   
   resources :termsets do
@@ -74,6 +81,6 @@ Lingdesktop::Application.routes.draw do
     end
   end
   
-  root :to => "desktop#index"
+  
   
 end

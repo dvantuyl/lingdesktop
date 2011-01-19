@@ -6,6 +6,16 @@ require "action_mailer/railtie"
 require "active_resource/railtie"
 require "rails/test_unit/railtie"
 require 'neo4j'
+require 'devise-neo4j'
+
+module Neo4j
+  module Rails
+    class Model
+      extend ::Devise::Models
+      extend ::Devise::Orm::Neo4j::Hook
+    end
+  end
+end
 
 # If you have a Gemfile, require the gems listed there, including any gems
 # you've limited to :test, :development, or :production.

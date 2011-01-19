@@ -1,3 +1,6 @@
 class DesktopController < ApplicationController
-  layout false
+  
+  def index
+    render :layout => 'desktop'
+  end
 end
