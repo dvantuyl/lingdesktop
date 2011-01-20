@@ -6,11 +6,14 @@ gem 'rails', '>= 3.0.3'
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
 gem 'neo4j', :git => 'git://github.com/andreasronge/neo4j.git'
-gem 'devise-neo4j', :git => 'git://github.com/benjackson/devise-neo4j.git'
+
 gem 'jruby-openssl'
 gem 'jruby-rack'
 gem 'rdf'
 gem 'glassfish'
+
+# Authentication gems
+gem 'devise-neo4j', :git => 'git://github.com/benjackson/devise-neo4j.git'
 gem 'omniauth'
 
 # Bundle gems for the local environment. Make sure to

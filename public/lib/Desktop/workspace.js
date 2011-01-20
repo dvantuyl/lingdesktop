@@ -21,35 +21,9 @@ Desktop.workspace = function() {
     var viewPanel;
     var borderPanel;
     var fullScreenPanel;
-    var loginWindow;
     var toolbar;
     var currentUser;
     var cookieUtil = Ext.util.Cookies;
-    
-    var googleLoginBtn = {
-        xtype: 'box',
-        cls: 'dt-auth-google',       
-        html: "<a href='/auth/google'><img src='images/authbuttons/google_64.png'/></a>",
-        flex: 1
-    };
-    
-    var yahooLoginBtn = {
-        xtype: 'box',
-        cls: 'dt-auth-yahoo',  
-        html: "<a href='/auth/yahoo'>" +
-        "<img src='images/authbuttons/yahoo_64.png'/>" +
-        "</a>",
-        flex: 1
-    };
-    
-    var openIdLoginBtn = {
-        xtype: 'box',
-        cls: 'dt-auth-openid',  
-        html: "<a href='/auth/open_id'>" +
-        "<img src='images/authbuttons/openid_64.png'/>" +
-        "</a>",
-        flex: 1
-    };
 
     return {
         init: function() {
@@ -77,11 +51,11 @@ Desktop.workspace = function() {
             Ext.Ajax.request({
                 url: 'users/current.json',
                 success: function(response, opts) {
-                    current_user = Ext.decode(response.responseText);
-                    toolbar.displayUser(current_user.email, current_user.is_admin);
+                    current_user = Ext.decode(response.responseText).data;
+                    toolbar.displayUser(current_user.email, current_user.role);
                 },
                 failure: function() {
-                    console.log("ERROR: retrieve User failure.")
+                    // console.log("ERROR: retrieve User failure.")
                 }
             });
         },
@@ -115,70 +89,6 @@ Desktop.workspace = function() {
             return cookieUtil;
         },
 
-        showLoginWindow: function() {
-            if (!loginWindow) {
-                loginWindow = this.constructLoginWindow();
-            }
-
-            loginWindow.show();
-        },
-
-        constructLoginWindow: function() {
-            var formItemDefaults = {
-                allowBlank: false,
-                anchor: '-5',
-                listeners: {
-                    scope: this,
-                    specialkey: function(field, e) {
-                        if (e.getKey() === e.ENTER) {
-                            this.doLogin();
-                        }
-                    }
-                }
-            };
-
-            var formLoginItems = [{
-                fieldLabel: 'User Name',
-                name: 'login'
-            },
-            {
-                inputType: 'password',
-                fieldLabel: 'Password',
-                name: 'password',
-                msgTarget: 'under'
-            }];
-
-            return new Ext.Window({
-                width: 250,
-                height: 140,
-                modal: true,
-                draggable: false,
-                title: 'Select a service to Login through:',
-                layout: 'hbox',
-                layoutConfig: {
-                    pack: 'center',
-                    align: 'stretch'
-                },
-                center: true,
-                closable: false,
-                resizable: false,
-                border: false,
-                items: [
-                  googleLoginBtn,
-                  yahooLoginBtn,
-                  openIdLoginBtn
-                ],
-                buttons: [
-                '->', {
-                    text: 'Cancel',
-                    handler: function() {
-                        loginWindow.destroy();
-                        loginWindow = null;
-                    }
-                }
-                ]
-            });
-        },
 
         showViewport: function() {
 
@@ -261,26 +171,6 @@ Desktop.workspace = function() {
             Ext.ComponentMgr.get(fullScreenPanel.dockPanel_id + '_container').setDockPanel(fullScreenPanel.dockPanel_id);
             viewPanel.layout.setActiveItem(0);
             viewPanel.doLayout();
-        },
-
-        onLogOut: function() {
-            toolbar.displayGuest();
-
-            cookieUtil.set(
-              '_Lingdesktop_session',
-              null,
-              new Date("January 1, 1970"),
-              '/');
-            
-            Ext.Ajax.request({
-                url: 'signout'
-            });
-
-            if (Desktop.test) {
-                Desktop.AppMgr.initApps('test');
-            } else {
-                Desktop.AppMgr.initApps();
-            }
         },
 
         onAfterAjaxReq: function(options, success, result) {

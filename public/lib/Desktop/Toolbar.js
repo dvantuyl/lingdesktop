@@ -74,9 +74,17 @@ Ext.ns("Desktop");
         	{ itemId: 'start', text: 'Main Menu', iconCls: 'dt-icon-cog', menu: appMenu },
 			'-',{xtype: 'tbtext', text: '', itemId: 'current'},
         	'->',
-			{ text: 'Login', itemId: 'login', handler: function(){this.ownerCt.fireEvent('login');}},
+			{ text: 'Login', itemId: 'login', 
+			  handler: function(){
+			    window.location = "authentication/login"
+			  }
+			},
 			{ text: 'Account', id: 'accountBtn', itemId: 'account', hidden:true}, //, handler: function(){this.ownerCt.fireEvent('account');}},
- 			{ text: 'Logout', itemId: 'logout', hidden:true, handler: function(){this.ownerCt.fireEvent('logout');}},
+ 			{ text: 'Logout', itemId: 'logout', hidden:true, 
+ 			  handler: function(){
+ 			    window.location = "authentication/logout"
+ 			  }
+ 			},
 			{ text: 'Help', menu: helpMenu}
  		];
  		
@@ -100,7 +108,7 @@ Ext.ns("Desktop");
 		}
 	},
 		
-	displayUser : function(userid, is_admin){
+	displayUser : function(userid, role){
 		this.getComponent('login').hide();
 		var account_item = this.getComponent('account')
 		Ext.query('.x-btn-text',account_item.el.dom)[0].innerHTML = userid; //set account button to userid
@@ -108,7 +116,7 @@ Ext.ns("Desktop");
 		this.getComponent('logout').show();
 		
 		//show admin menu if admin
-		if(is_admin == 'true'){
+		if(role == 'admin'){
 			this.getComponent('start').menu.getComponent('admin').show();
 		}else{
 			this.getComponent('start').menu.getComponent('admin').hide();

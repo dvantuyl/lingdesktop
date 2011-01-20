@@ -10,23 +10,27 @@ class GoldController < ApplicationController
     respond_to do |format|
       format.html #show.html.erb
       format.json do
-        render :json => @resource.to_hash(
-         "rdf:type" => {
-           :first => true,
-           :simple_value => :uri,
-           :context => @context},
+        render :json => {
+          :data => @resource.to_hash(
+           "rdf:type" => {
+             :first => true,
+             :simple_value => :uri,
+             :context => @context},
            
-         "rdfs:label" => {
-           :lang => @lang, 
-           :first => true,
-           :simple_value => :value,
-           :context => @context},
+           "rdfs:label" => {
+             :lang => @lang, 
+             :first => true,
+             :simple_value => :value,
+             :context => @context},
            
-         "rdfs:comment" => {
-           :lang => @lang,
-           :first => true,
-           :simple_value => :value,
-           :context => @context})
+           "rdfs:comment" => {
+             :lang => @lang,
+             :first => true,
+             :simple_value => :value,
+             :context => @context}),
+             
+           :success => true
+         }
       end
     end
   end

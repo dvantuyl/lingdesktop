@@ -100,24 +100,41 @@ namespace :neo4j do
     print "Finished seeding GOLD\n\n"
   end
   
-  desc "Seed Neo4j store with admin user"
-  task :admin => :environment do
+  desc "Seed Neo4j store with users"
+  task :users => :environment do
     
     Neo4j::Transaction.run do
       admin = User.create!(
         :email => 'admin@lingdesktop.org',
-        :name => 'admin',
-        :uri_esc => "http://purl.org/linguistics/lingdesktop/users/admin".uri_esc,
+        :name => 'Lingdesktop Admin',
+        :role => 'admin',
+        :uri_esc => "http://purl.org/linguistics/lingdesktop/users/lingdesktop.org/admin".uri_esc,
         :password => 'admin',
         :password_confirmation => 'admin'
       )
       
-      puts "New user created!"
-      puts 'Email   : ' << admin.email
+      demo = User.create!(
+        :email => 'demo@lingdesktop.org',
+        :name => 'Lingdesktop Demo',
+        :role => 'user',
+        :uri_esc => "http://purl.org/linguistics/lingdesktop/users/lingdesktop.org/demo".uri_esc,
+        :password => 'demo',
+        :password_confirmation => 'demo'
+      )
+      
+      puts "New users created!"
+      puts "-------------------------"
+      puts admin.name
+      puts '  Email    : ' << admin.email
+      puts '  Password : ' << admin.password
+      puts demo.name
+      puts '  Email    : ' << demo.email
+      puts '  Password : ' << demo.password
+
     end
   end
     
   desc "Seed Neo4j store with GOLD and admins"
-  task :seed => [:gold, :admin]
+  task :seed => [:gold, :users]
   
 end

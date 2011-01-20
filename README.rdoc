@@ -12,29 +12,32 @@ LingDesktop is a rich Internet application and collection of web services which 
  3. cd path_to/lingdesktop
    > jruby -S bundle
    
-== Seed neo4j store with GOLD
+== Seed neo4j store with GOLD and users
 
-Seeding requires the rdf-raptor libraries installed on your system.  To install the required Raptor command-line tools themselves, look for a raptor or raptor-utils package in your platform's package management system. Here follow installation instructions for the Mac and the most common Linux and BSD distributions:
-
- [sudo] port install raptor # Mac OS X with MacPorts
- [sudo] fink install raptor-bin # Mac OS X with Fink
- [sudo] aptitude install raptor-utils # Ubuntu / Debian
- [sudo] yum install raptor # Fedora / CentOS / RHEL
- [sudo] zypper install raptor # openSUSE
- [sudo] emerge raptor # Gentoo Linux
- [sudo] pacman -S raptor # Arch Linux
- [sudo] pkg_add -r raptor # FreeBSD
- [sudo] pkg_add raptor # OpenBSD / NetBSD
- 
-Note: you may also need to add the libraptor.lib path to the LD_LIBRARY_PATH if ldopen has problems finding it. Example
- 
- LD_LIBRARY_PATH=/opt/local/lib
- export LD_LIBRARY_PATH
- 
-...then
   > jruby -S rake neo4j:seed
   
+This rake task will import GOLD from a ntriples file located in:
+  
+  /lingdesktop/db/slash_gold-2009.nt
+  
+Also inits the store with admin and demo users
+
+  Email:    admin@lingdesktop.com
+  Password: admin
+  
+  Email:    demo@lingdesktop.com
+  Password: demo
+  
+To run these rake tasks separately:
+
+  > jruby -S rake neo4j:gold
+  > jruby -S rake neo4j:users
+  
 == Starting the server
+
+ > jruby -S rails server
+ 
+..or
 
  > jruby -S glassfish
  

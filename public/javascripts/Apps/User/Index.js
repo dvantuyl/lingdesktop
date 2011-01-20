@@ -13,11 +13,10 @@ User.Index = Ext.extend(Desktop.App, {
             storeId: 'user_index',
             // reader configs
             root: 'data',
-            fields: ['name', 'uri',
-            {
-                name: 'created_at',
-                type: 'date'
-            }]
+            fields: ['name', 'email', 'role', 'uri',
+              { name: 'last_login_at', type: 'date'},
+              { name: 'created_at', type: 'date'}
+            ]
         });
 
         //setup grid
@@ -31,8 +30,22 @@ User.Index = Ext.extend(Desktop.App, {
                     dataIndex: 'name'
                 },
                 {
-                    header: 'Joined',
+                    header: 'Email',
+                    dataIndex: 'email'
+                },
+                {
+                    header: 'Role',
+                    dataIndex: 'role'
+                },
+                {
+                    header: 'Created',
                     dataIndex: 'created_at',
+                    xtype: 'datecolumn',
+                    format: 'M d, Y'
+                },
+                {
+                    header: 'Last Login',
+                    dataIndex: 'last_login_at',
                     xtype: 'datecolumn',
                     format: 'M d, Y'
                 }
@@ -46,27 +59,37 @@ User.Index = Ext.extend(Desktop.App, {
             }),
             listeners: {
                 rowclick: function(g, index) {
-                    Desktop.workspace.getMainBar().showButton('view', _this);
+                    Desktop.workspace.getMainBar().showButton('edit', _this);
                 },
                 rowdblclick: function(g, index) {
                     var record = g.getStore().getAt(index);
-                    Desktop.AppMgr.display('user_view', record.get('uri'));
+                    Desktop.AppMgr.display('user_form', record.get('uri'));
                 }
             },
             scope: this
         });
 
         //setup mainBar
-        var mainBar = [{
-            text: 'View',
-            itemId: 'view',
-            iconCls: 'dt-icon-view',
-            hidden: true,
+        var mainBar = [
+        {
+            text: 'New',
+            iconCls: 'dt-icon-add',
             handler: function() {
-                this.fireEvent('view')
+                this.fireEvent('new')
             },
             scope: this
-        }];
+        },
+        {
+            text: 'Edit',
+            itemId: 'edit',
+            iconCls: 'dt-icon-edit',
+            hidden: true,
+            handler: function() {
+                this.fireEvent('edit')
+            },
+            scope: this
+        }
+        ];
 
         //apply all components to this app instance
         Ext.apply(this, {
@@ -74,8 +97,21 @@ User.Index = Ext.extend(Desktop.App, {
             mainBar: mainBar
         });
 
+        //call App initComponent
         User.Index.superclass.initComponent.call(this);
-        
+
+        //event handlers
+        this.on('new',
+        function() {
+            Desktop.AppMgr.display('user_form');
+        });
+
+        this.on('edit',
+        function() {
+            var record = grid.getSelectionModel().getSelected();
+            Desktop.AppMgr.display('user_form', record.get('uri'));
+        });
+
         this.on('render',
         function() {
             store.reload();
@@ -84,9 +120,9 @@ User.Index = Ext.extend(Desktop.App, {
 });
 
 Desktop.AppMgr.registerApp(User.Index, {
-    title: 'Community',
+    title: 'Users',
     iconCls: 'dt-icon-user',
     appId: 'user_index',
-    displayMenu: 'public',
-    dockContainer: Desktop.EAST
+    displayMenu: 'admin',
+    dockContainer: Desktop.CENTER
 });
