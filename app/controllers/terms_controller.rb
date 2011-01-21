@@ -139,7 +139,7 @@ class TermsController < ApplicationController
   private
   
   def init_context
-    @context = current_user
+    @context = current_user.context
     @gold_context = RDF_Context.find(:uri_esc =>"http://purl.org/linguistics/gold".uri_esc)
   end
   

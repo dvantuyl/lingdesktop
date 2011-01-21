@@ -76,18 +76,18 @@ Ext.ns("Desktop");
         	'->',
 			{ text: 'Login', itemId: 'login', 
 			  handler: function(){
-			    window.location = "authentication/login"
+			    window.location = "accounts/login"
 			  }
 			},
 			{ text: 'Account', id: 'accountBtn', itemId: 'account', hidden:true, 
 			  handler: function(){
 			    var current_user = Desktop.workspace.getCurrentUser();
-					Desktop.AppMgr.display('user_form', current_user.localname);
+					Desktop.AppMgr.display('user_form', current_user.id);
 			  }
 			},
  			{ text: 'Logout', itemId: 'logout', hidden:true, 
  			  handler: function(){
- 			    window.location = "authentication/logout"
+ 			    window.location = "accounts/logout"
  			  }
  			},
 			{ text: 'Help', menu: helpMenu}

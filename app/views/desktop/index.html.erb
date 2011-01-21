@@ -23,7 +23,7 @@
   <%# DESKTOP %>
   <%= stylesheet_link_tag :all, 
                           :recursive => true	, 
-                          :cache => ((ENV['RAILS_ENV'] == 'production') ? 'apps' : false) %>
+                          :cache => false %>
 
   <%= javascript_include_tag "/lib/Desktop/workspace", 
                              "/lib/Desktop/App",
@@ -32,12 +32,12 @@
                              "/lib/Desktop/dock/FullScreen",
                              "/lib/Desktop/dock/Toolbar",
                              "/lib/Desktop/dock/Panel", 
-                             :cache => ((ENV['RAILS_ENV'] == 'production') ? 'apps' : false) %>
+                             :cache => false %>
   
   <%# APPS %>
   <%= javascript_include_tag :all, 
                              :recursive => true, 
-                             :cache => ((ENV['RAILS_ENV'] == 'production') ? 'apps' : false) %>
+                             :cache => false %>
 
 
   
@@ -46,7 +46,7 @@
 <body>
 	<% if ENV['RAILS_ENV'] == 'production' then %>
 	<script>
-		window.onbeforeunload = confirmBrowseAway;
+		// window.onbeforeunload = confirmBrowseAway;
 
 		function confirmBrowseAway(){
 			return "Warning: Selecting OK will LEAVE LingDesktop.";

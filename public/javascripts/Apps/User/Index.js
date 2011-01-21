@@ -13,7 +13,7 @@ User.Index = Ext.extend(Desktop.App, {
             storeId: 'user_index',
             // reader configs
             root: 'data',
-            fields: ['name', 'email', 'uri', 'localname',
+            fields: ['name', 'email', 'id', 'localname',
               { name: 'is_admin', type: 'boolean'},
               { name: 'last_login_at', type: 'date'},
               { name: 'created_at', type: 'date'}
@@ -64,7 +64,7 @@ User.Index = Ext.extend(Desktop.App, {
                 },
                 rowdblclick: function(g, index) {
                     var record = g.getStore().getAt(index);
-                    Desktop.AppMgr.display('user_form', record.get('localname'), {title: record.get('name')});
+                    Desktop.AppMgr.display('user_form', record.get('id'), {title: record.get('name')});
                 }
             },
             scope: this
@@ -110,7 +110,7 @@ User.Index = Ext.extend(Desktop.App, {
         this.on('edit',
         function() {
             var record = grid.getSelectionModel().getSelected();
-            Desktop.AppMgr.display('user_form', record.get('localname'), {title: record.get('name')});
+            Desktop.AppMgr.display('user_form', record.get('id'), {title: record.get('name')});
         });
 
         this.on('render',

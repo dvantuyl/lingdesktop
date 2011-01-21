@@ -56,8 +56,7 @@ Lingdesktop::Application.routes.draw do
   # Note: This route will make all actions in every controller accessible via GET requests.
   # match ':controller(/:action(/:id(.:format)))'
   
-  devise_for :users, :path => "authentication", 
-    :controllers => { :sessions => "sessions" },
+  devise_for :users, :path => 'accounts',
     :path_names => { :sign_in => 'login', :sign_out => 'logout' }
   
   resources :help, :users

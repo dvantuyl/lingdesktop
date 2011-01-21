@@ -101,7 +101,7 @@ class TermsetsController < ApplicationController
   private
   
   def init_context
-    @context = current_user
+    @context = current_user.context
   end
   
   def find_resource

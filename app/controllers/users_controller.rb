@@ -39,9 +39,7 @@ class UsersController < ApplicationController
   
   def create
     # build user URI
-    uri = "http://purl.org/linguistics/lingdesktop/users/" +
-          params[:email].gsub(/\./, "_dot_").gsub(/@/, "_at_")
-    params[:uri_esc] = uri.uri_esc
+    
     
     # clean is_admin checkbox
     if (params.has_key?(:is_admin) && params[:is_admin].empty?)
@@ -107,7 +105,7 @@ class UsersController < ApplicationController
 
     # find user by id
     else
-      @user = User.find(:uri_esc => (RDF::LD.users.to_s + "/" + params[:id]).uri_esc)
+      @user = User.find(params[:id])
     end
 
   end

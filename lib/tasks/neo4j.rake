@@ -15,7 +15,7 @@ namespace :neo4j do
       Neo4j::Transaction.run do
 
         if gold_class_uri.uri? then
-          ctx_node = RDF_Context.find_or_create(:uri_esc => "http://purl.org/linguistics/gold".uri_esc)
+          ctx_node = RDF_Context.find_or_create(:uri_esc => "http://purl.org/linguistics/lingdesktop/contexts/gold".uri_esc)
           gold_class_node = RDF_Resource.find_or_create(:uri_esc => gold_class_uri.uri_esc)
           print "LOAD owl:Class => #{gold_class_node.uri}\n\n"
 
@@ -108,7 +108,6 @@ namespace :neo4j do
         :email => 'admin@lingdesktop.org',
         :name => 'Lingdesktop Admin',
         :is_admin => true,
-        :uri_esc => "http://purl.org/linguistics/lingdesktop/users/admin_at_lingdesktop_dot_com".uri_esc,
         :password => 'adminadmin',
         :password_confirmation => 'adminadmin'
       )
@@ -117,7 +116,6 @@ namespace :neo4j do
         :email => 'demo@lingdesktop.org',
         :name => 'Lingdesktop Demo',
         :is_admin => false,
-        :uri_esc => "http://purl.org/linguistics/lingdesktop/users/demo_at_lingdesktop_dot_com".uri_esc,
         :password => 'demodemo',
         :password_confirmation => 'demodemo'
       )
