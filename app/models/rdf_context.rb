@@ -30,6 +30,11 @@ class RDF_Context < Neo4j::Model
   end
   
   
+  def localname
+    self.uri.gsub(/([^\/]*\/|[^#]*#)/, "")
+  end
+  
+  
   def followers
     self.incoming(:follows).to_a
   end
@@ -43,6 +48,7 @@ class RDF_Context < Neo4j::Model
   def follow(context_node)
     self.outgoing(:follows) << context_node unless self.following.include?(context_node)
   end
+  
   
   def unfollow(context_node)
     self.rels(:follows).outgoing.to_other(context_node).del

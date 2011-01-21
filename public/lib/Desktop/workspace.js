@@ -15,6 +15,7 @@ Desktop.SOUTH = 'southdock';
 Desktop.test = false;
 Desktop.authenticated = false;
 
+
 Desktop.workspace = function() {
     Ext.QuickTips.init();
     var viewport;
@@ -22,8 +23,8 @@ Desktop.workspace = function() {
     var borderPanel;
     var fullScreenPanel;
     var toolbar;
-    var currentUser;
     var cookieUtil = Ext.util.Cookies;
+    var current_user = {};
 
     return {
         init: function() {
@@ -51,8 +52,12 @@ Desktop.workspace = function() {
             Ext.Ajax.request({
                 url: 'users/current.json',
                 success: function(response, opts) {
-                    current_user = Ext.decode(response.responseText).data;
-                    toolbar.displayUser(current_user.email, current_user.role);
+                   var decoded_response = Ext.decode(response.responseText);
+                   if (decoded_response.success == true){
+                     current_user = decoded_response.data;
+                     toolbar.displayUser(current_user.email, current_user.is_admin);
+                   }
+
                 },
                 failure: function() {
                     // console.log("ERROR: retrieve User failure.")
@@ -71,6 +76,10 @@ Desktop.workspace = function() {
                     break;
                 }
             }
+        },
+        
+        getCurrentUser: function(){
+          return current_user;
         },
 
         onAppFocus: function(instance) {
@@ -95,13 +104,6 @@ Desktop.workspace = function() {
             if (!viewport) {
 
                 toolbar = new Desktop.Toolbar();
-                toolbar.on('login', this.showLoginWindow, this);
-                toolbar.on('logout', this.onLogOut, this);
-                toolbar.on('account',
-                function() {
-                    var userid = cookieUtil.get('userid');
-                    Desktop.AppMgr.display('user_form', userid);
-                });
 
                 borderPanel = new Ext.Panel({
                     layout: 'border',

@@ -89,13 +89,13 @@ Term.Nav = Ext.extend(Desktop.App, {
             var selected = tree.getSelectionModel().getSelectedNode();
             if (selected.attributes["rdf:type"] == 'http://purl.org/linguistics/gold/Termset') {
                 Desktop.AppMgr.display('term_set_form', selected.attributes.localname, {
-                    title: selected.attributes.label,
+                    title: selected.attributes["rdfs:label"],
                     node: tree.getRootNode()
                     //give tree's root node so that the form can refresh the entire tree on save
                 });
             } else {
                 Desktop.AppMgr.display('term_form', selected.attributes.localname, {
-                    title: selected.attributes.label,
+                    title: selected.attributes["rdfs:label"],
                     node: selected.parentNode
                     //give tree's root node so that the form can refresh the entire tree on save
                 });

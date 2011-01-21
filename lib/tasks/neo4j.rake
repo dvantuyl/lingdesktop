@@ -107,19 +107,19 @@ namespace :neo4j do
       admin = User.create!(
         :email => 'admin@lingdesktop.org',
         :name => 'Lingdesktop Admin',
-        :role => 'admin',
-        :uri_esc => "http://purl.org/linguistics/lingdesktop/users/lingdesktop.org/admin".uri_esc,
-        :password => 'admin',
-        :password_confirmation => 'admin'
+        :is_admin => true,
+        :uri_esc => "http://purl.org/linguistics/lingdesktop/users/admin_at_lingdesktop_dot_com".uri_esc,
+        :password => 'adminadmin',
+        :password_confirmation => 'adminadmin'
       )
       
       demo = User.create!(
         :email => 'demo@lingdesktop.org',
         :name => 'Lingdesktop Demo',
-        :role => 'user',
-        :uri_esc => "http://purl.org/linguistics/lingdesktop/users/lingdesktop.org/demo".uri_esc,
-        :password => 'demo',
-        :password_confirmation => 'demo'
+        :is_admin => false,
+        :uri_esc => "http://purl.org/linguistics/lingdesktop/users/demo_at_lingdesktop_dot_com".uri_esc,
+        :password => 'demodemo',
+        :password_confirmation => 'demodemo'
       )
       
       puts "New users created!"

@@ -79,7 +79,12 @@ Ext.ns("Desktop");
 			    window.location = "authentication/login"
 			  }
 			},
-			{ text: 'Account', id: 'accountBtn', itemId: 'account', hidden:true}, //, handler: function(){this.ownerCt.fireEvent('account');}},
+			{ text: 'Account', id: 'accountBtn', itemId: 'account', hidden:true, 
+			  handler: function(){
+			    var current_user = Desktop.workspace.getCurrentUser();
+					Desktop.AppMgr.display('user_form', current_user.localname);
+			  }
+			},
  			{ text: 'Logout', itemId: 'logout', hidden:true, 
  			  handler: function(){
  			    window.location = "authentication/logout"
@@ -108,7 +113,7 @@ Ext.ns("Desktop");
 		}
 	},
 		
-	displayUser : function(userid, role){
+	displayUser : function(userid, is_admin){
 		this.getComponent('login').hide();
 		var account_item = this.getComponent('account')
 		Ext.query('.x-btn-text',account_item.el.dom)[0].innerHTML = userid; //set account button to userid
@@ -116,7 +121,7 @@ Ext.ns("Desktop");
 		this.getComponent('logout').show();
 		
 		//show admin menu if admin
-		if(role == 'admin'){
+		if(is_admin == true){
 			this.getComponent('start').menu.getComponent('admin').show();
 		}else{
 			this.getComponent('start').menu.getComponent('admin').hide();

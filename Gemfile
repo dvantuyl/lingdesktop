@@ -11,6 +11,7 @@ gem 'jruby-openssl'
 gem 'jruby-rack'
 gem 'rdf'
 gem 'glassfish'
+gem 'uuidtools'
 
 # Authentication gems
 gem 'devise-neo4j', :git => 'git://github.com/benjackson/devise-neo4j.git'

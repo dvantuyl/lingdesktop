@@ -23,10 +23,10 @@ This rake task will import GOLD from a ntriples file located in:
 Also inits the store with admin and demo users
 
   Email:    admin@lingdesktop.com
-  Password: admin
+  Password: adminadmin
   
   Email:    demo@lingdesktop.com
-  Password: demo
+  Password: demodemo
   
 To run these rake tasks separately:
 
@@ -37,7 +37,7 @@ To run these rake tasks separately:
 
  > jruby -S rails server
  
-..or
+..or to test on the production java environement
 
  > jruby -S glassfish
  

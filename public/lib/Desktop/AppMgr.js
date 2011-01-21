@@ -87,7 +87,6 @@ Desktop.AppMgr = function(){
 				
 			//or create a new instance if there isn't one
 			}else {
-				
 				//set title
 				if(params.title){
 					//do nothing

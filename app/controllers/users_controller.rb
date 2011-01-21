@@ -5,6 +5,7 @@
 #   Gold Controller
 #
 class UsersController < ApplicationController
+  around_filter Neo4j::Rails::Transaction, :only => [:create, :update, :destroy]
 
   def index
     
@@ -37,19 +38,63 @@ class UsersController < ApplicationController
   end
   
   def create
-    
+    # build user URI
     uri = "http://purl.org/linguistics/lingdesktop/users/" +
-      params[:user][:email].split("@").last +
-      "/" +
-      params[:user][:email].split("@").first
-      
-    resource.uri_esc = uri.uri_esc
+          params[:email].gsub(/\./, "_dot_").gsub(/@/, "_at_")
+    params[:uri_esc] = uri.uri_esc
     
-    if resource.save
-
-    else
-      clean_up_passwords(resource)
+    # clean is_admin checkbox
+    if (params.has_key?(:is_admin) && params[:is_admin].empty?)
+      params[:is_admin] = false
+    elsif (params.has_key?(:is_admin) && params[:is_admin] == "true")
+      params[:is_admin] = true
     end
+    
+    # Create new user
+    user = User.new(params)
+
+    # Output response
+    respond_to do |format|
+      format.json do
+        if user.valid? then
+          user.save
+          render :json => {:success => true}
+        else
+          render :json => {:success => false, :errors => user.errors}
+        end
+      end
+    end 
+  end
+  
+  def update
+    find_user
+    
+    # clean is_admin checkbox
+    if (params.has_key?(:is_admin) && params[:is_admin].empty?)
+      params[:is_admin] = false
+    elsif (params.has_key?(:is_admin) && params[:is_admin] == "true")
+      params[:is_admin] = true
+    end
+    
+    # Update User
+    @user.update_attributes(params)
+    
+    # Output response
+    respond_to do |format|
+      format.json do
+        if @user.valid? then
+          @user.save
+          render :json => {:success => true}
+        else
+          render :json => {:success => false, :errors => @user.errors}
+        end
+      end
+    end
+    
+  end
+  
+  def destroy
+    find_user
   end
   
   private
@@ -62,7 +107,7 @@ class UsersController < ApplicationController
 
     # find user by id
     else
-      @user = User.find(:uri_esc => params[:id].uri_esc)
+      @user = User.find(:uri_esc => (RDF::LD.users.to_s + "/" + params[:id]).uri_esc)
     end
 
   end

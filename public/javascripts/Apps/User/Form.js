@@ -9,17 +9,11 @@ User.Form = Ext.extend(Desktop.App, {
 	  var ic = this.initialConfig; //configuration given to Desktop.App
 	 
 	 	//setup fields
-	    var firstname = new Ext.form.TextField({
-	      fieldLabel: 'First Name', 
-	      name: 'first_name',
+	    var name = new Ext.form.TextField({
+	      fieldLabel: 'Name', 
+	      name: 'name',
 	      width: 165,
 	    });
-	    
-	    var lastname = new Ext.form.TextField({
-	        fieldLabel: 'Last Name', 
-	        name: 'last_name',
-	        width: 165,
-	      });
 	    
 	    var email = new Ext.form.TextField({
 	        fieldLabel: 'Email', 
@@ -27,14 +21,6 @@ User.Form = Ext.extend(Desktop.App, {
 	        width: 165,
 	        regex: /^([\w\-\'\-]+)(\.[\w-\'\-]+)*@([\w\-]+\.){1,5}([A-Za-z]){2,4}$/
 	      });
-	    
-		var username = new Ext.form.TextField({
-		  allowBlank: false,
-		  requiredField: true,
-	      fieldLabel: 'Username', 
-	      name: 'username',
-	      width: 165,
-	    });
 		
 	    var password = new Ext.form.TextField({
 	        fieldLabel: 'Password',
@@ -49,7 +35,7 @@ User.Form = Ext.extend(Desktop.App, {
 	    
 	    var retypepassword = new Ext.form.TextField({
 	        fieldLabel: 'Retype Password',
-	        name: 'retypepassword', 
+	        name: 'password_confirmation', 
 	        inputType:'password',
 	        width: 165,
 			validator : function(value){
@@ -80,22 +66,6 @@ User.Form = Ext.extend(Desktop.App, {
 				hidden_admin.setValue(checked);
 			}
 	    });
-		
-		var hidden_active = new Ext.form.Hidden({
-			name: 'is_active'
-		});
-	  
-	    //active by default. can only change after created
-	    var is_active = new Ext.form.Checkbox({
-	    	fieldLabel:'Active',
-			name: 'is_active',
-	    	submitValue: false,
-			checked: true,
-			disabled: true,
-			handler : function(chkbox, checked){
-				hidden_active.setValue(checked);
-			}
-	    });		
 	 	
 		//setup form
 	    this.form = new Ext.FormPanel({
@@ -112,9 +82,7 @@ User.Form = Ext.extend(Desktop.App, {
 		        columnWidth: .5,
 		        border: false,
 		        items: [
-				  username,
-		          firstname,
-				  lastname, 
+				  name,
 				  email 
 				]
 			  },{
@@ -128,9 +96,7 @@ User.Form = Ext.extend(Desktop.App, {
 				   password,
 				   retypepassword,
 				   is_admin,
-				   hidden_admin,
-				   is_active,
-				   hidden_active
+				   hidden_admin
 				]
 			  }]
 	    	}]
@@ -146,7 +112,7 @@ User.Form = Ext.extend(Desktop.App, {
 		if(ic.instanceId){
 			
 			//username can not be changed
-			username.disable();
+			email.disable();
 			
 			//show button to set password
 			setpassword.show();
@@ -157,10 +123,8 @@ User.Form = Ext.extend(Desktop.App, {
 			//hide retypepassword field and label
 			retypepassword.hide();
 			
-			is_active.enable();
-			
 			//add delete button
-			mainBar.push({text: 'Delete', iconCls: 'dt-icon-delete', handler:function(){this.fireEvent('delete')}, scope: this});
+			// mainBar.push({text: 'Delete', iconCls: 'dt-icon-delete', handler:function(){this.fireEvent('delete')}, scope: this});
 
 			//Load server -> form values if we have the ic.instance_id
 			var userid = ic.instanceId;
@@ -180,13 +144,10 @@ User.Form = Ext.extend(Desktop.App, {
 		User.Form.superclass.initComponent.call(this);
 		
 		//hide fields that are not admin accessable
-		var admincheck = Ext.util.Cookies.get('is_admin');
-		if(admincheck != 'true'){
+		var current_user = Desktop.workspace.getCurrentUser();
+		if(current_user.is_admin != true){
 			is_admin.on('render',function(){
 				is_admin.hide();
-			});
-			is_active.on('render',function(){
-				is_active.hide();			
 			});
 		}
 		
@@ -197,12 +158,14 @@ User.Form = Ext.extend(Desktop.App, {
 			if(ic.instanceId){
 				save_config.params = {'_method':'PUT'};
 				save_config.success = function(){
+				  this.destroy();
+					Desktop.AppMgr.display('user_index');
 					if(store){store.reload();}
 				}
 			}else{
 				save_config.success = function(form,action){
 					this.destroy();
-					Desktop.AppMgr.display('user_form',action.result.instanceId);
+					Desktop.AppMgr.display('user_index');
 					if(store){store.reload();}
 				}
 			}

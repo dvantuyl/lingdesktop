@@ -16,7 +16,7 @@ Termset.Help = Ext.extend(Desktop.App, {
 });
 
 Desktop.AppMgr.registerApp(Termset.Help, {
-	title: 'Help',
+	title: 'Termset Help',
 	appId: 'termset_help',
 	iconCls: 'dt-icon-term',
 	dockContainer: Desktop.CENTER,

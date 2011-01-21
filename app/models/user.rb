@@ -1,24 +1,23 @@
 class User < RDF_Context
-  devise :database_authenticatable, :token_authenticatable, :rememberable, :trackable, :omniauthable
+  devise :database_authenticatable, :token_authenticatable, :trackable, :omniauthable
   
-  attr_accessible :email, :password, :password_confirmation, :uri_esc, :name, :role, :remember_me, :created_at, :last_sign_in_at
+  attr_accessible :email, :password, :password_confirmation, :uri_esc, :name, :is_admin, :remember_me, :created_at, :last_sign_in_at
   
   property :name
   property :email
   property :password
-  property :role
+  property :is_admin, :default => false
   
   index :email
   index :name
-  
-  ROLES = %w[admin user]
   
   def to_hash
     {
       :email => self.email,
       :name => self.name,
       :uri => self.uri,
-      :role => self.role,
+      :localname => self.localname,
+      :is_admin => self.is_admin,
       :created_at => self.created_at,
       :last_login_at => self.last_sign_in_at
     }

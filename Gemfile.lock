@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/andreasronge/neo4j.git
-  revision: 5dc8a1c7fd7787285bd3aaf7c68b68f919c3c911
+  revision: c3f699d13da7d826de6561178111acfbcc72347c
   specs:
     neo4j (1.0.0.beta.26-java)
       activemodel (>= 3.0.0)
@@ -46,7 +46,7 @@ GEM
       activemodel (= 3.0.3)
       activesupport (= 3.0.3)
     activesupport (3.0.3)
-    addressable (2.2.2)
+    addressable (2.2.3)
     arel (2.0.7)
     bcrypt-ruby (2.1.4-java)
     bouncy-castle-java (1.5.0145.2)
@@ -76,7 +76,7 @@ GEM
     glassfish (1.0.3-java)
       rack (>= 0.4.0)
     i18n (0.5.0)
-    jruby-openssl (0.7.2)
+    jruby-openssl (0.7.3)
       bouncy-castle-java
     jruby-rack (1.0.5)
     json (1.4.6-java)
@@ -178,6 +178,7 @@ GEM
     treetop (1.4.9)
       polyglot (>= 0.3.1)
     tzinfo (0.3.24)
+    uuidtools (2.1.1)
     warden (1.0.3)
       rack (>= 1.0.0)
     weakling (0.0.4-java)
@@ -198,3 +199,4 @@ DEPENDENCIES
   rdf
   rdf-raptor
   rspec-rails
+  uuidtools
