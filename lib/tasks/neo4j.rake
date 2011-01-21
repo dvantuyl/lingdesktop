@@ -131,8 +131,25 @@ namespace :neo4j do
 
     end
   end
+
+
+  task :dev do
+    RAILS_ENV = ENV['RAILS_ENV'] = 'dev'
+  end
     
+  task :prod do
+    RAILS_ENV = ENV['RAILS_ENV'] = 'prod'
+  end
+  
   desc "Seed Neo4j store with GOLD and admins"
-  task :seed => [:gold, :users]
+  task :seed => [:dev, :gold, :users] do  
+  end
+  
+  task :seed_prod => [:prod, :gold, :users] do  
+  end
+  
+  desc "Seed Both"
+  task :seed_both => [:seed, :seed_prod] do
+  end
   
 end
