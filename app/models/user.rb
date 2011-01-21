@@ -1,6 +1,5 @@
 class User < RDF_Context
-  devise :database_authenticatable, :token_authenticatable, :trackable, :omniauthable
-  
+
   attr_accessible :email, :password, :password_confirmation, :uri_esc, :name, :is_admin, :remember_me, :created_at, :last_sign_in_at
   
   property :name

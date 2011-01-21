@@ -13,6 +13,7 @@
 # @example Get all CTX_Statement nodes in this context.
 #   context_node.rels.incoming(:CTX_in).nodes
 class RDF_Context < Neo4j::Model
+  devise :database_authenticatable, :token_authenticatable, :trackable, :omniauthable
 
   # The uri property is utilized as an id of this node. Each CTX_Context should have a unique uri.
   #
