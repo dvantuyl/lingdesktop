@@ -82,7 +82,7 @@ Ext.ns("Desktop");
 			{ text: 'Account', id: 'accountBtn', itemId: 'account', hidden:true, 
 			  handler: function(){
 			    var current_user = Desktop.workspace.getCurrentUser();
-					Desktop.AppMgr.display('user_form', current_user.id);
+					Desktop.AppMgr.display('user_form', current_user.id, {title: current_user.name});
 			  }
 			},
  			{ text: 'Logout', itemId: 'logout', hidden:true, 
