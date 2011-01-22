@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.0
- * Copyright(c) 2006-2009 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.3.1
+ * Copyright(c) 2006-2010 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.tree.TreeEditor
@@ -18,6 +18,7 @@
 Ext.tree.TreeEditor = function(tree, fc, config){
     fc = fc || {};
     var field = fc.events ? fc : new Ext.form.TextField(fc);
+    
     Ext.tree.TreeEditor.superclass.constructor.call(this, field, config);
 
     this.tree = tree;
@@ -70,16 +71,18 @@ Ext.extend(Ext.tree.TreeEditor, Ext.Editor, {
 
     initEditor : function(tree){
         tree.on({
-            scope: this,
+            scope      : this,
             beforeclick: this.beforeNodeClick,
-            dblclick: this.onNodeDblClick
+            dblclick   : this.onNodeDblClick
         });
+        
         this.on({
-            scope: this,
-            complete: this.updateNode,
+            scope          : this,
+            complete       : this.updateNode,
             beforestartedit: this.fitToTree,
-            specialkey: this.onSpecialKey
+            specialkey     : this.onSpecialKey
         });
+        
         this.on('startedit', this.bindScroll, this, {delay:10});
     },
 

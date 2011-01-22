@@ -6,7 +6,13 @@
     <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
 </head>
 <body  onload="prettyPrint();">
-    <pre class="prettyprint lang-js"><div id="cls-Ext.ProgressBar"></div>/**
+    <pre class="prettyprint lang-js">/*!
+ * Ext JS Library 3.3.1
+ * Copyright(c) 2006-2010 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
+ */
+<div id="cls-Ext.ProgressBar"></div>/**
  * @class Ext.ProgressBar
  * @extends Ext.BoxComponent
  * <p>An updateable progress bar component.  The progress bar supports two different modes: manual and automatic.</p>
@@ -73,8 +79,8 @@ Ext.ProgressBar = Ext.extend(Ext.BoxComponent, {
         );
 
         this.el = position ? tpl.insertBefore(position, {cls: this.baseCls}, true)
-        	: tpl.append(ct, {cls: this.baseCls}, true);
-		        
+            : tpl.append(ct, {cls: this.baseCls}, true);
+                
         if(this.id){
             this.el.dom.id = this.id;
         }
@@ -122,7 +128,7 @@ Ext.ProgressBar = Ext.extend(Ext.BoxComponent, {
         if(text){
             this.updateText(text);
         }
-        if(this.rendered){
+        if(this.rendered && !this.isDestroyed){
             var w = Math.floor(value*this.el.dom.firstChild.offsetWidth);
             this.progressBar.setWidth(w, animate === true || (animate !== false && this.animate));
             if(this.textTopEl){
@@ -278,18 +284,24 @@ myAction.on('complete', function(){
         if(this.textTopEl){
             this.textTopEl.addClass('x-hidden');
         }
-        if(this.waitTimer){
-            this.waitTimer.onStop = null; //prevent recursion
-            Ext.TaskMgr.stop(this.waitTimer);
-            this.waitTimer = null;
-        }
+        this.clearTimer();
         if(hide === true){
             this.hide();
         }
         return this;
     },
     
+    // private
+    clearTimer : function(){
+        if(this.waitTimer){
+            this.waitTimer.onStop = null; //prevent recursion
+            Ext.TaskMgr.stop(this.waitTimer);
+            this.waitTimer = null;
+        }
+    },
+    
     onDestroy: function(){
+        this.clearTimer();
         if(this.rendered){
             if(this.textEl.isComposite){
                 this.textEl.clear();

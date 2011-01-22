@@ -42,7 +42,7 @@ Ontology.Individual.Index = Ext.extend(Desktop.App, {
             }),
             listeners: {
                 rowclick: function(g, index) {
-                    Desktop.workspace.getMainBar().showButton('view', _this);
+                    _this.showButton('view');
                 },
                 rowdblclick: function(g, index) {
                     var record = g.getStore().getAt(index);
@@ -63,8 +63,8 @@ Ontology.Individual.Index = Ext.extend(Desktop.App, {
             scope: this
         });
 
-        //setup mainBar
-        var mainBar = [{
+        //setup toolbar
+        var toolbar = [{
             text: 'View',
             itemId: 'view',
             iconCls: 'dt-icon-view',
@@ -78,7 +78,7 @@ Ontology.Individual.Index = Ext.extend(Desktop.App, {
         //apply all components to this app instance
         Ext.apply(this, {
             items: grid,
-            mainBar: mainBar
+            tbar: toolbar
         });
 
         //call App initComponent

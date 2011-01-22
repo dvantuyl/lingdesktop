@@ -36,8 +36,8 @@ Ontology.Gold = Ext.extend(Desktop.App, {
             });
         }
 
-        //setup mainBar
-        var mainBar = [
+        //setup toolbar
+        var toolbar = [
         {
             text: 'View',
             itemId: 'view',
@@ -72,7 +72,7 @@ Ontology.Gold = Ext.extend(Desktop.App, {
 
         //apply all components to this app instance
         Ext.apply(this, {
-            mainBar: mainBar,
+            tbar: toolbar,
             items: trees
         });
 
@@ -82,20 +82,20 @@ Ontology.Gold = Ext.extend(Desktop.App, {
         this.on('nodeclick',
         function(node, e) {
             if (node.leaf) {
-                Desktop.workspace.getMainBar().hideButton('expand', this);
+                this.hideButton('expand');
             } else {
-                Desktop.workspace.getMainBar().showButton('expand', this);
+                this.showButton('expand');
             }
-            Desktop.workspace.getMainBar().showButton('individuals', this);
-            Desktop.workspace.getMainBar().showButton('view', this);
+            this.showButton('individuals');
+            this.showButton('view');
         },
         this);
 
         this.on('tree-deactivate',
         function() {
-            Desktop.workspace.getMainBar().hideButton('individuals', this);
-            Desktop.workspace.getMainBar().hideButton('expand', this);
-            Desktop.workspace.getMainBar().hideButton('view', this);
+            this.hideButton('individuals');
+            this.hideButton('expand');
+            this.hideButton('view');
         },
         this);
 

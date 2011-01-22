@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.0
- * Copyright(c) 2006-2009 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.3.1
+ * Copyright(c) 2006-2010 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 Ext.ns("Ext.ux");
 
@@ -43,6 +43,10 @@ Ext.ux.FieldReplicator = {
 
 //  Handle the field either being changed to blank or from blank.
     onChange: function(f, n, o) {
+
+//		Ensure that "change" is only fired once.
+    	f.startValue = n;
+
         var c = f.ownerCt, l,
             ps = f.previousSibling(),
             ns = f.nextSibling();

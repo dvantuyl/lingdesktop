@@ -103,8 +103,8 @@ User.Form = Ext.extend(Desktop.App, {
 	    });
 		
 		
-		//setup mainBar 
-		var mainBar = [
+		//setup toolbar 
+		var toolbar = [
 			{text: 'Save', iconCls: 'dt-icon-save', handler:function(){this.fireEvent('save')}, scope: this}
 		];
 		
@@ -137,7 +137,7 @@ User.Form = Ext.extend(Desktop.App, {
 		//apply all components to this app instance
  		Ext.apply(this, {
  			items : this.form,
-			mainBar : mainBar
+			tbar : toolbar
  		});
  		
 		//call App initComponent

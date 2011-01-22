@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.0
- * Copyright(c) 2006-2009 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.3.1
+ * Copyright(c) 2006-2010 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.Viewport
@@ -119,7 +119,7 @@ Ext.Viewport = Ext.extend(Ext.Container, {
     },
 
     fireResize : function(w, h){
-        this.onResize(w, h, w, h);
+        this.fireEvent('resize', this, w, h, w, h);
     }
 });
 Ext.reg('viewport', Ext.Viewport);

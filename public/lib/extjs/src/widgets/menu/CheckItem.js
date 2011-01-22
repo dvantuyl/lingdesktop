@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.0
- * Copyright(c) 2006-2009 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.3.1
+ * Copyright(c) 2006-2010 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.menu.CheckItem
@@ -30,7 +30,7 @@ Ext.menu.CheckItem = Ext.extend(Ext.menu.Item, {
 
     /**
      * @cfg {Boolean} checked True to initialize this checkbox as checked (defaults to false).  Note that
-     * if this checkbox is part of a radio group (group = true) only the last item in the group that is
+     * if this checkbox is part of a radio group (group = true) only the first item in the group that is
      * initialized with checked = true will be rendered as checked.
      */
     checked: false,
@@ -93,12 +93,14 @@ Ext.menu.CheckItem = Ext.extend(Ext.menu.Item, {
      * @param {Boolean} suppressEvent (optional) True to prevent the checkchange event from firing (defaults to false)
      */
     setChecked : function(state, suppressEvent){
-        if(this.checked != state && this.fireEvent("beforecheckchange", this, state) !== false){
+        var suppress = suppressEvent === true;
+        if(this.checked != state && (suppress || this.fireEvent("beforecheckchange", this, state) !== false)){
+            Ext.menu.MenuMgr.onCheckChange(this, state);
             if(this.container){
                 this.container[state ? "addClass" : "removeClass"]("x-menu-item-checked");
             }
             this.checked = state;
-            if(suppressEvent !== true){
+            if(!suppress){
                 this.fireEvent("checkchange", this, state);
             }
         }

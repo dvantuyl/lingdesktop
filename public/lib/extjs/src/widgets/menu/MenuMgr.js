@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.0
- * Copyright(c) 2006-2009 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.3.1
+ * Copyright(c) 2006-2010 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.menu.MenuMgr
@@ -56,7 +56,7 @@ Ext.menu.MenuMgr = function(){
        if(m.parentMenu){
           m.getEl().setZIndex(parseInt(m.parentMenu.getEl().getStyle("z-index"), 10) + 3);
           m.parentMenu.activeChild = m;
-       }else if(last && last.isVisible()){
+       }else if(last && !last.isDestroyed && last.isVisible()){
           m.getEl().setZIndex(parseInt(last.getEl().getStyle("z-index"), 10) + 3);
        }
    }
@@ -89,18 +89,6 @@ Ext.menu.MenuMgr = function(){
        }
    }
 
-   // private
-   function onBeforeCheck(mi, state){
-       if(state){
-           var g = groups[mi.group];
-           for(var i = 0, l = g.length; i < l; i++){
-               if(g[i] != mi){
-                   g[i].setChecked(false);
-               }
-           }
-       }
-   }
-
    return {
 
        /**
@@ -108,7 +96,7 @@ Ext.menu.MenuMgr = function(){
         * @return {Boolean} success True if any active menus were hidden.
         */
        hideAll : function(){
-            return hideAll();  
+            return hideAll();
        },
 
        // private
@@ -163,7 +151,6 @@ Ext.menu.MenuMgr = function(){
                    groups[g] = [];
                }
                groups[g].push(menuItem);
-               menuItem.on("beforecheckchange", onBeforeCheck);
            }
        },
 
@@ -172,7 +159,23 @@ Ext.menu.MenuMgr = function(){
            var g = menuItem.group;
            if(g){
                groups[g].remove(menuItem);
-               menuItem.un("beforecheckchange", onBeforeCheck);
+           }
+       },
+       
+       // private
+       onCheckChange: function(item, state){
+           if(item.group && state){
+               var group = groups[item.group],
+                   i = 0,
+                   len = group.length,
+                   current;
+                   
+               for(; i < len; i++){
+                   current = group[i];
+                   if(current != item){
+                       current.setChecked(false);
+                   }
+               }
            }
        },
 

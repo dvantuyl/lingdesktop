@@ -83,7 +83,7 @@ Desktop.workspace = function() {
         },
 
         onAppFocus: function(instance) {
-            toolbar.setAppMenu(instance);
+            //toolbar.setAppMenu(instance);
         },
 
         onAppUnfocus: function() {

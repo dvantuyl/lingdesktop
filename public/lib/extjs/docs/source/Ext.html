@@ -6,7 +6,12 @@
     <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
 </head>
 <body  onload="prettyPrint();">
-    <pre class="prettyprint lang-js">
+    <pre class="prettyprint lang-js">/*!
+ * Ext JS Library 3.3.1
+ * Copyright(c) 2006-2010 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
+ */
 // for old browsers
 window.undefined = window.undefined;
 
@@ -21,7 +26,12 @@ Ext = {
      * The version of the framework
      * @type String
      */
-    version : '3.1.0'
+    version : '3.3.1',
+    versionDetail : {
+        major : 3,
+        minor : 3,
+        patch : 1
+    }
 };
 
 <div id="method-Ext-apply"></div>/**
@@ -53,17 +63,18 @@ Ext.apply = function(o, c, defaults){
             return r.test(ua);
         },
         DOC = document,
+        docMode = DOC.documentMode,
         isStrict = DOC.compatMode == "CSS1Compat",
         isOpera = check(/opera/),
-        isChrome = check(/chrome/),
+        isChrome = check(/\bchrome\b/),
         isWebKit = check(/webkit/),
         isSafari = !isChrome && check(/safari/),
         isSafari2 = isSafari && check(/applewebkit\/4/), // unique to Safari 2
         isSafari3 = isSafari && check(/version\/3/),
         isSafari4 = isSafari && check(/version\/4/),
         isIE = !isOpera && check(/msie/),
-        isIE7 = isIE && check(/msie 7/),
-        isIE8 = isIE && check(/msie 8/),
+        isIE7 = isIE && (check(/msie 7/) || docMode == 7),
+        isIE8 = isIE && (check(/msie 8/) && docMode != 7),
         isIE6 = isIE && !isIE7 && !isIE8,
         isGecko = !isWebKit && check(/gecko/),
         isGecko2 = isGecko && check(/rv:1\.8/),
@@ -110,6 +121,14 @@ Ext.apply = function(o, c, defaults){
          * @type Boolean
          * @property enableFx
          */
+
+        <div id="prop-Ext-enableForcedBoxModel"></div>/**
+         * HIGHLY EXPERIMENTAL
+         * True to force css based border-box model override and turning off javascript based adjustments. This is a
+         * runtime configuration and must be set before onReady.
+         * @type Boolean
+         */
+        enableForcedBoxModel : false,
 
         <div id="prop-Ext-enableGarbageCollector"></div>/**
          * True to automatically uncache orphaned Ext.Elements periodically (defaults to true)
@@ -163,7 +182,11 @@ Ext.apply = function(o, c, defaults){
          * @return {String} The generated Id.
          */
         id : function(el, prefix){
-            return (el = Ext.getDom(el) || {}).id = el.id || (prefix || "ext-gen") + (++idSeed);
+            el = Ext.getDom(el, true) || {};
+            if (!el.id) {
+                el.id = (prefix || "ext-gen") + (++idSeed);
+            }
+            return el.id;
         },
 
         <div id="method-Ext-extend"></div>/**
@@ -225,7 +248,7 @@ MyGridPanel = Ext.extend(Ext.grid.GridPanel, {
             var oc = Object.prototype.constructor;
 
             return function(sb, sp, overrides){
-                if(Ext.isObject(sp)){
+                if(typeof sp == 'object'){
                     overrides = sp;
                     sp = sb;
                     sb = overrides.constructor != oc ? overrides.constructor : function(){sp.apply(this, arguments);};
@@ -392,7 +415,7 @@ Ext.urlDecode("foo=1&bar=2&bar=3&bar=4", false); // returns {foo: "1", bar: ["2"
                  } :
                  function(a, i, j){
                      return Array.prototype.slice.call(a, i || 0, j || a.length);
-                 }
+                 };
          }(),
 
         isIterable : function(v){
@@ -406,7 +429,7 @@ Ext.urlDecode("foo=1&bar=2&bar=3&bar=4", false); // returns {foo: "1", bar: ["2"
             }
             //NodeList has an item and length property
             //IXMLDOMNodeList has nextNode method, needs to be checked first.
-            return ((v.nextNode || v.item) && Ext.isNumber(v.length));
+            return ((typeof v.nextNode != 'undefined' || v.item) && Ext.isNumber(v.length));
         },
 
         <div id="method-Ext-each"></div>/**
@@ -473,7 +496,7 @@ Ext.urlDecode("foo=1&bar=2&bar=3&bar=4", false); // returns {foo: "1", bar: ["2"
             if(Ext.isIterable(obj)){
                 Ext.each(obj, fn, scope);
                 return;
-            }else if(Ext.isObject(obj)){
+            }else if(typeof obj == 'object'){
                 for(var prop in obj){
                     if(obj.hasOwnProperty(prop)){
                         if(fn.call(scope || obj, prop, obj[prop], obj) === false){
@@ -486,6 +509,8 @@ Ext.urlDecode("foo=1&bar=2&bar=3&bar=4", false); // returns {foo: "1", bar: ["2"
 
         <div id="method-Ext-getDom"></div>/**
          * Return the dom node for the passed String (id), dom node, or Ext.Element.
+         * Optional 'strict' flag is needed for IE since it can return 'name' and
+         * 'id' elements by using getElementById.
          * Here are some examples:
          * <pre><code>
 // gets dom node based on id
@@ -505,11 +530,29 @@ function(el){
          * @param {Mixed} el
          * @return HTMLElement
          */
-        getDom : function(el){
+        getDom : function(el, strict){
             if(!el || !DOC){
                 return null;
             }
-            return el.dom ? el.dom : (Ext.isString(el) ? DOC.getElementById(el) : el);
+            if (el.dom){
+                return el.dom;
+            } else {
+                if (typeof el == 'string') {
+                    var e = DOC.getElementById(el);
+                    // IE returns elements with the 'name' and 'id' attribute.
+                    // we do a strict check to return the element with only the id attribute
+                    if (e && isIE && strict) {
+                        if (el == e.getAttribute('id')) {
+                            return e;
+                        } else {
+                            return null;
+                        }
+                    }
+                    return e;
+                } else {
+                    return el;
+                }
+            }
         },
 
         <div id="method-Ext-getBody"></div>/**
@@ -519,6 +562,22 @@ function(el){
         getBody : function(){
             return Ext.get(DOC.body || DOC.documentElement);
         },
+        
+        <div id="method-Ext-getHead"></div>/**
+         * Returns the current document body as an {@link Ext.Element}.
+         * @return Ext.Element The document body
+         */
+        getHead : function() {
+            var head;
+            
+            return function() {
+                if (head == undefined) {
+                    head = Ext.get(DOC.getElementsByTagName("head")[0]);
+                }
+                
+                return head;
+            };
+        }(),
 
         <div id="prop-Ext-"></div>/**
          * Removes a DOM node from the document.
@@ -540,7 +599,7 @@ function(el){
                     d.innerHTML = '';
                     delete Ext.elCache[n.id];
                 }
-            }
+            };
         }() : function(n){
             if(n && n.parentNode && n.tagName != 'BODY'){
                 (Ext.enableNestedListenerRemoval) ? Ext.EventManager.purgeElement(n, true) : Ext.EventManager.removeAll(n);
@@ -643,7 +702,7 @@ function(el){
          * @return {Boolean}
          */
         isElement : function(v) {
-            return !!v && v.tagName;
+            return v ? !!v.tagName : false;
         },
 
         <div id="method-Ext-isDefined"></div>/**
@@ -770,7 +829,7 @@ Company.data.CustomStore = function(config) { ... }
     Ext.ns = Ext.namespace;
 })();
 
-Ext.ns("Ext.util", "Ext.lib", "Ext.data");
+Ext.ns('Ext.util', 'Ext.lib', 'Ext.data', 'Ext.supports');
 
 Ext.elCache = {};
 

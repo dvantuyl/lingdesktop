@@ -8,14 +8,14 @@ Ontology.Class.View = Ext.extend(Desktop.App, {
 	
 		var ic = this.initialConfig;
 		
-		//setup mainBar 
-		var mainBar = [
+		//setup toolbar 
+		var toolbar = [
 			{text: 'List', iconCls: 'dt-icon-grid', handler:function(){this.fireEvent('individuals')}, scope: this}
 		];
 		
 		//apply all components to this app instance
 		Ext.apply(this, {
-			mainBar : mainBar,
+			tbar : toolbar,
 			autoLoad: {
 				url: 'gold/' + ic.instanceId,
 				method: 'GET',

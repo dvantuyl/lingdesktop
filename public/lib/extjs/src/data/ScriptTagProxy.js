@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.0
- * Copyright(c) 2006-2009 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.3.1
+ * Copyright(c) 2006-2010 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.data.ScriptTagProxy
@@ -53,6 +53,17 @@ if ($callback) {
     header('Content-Type: application/x-json');
     echo json_encode($output);
 }
+</code></pre>
+ * <p>Below is the ASP.Net code to do the same thing:</p><pre><code>
+String jsonString = "{success: true}";
+String cb = Request.Params.Get("callback");
+String responseString = "";
+if (!String.IsNullOrEmpty(cb)) {
+    responseString = cb + "(" + jsonString + ")";
+} else {
+    responseString = jsonString;
+}
+Response.Write(responseString);
 </code></pre>
  *
  * @constructor

@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.0
- * Copyright(c) 2006-2009 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.3.1
+ * Copyright(c) 2006-2010 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.ToolTip
@@ -134,7 +134,7 @@ myGrid.on('render', function(grid) {
     // private
     afterRender : function(){
         Ext.ToolTip.superclass.afterRender.call(this);
-        this.anchorEl.setStyle('z-index', this.el.getZIndex() + 1);
+        this.anchorEl.setStyle('z-index', this.el.getZIndex() + 1).setVisibilityMode(Ext.Element.DISPLAY);
     },
 
     /**
@@ -197,7 +197,7 @@ myGrid.on('render', function(grid) {
                 bd = document.body,
                 scrollX = (de.scrollLeft || bd.scrollLeft || 0) + 5,
                 scrollY = (de.scrollTop || bd.scrollTop || 0) + 5,
-                axy = [xy[0] + offsets[0], xy[1] + offsets[1]]
+                axy = [xy[0] + offsets[0], xy[1] + offsets[1]],
                 sz = this.getSize();
                 
             this.anchorEl.removeClass(this.anchorCls);
@@ -401,8 +401,8 @@ myGrid.on('render', function(grid) {
         this.showAt(this.getTargetXY());
 
         if(this.anchor){
-            this.syncAnchor();
             this.anchorEl.show();
+            this.syncAnchor();
             this.constrainPosition = this.origConstrainPosition;
         }else{
             this.anchorEl.hide();
@@ -420,6 +420,8 @@ myGrid.on('render', function(grid) {
         if(this.anchor && !this.anchorEl.isVisible()){
             this.syncAnchor();
             this.anchorEl.show();
+        }else{
+            this.anchorEl.hide();
         }
     },
 
@@ -489,7 +491,14 @@ myGrid.on('render', function(grid) {
     onDocMouseDown : function(e){
         if(this.autoHide !== true && !this.closable && !e.within(this.el.dom)){
             this.disable();
-            this.enable.defer(100, this);
+            this.doEnable.defer(100, this);
+        }
+    },
+    
+    // private
+    doEnable : function(){
+        if(!this.isDestroyed){
+            this.enable();
         }
     },
 

@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.0
- * Copyright(c) 2006-2009 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.3.1
+ * Copyright(c) 2006-2010 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.data.JsonReader
@@ -23,7 +23,7 @@ var myReader = new Ext.data.JsonReader({
     // constructor that provides mapping for reading the record data objects
     {@link Ext.data.DataReader#fields fields}: [
         // map Record&#39;s 'firstname' field to data object&#39;s key of same name
-        {name: 'name'},
+        {name: 'name', mapping: 'firstname'},
         // map Record&#39;s 'job' field to data object&#39;s 'occupation' key
         {name: 'job', mapping: 'occupation'}
     ]
@@ -165,12 +165,15 @@ Ext.extend(Ext.data.JsonReader, Ext.data.DataReader, {
         return this.readRecords(o);
     },
 
-    /**
-     * Decode a json response from server.
-     * @param {String} action [Ext.data.Api.actions.create|read|update|destroy]
-     * @param {Object} response
+    /*
      * TODO: refactor code between JsonReader#readRecords, #readResponse into 1 method.
      * there's ugly duplication going on due to maintaining backwards compat. with 2.0.  It's time to do this.
+     */
+    /**
+     * Decode a JSON response from server.
+     * @param {String} action [Ext.data.Api.actions.create|read|update|destroy]
+     * @param {Object} response The XHR object returned through an Ajax server request.
+     * @return {Response} A {@link Ext.data.Response Response} object containing the data response, and also status information.
      */
     readResponse : function(action, response) {
         var o = (response.responseText !== undefined) ? Ext.decode(response.responseText) : response;
@@ -298,14 +301,20 @@ Ext.extend(Ext.data.JsonReader, Ext.data.DataReader, {
     createAccessor : function(){
         var re = /[\[\.]/;
         return function(expr) {
-            try {
-                return(re.test(expr)) ?
-                new Function('obj', 'return obj.' + expr) :
-                function(obj){
-                    return obj[expr];
-                };
-            } catch(e){}
-            return Ext.emptyFn;
+            if(Ext.isEmpty(expr)){
+                return Ext.emptyFn;
+            }
+            if(Ext.isFunction(expr)){
+                return expr;
+            }
+            var i = String(expr).search(re);
+            if(i >= 0){
+                return new Function('obj', 'return obj' + (i > 0 ? '.' : '') + expr);
+            }
+            return function(obj){
+                return obj[expr];
+            };
+
         };
     }(),
 

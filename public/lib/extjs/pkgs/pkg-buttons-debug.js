@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.0
- * Copyright(c) 2006-2009 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.3.1
+ * Copyright(c) 2006-2010 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.Button
@@ -185,8 +185,20 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
      * @type Menu
      * The {@link Ext.menu.Menu Menu} object associated with this Button when configured with the {@link #menu} config option.
      */
+    /**
+     * @cfg {Boolean} autoWidth
+     * By default, if a width is not specified the button will attempt to stretch horizontally to fit its content.
+     * If the button is being managed by a width sizing layout (hbox, fit, anchor), set this to false to prevent
+     * the button from doing this automatic sizing.
+     * Defaults to <tt>undefined</tt>.
+     */
 
     initComponent : function(){
+        if(this.menu){
+            this.menu = Ext.menu.MenuMgr.get(this.menu);
+            this.menu.ownerCt = this;
+        }
+        
         Ext.Button.superclass.initComponent.call(this);
 
         this.addEvents(
@@ -249,8 +261,9 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
              */
             'menutriggerout'
         );
-        if(this.menu){
-            this.menu = Ext.menu.MenuMgr.get(this.menu);
+        
+        if (this.menu){
+            this.menu.ownerCt = undefined;
         }
         if(Ext.isString(this.toggleGroup)){
             this.enableToggle = true;
@@ -282,7 +295,7 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
             if(!Ext.isEmpty(this.oldCls)){
                 this.el.removeClass([this.oldCls, 'x-btn-pressed']);
             }
-            this.oldCls = (this.iconCls || this.icon) ? (this.text ? ' x-btn-text-icon' : ' x-btn-icon') : ' x-btn-noicon';
+            this.oldCls = (this.iconCls || this.icon) ? (this.text ? 'x-btn-text-icon' : 'x-btn-icon') : 'x-btn-noicon';
             this.el.addClass([this.oldCls, this.pressed ? 'x-btn-pressed' : null]);
         }
     },
@@ -367,9 +380,10 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
 
         if(this.repeat){
             var repeater = new Ext.util.ClickRepeater(btn, Ext.isObject(this.repeat) ? this.repeat : {});
-            this.mon(repeater, 'click', this.onClick, this);
+            this.mon(repeater, 'click', this.onRepeatClick, this);
+        }else{
+            this.mon(btn, this.clickEvent, this.onClick, this);
         }
-        this.mon(btn, this.clickEvent, this.onClick, this);
     },
 
     // private
@@ -436,8 +450,8 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
         if(this.rendered){
             this.clearTip();
         }
-        if(this.menu && this.menu.autoDestroy) {
-            Ext.destroy(this.menu);
+        if(this.menu && this.destroyMenu !== false) {
+            Ext.destroy(this.btnEl, this.menu);
         }
         Ext.destroy(this.repeater);
     },
@@ -451,11 +465,12 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
             delete this.btnEl;
             Ext.ButtonToggleMgr.unregister(this);
         }
+        Ext.Button.superclass.onDestroy.call(this);
     },
 
     // private
     doAutoWidth : function(){
-        if(this.el && this.text && this.width === undefined){
+        if(this.autoWidth !== false && this.el && this.text && this.width === undefined){
             this.el.setWidth('auto');
             if(Ext.isIE7 && Ext.isStrict){
                 var ib = this.btnEl;
@@ -546,13 +561,6 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
         return this;
     },
 
-    /**
-     * Focus the button
-     */
-    focus : function(){
-        this.btnEl.focus();
-    },
-
     // private
     onDisable : function(){
         this.onDisableChange(true);
@@ -581,6 +589,10 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
             if(this.tooltip){
                 Ext.QuickTips.getQuickTip().cancelShow(this.btnEl);
             }
+            if(this.menu.isVisible()){
+                this.menu.hide();
+            }
+            this.menu.ownerCt = this;
             this.menu.show(this.el, this.menuAlign);
         }
         return this;
@@ -590,7 +602,7 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
      * Hide this button's menu (if it has one)
      */
     hideMenu : function(){
-        if(this.menu){
+        if(this.hasVisibleMenu()){
             this.menu.hide();
         }
         return this;
@@ -601,7 +613,12 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
      * @return {Boolean}
      */
     hasVisibleMenu : function(){
-        return this.menu && this.menu.isVisible();
+        return this.menu && this.menu.ownerCt == this && this.menu.isVisible();
+    },
+    
+    // private
+    onRepeatClick : function(repeat, e){
+        this.onClick(e);
     },
 
     // private
@@ -613,10 +630,8 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
             return;
         }
         if(!this.disabled){
-            if(this.enableToggle && (this.allowDepress !== false || !this.pressed)){
-                this.toggle();
-            }
-            if(this.menu && !this.menu.isVisible() && !this.ignoreNextClick){
+            this.doToggle();
+            if(this.menu && !this.hasVisibleMenu() && !this.ignoreNextClick){
                 this.showMenu();
             }
             this.fireEvent('click', this, e);
@@ -624,6 +639,13 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
                 //this.el.removeClass('x-btn-over');
                 this.handler.call(this.scope || this, this, e);
             }
+        }
+    },
+    
+    // private
+    doToggle: function(){
+        if (this.enableToggle && (this.allowDepress !== false || !this.pressed)) {
+            this.toggle();
         }
     },
 
@@ -716,17 +738,21 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
     },
     // private
     onMenuShow : function(e){
-        this.menu.ownerCt = this;
-        this.ignoreNextClick = 0;
-        this.el.addClass('x-btn-menu-active');
-        this.fireEvent('menushow', this, this.menu);
+        if(this.menu.ownerCt == this){
+            this.menu.ownerCt = this;
+            this.ignoreNextClick = 0;
+            this.el.addClass('x-btn-menu-active');
+            this.fireEvent('menushow', this, this.menu);
+        }
     },
     // private
     onMenuHide : function(e){
-        this.el.removeClass('x-btn-menu-active');
-        this.ignoreNextClick = this.restoreClick.defer(250, this);
-        this.fireEvent('menuhide', this, this.menu);
-        delete this.menu.ownerCt;
+        if(this.menu.ownerCt == this){
+            this.el.removeClass('x-btn-menu-active');
+            this.ignoreNextClick = this.restoreClick.defer(250, this);
+            this.fireEvent('menuhide', this, this.menu);
+            delete this.menu.ownerCt;
+        }
     },
 
     // private
@@ -736,6 +762,21 @@ Ext.Button = Ext.extend(Ext.BoxComponent, {
 
     /**
      * @cfg {String} autoEl @hide
+     */
+    /**
+     * @cfg {String/Object} html @hide
+     */
+    /**
+     * @cfg {String} contentEl  @hide
+     */
+    /**
+     * @cfg {Mixed} data  @hide
+     */
+    /**
+     * @cfg {Mixed} tpl  @hide
+     */
+    /**
+     * @cfg {String} tplWriteMode  @hide
      */
 });
 Ext.reg('button', Ext.Button);
@@ -896,9 +937,7 @@ Ext.SplitButton = Ext.extend(Ext.Button, {
                     this.arrowHandler.call(this.scope || this, this, e);
                 }
             }else{
-                if(this.enableToggle){
-                    this.toggle();
-                }
+                this.doToggle();
                 this.fireEvent("click", this, e);
                 if(this.handler){
                     this.handler.call(this.scope || this, this, e);
@@ -1011,7 +1050,7 @@ Ext.CycleButton = Ext.extend(Ext.SplitButton, {
             }
             this.activeItem = item;
             if(!item.checked){
-                item.setChecked(true, true);
+                item.setChecked(true, false);
             }
             if(this.forceIcon){
                 this.setIconClass(this.forceIcon);
@@ -1052,7 +1091,7 @@ Ext.CycleButton = Ext.extend(Ext.SplitButton, {
         this.itemCount = this.items.length;
 
         this.menu = {cls:'x-cycle-menu', items:[]};
-        var checked;
+        var checked = 0;
         Ext.each(this.items, function(item, i){
             Ext.apply(item, {
                 group: item.group || this.id,
@@ -1063,13 +1102,12 @@ Ext.CycleButton = Ext.extend(Ext.SplitButton, {
             });
             this.menu.items.push(item);
             if(item.checked){
-                checked = item;
+                checked = i;
             }
         }, this);
-        this.setActiveItem(checked, true);
         Ext.CycleButton.superclass.initComponent.call(this);
-
         this.on('click', this.toggleSelected, this);
+        this.setActiveItem(checked, true);
     },
 
     // private

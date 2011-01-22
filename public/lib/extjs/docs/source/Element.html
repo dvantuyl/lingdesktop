@@ -6,7 +6,13 @@
     <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
 </head>
 <body  onload="prettyPrint();">
-    <pre class="prettyprint lang-js">/**
+    <pre class="prettyprint lang-js">/*!
+ * Ext JS Library 3.3.1
+ * Copyright(c) 2006-2010 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
+ */
+/**
  * @class Ext.Element
  * <p>Encapsulates a DOM element, adding simple DOM manipulation facilities, normalizing for browser differences.</p>
  * <p>All instances of this class inherit the methods of {@link Ext.Fx} making visual effects easily available to all DOM elements.</p>
@@ -104,10 +110,7 @@ Ext.Element = function(element, forceNew){
     this.id = id || Ext.id(dom);
 };
 
-var D = Ext.lib.Dom,
-    DH = Ext.DomHelper,
-    E = Ext.lib.Event,
-    A = Ext.lib.Anim,
+var DH = Ext.DomHelper,
     El = Ext.Element,
     EC = Ext.elCache;
 
@@ -124,7 +127,7 @@ El.prototype = {
             val,
             useSet = (useSet !== false) && !!el.setAttribute;
 
-        for(attr in o){
+        for (attr in o) {
             if (o.hasOwnProperty(attr)) {
                 val = o[attr];
                 if (attr == 'style') {
@@ -637,7 +640,7 @@ el.un('click', this.handlerFn);
      * @return {Boolean}
      */
     isBorderBox : function(){
-        return noBoxAdjust[(this.dom.tagName || "").toLowerCase()] || Ext.isBorderBox;
+        return Ext.isBorderBox || Ext.isForcedBorderBox || noBoxAdjust[(this.dom.tagName || "").toLowerCase()];
     },
 
     <div id="method-Ext.Element-remove"></div>/**
@@ -804,8 +807,15 @@ El.get = function(el){
         return ex;
     } else if (el instanceof El) {
         if(el != docEl){
-            el.dom = DOC.getElementById(el.id) || el.dom; // refresh dom element in case no longer valid,
-                                                          // catch case where it hasn't been appended
+            // refresh dom element in case no longer valid,
+            // catch case where it hasn't been appended
+
+            // If an el instance is passed, don't pass to getElementById without some kind of id
+            if (Ext.isIE && (el.id == undefined || el.id == '')) {
+                el.dom = el.dom;
+            } else {
+                el.dom = DOC.getElementById(el.id) || el.dom;
+            }
         }
         return el;
     } else if(el.isComposite) {
@@ -826,7 +836,7 @@ El.get = function(el){
 };
 
 El.addToCache = function(el, id){
-    id = id || el.id;    
+    id = id || el.id;
     EC[id] = {
         el:  el,
         data: {},
@@ -980,11 +990,6 @@ if(Ext.isIE || Ext.isGecko){
     noBoxAdjust['button'] = 1;
 }
 
-
-Ext.EventManager.on(window, 'unload', function(){
-    delete EC;
-    delete El._flyweights;
-});
 })();
 </pre>    
 </body>

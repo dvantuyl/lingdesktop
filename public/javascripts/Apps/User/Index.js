@@ -70,8 +70,8 @@ User.Index = Ext.extend(Desktop.App, {
             scope: this
         });
 
-        //setup mainBar
-        var mainBar = [
+        //setup toolbar
+        var toolbar = [
         {
             text: 'New',
             iconCls: 'dt-icon-add',
@@ -95,7 +95,7 @@ User.Index = Ext.extend(Desktop.App, {
         //apply all components to this app instance
         Ext.apply(this, {
             items: grid,
-            mainBar: mainBar
+            tbar: toolbar
         });
 
         //call App initComponent

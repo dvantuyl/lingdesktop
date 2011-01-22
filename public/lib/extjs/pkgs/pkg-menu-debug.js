@@ -1,101 +1,9 @@
 /*!
- * Ext JS Library 3.1.0
- * Copyright(c) 2006-2009 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.3.1
+ * Copyright(c) 2006-2010 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
-/**
- * @class Ext.layout.MenuLayout
- * @extends Ext.layout.ContainerLayout
- * <p>Layout manager used by {@link Ext.menu.Menu}. Generally this class should not need to be used directly.</p>
- */
- Ext.layout.MenuLayout = Ext.extend(Ext.layout.ContainerLayout, {
-    monitorResize : true,
-
-    setContainer : function(ct){
-        this.monitorResize = !ct.floating;
-        // This event is only fired by the menu in IE, used so we don't couple
-        // the menu with the layout.
-        ct.on('autosize', this.doAutoSize, this);
-        Ext.layout.MenuLayout.superclass.setContainer.call(this, ct);
-    },
-
-    renderItem : function(c, position, target){
-        if (!this.itemTpl) {
-            this.itemTpl = Ext.layout.MenuLayout.prototype.itemTpl = new Ext.XTemplate(
-                '<li id="{itemId}" class="{itemCls}">',
-                    '<tpl if="needsIcon">',
-                        '<img src="{icon}" class="{iconCls}"/>',
-                    '</tpl>',
-                '</li>'
-            );
-        }
-
-        if(c && !c.rendered){
-            if(Ext.isNumber(position)){
-                position = target.dom.childNodes[position];
-            }
-            var a = this.getItemArgs(c);
-
-//          The Component's positionEl is the <li> it is rendered into
-            c.render(c.positionEl = position ?
-                this.itemTpl.insertBefore(position, a, true) :
-                this.itemTpl.append(target, a, true));
-
-//          Link the containing <li> to the item.
-            c.positionEl.menuItemId = c.getItemId();
-
-//          If rendering a regular Component, and it needs an icon,
-//          move the Component rightwards.
-            if (!a.isMenuItem && a.needsIcon) {
-                c.positionEl.addClass('x-menu-list-item-indent');
-            }
-            this.configureItem(c, position);
-        }else if(c && !this.isValidParent(c, target)){
-            if(Ext.isNumber(position)){
-                position = target.dom.childNodes[position];
-            }
-            target.dom.insertBefore(c.getActionEl().dom, position || null);
-        }
-    },
-
-    getItemArgs : function(c) {
-        var isMenuItem = c instanceof Ext.menu.Item;
-        return {
-            isMenuItem: isMenuItem,
-            needsIcon: !isMenuItem && (c.icon || c.iconCls),
-            icon: c.icon || Ext.BLANK_IMAGE_URL,
-            iconCls: 'x-menu-item-icon ' + (c.iconCls || ''),
-            itemId: 'x-menu-el-' + c.id,
-            itemCls: 'x-menu-list-item '
-        };
-    },
-
-//  Valid if the Component is in a <li> which is part of our target <ul>
-    isValidParent : function(c, target) {
-        return c.el.up('li.x-menu-list-item', 5).dom.parentNode === (target.dom || target);
-    },
-
-    onLayout : function(ct, target){
-        this.renderAll(ct, target);
-        this.doAutoSize();
-    },
-
-    doAutoSize : function(){
-        var ct = this.container, w = ct.width;
-        if(ct.floating){
-            if(w){
-                ct.setWidth(w);
-            }else if(Ext.isIE){
-                ct.setWidth(Ext.isStrict && (Ext.isIE7 || Ext.isIE8) ? 'auto' : ct.minWidth);
-                var el = ct.getEl(), t = el.dom.offsetWidth; // force recalc
-                ct.setWidth(ct.getLayoutTarget().getWidth() + el.getFrameWidth('lr'));
-            }
-        }
-    }
-});
-Ext.Container.LAYOUTS['menu'] = Ext.layout.MenuLayout;
-
 /**
  * @class Ext.menu.Menu
  * @extends Ext.Container
@@ -192,6 +100,13 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
      */
     floating : true,
 
+
+    /**
+     * @cfg {Number} zIndex
+     * zIndex to use when the menu is floating.
+     */
+    zIndex: 15000,
+
     // private
     hidden : true,
 
@@ -256,10 +171,10 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
         }
         Ext.menu.Menu.superclass.initComponent.call(this);
         if(this.autoLayout){
+            var fn = this.doLayout.createDelegate(this, []);
             this.on({
-                add: this.doLayout,
-                remove: this.doLayout,
-                scope: this
+                add: fn,
+                remove: fn
             });
         }
     },
@@ -290,7 +205,7 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
                 dh: dh,
                 constrain: false,
                 parentEl: ct,
-                zindex:15000
+                zindex: this.zIndex
             });
         }else{
             this.el = ct.createChild(dh);
@@ -379,7 +294,7 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
         var items = this.items;
         for(var i = start, len = items.length; i >= 0 && i < len; i+= step){
             var item = items.get(i);
-            if(!item.disabled && (item.canActivate || item.isFormField)){
+            if(item.isVisible() && !item.disabled && (item.canActivate || item.isFormField)){
                 this.setActiveItem(item, false);
                 return item;
             }
@@ -474,7 +389,7 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
                 // set the position so we can figure out the constrain value.
                 this.el.setXY(xy);
                 //constrain the value, keep the y coordinate the same
-                this.constrainScroll(xy[1]);
+                xy[1] = this.constrainScroll(xy[1]);
                 xy = [this.el.adjustForConstraints(xy)[0], xy[1]];
             }else{
                 //constrain to the viewport.
@@ -497,11 +412,30 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
     },
 
     constrainScroll : function(y){
-        var max, full = this.ul.setHeight('auto').getHeight();
+        var max, full = this.ul.setHeight('auto').getHeight(),
+            returnY = y, normalY, parentEl, scrollTop, viewHeight;
         if(this.floating){
-            max = this.maxHeight ? this.maxHeight : Ext.fly(this.el.dom.parentNode).getViewSize(false).height - y;
+            parentEl = Ext.fly(this.el.dom.parentNode);
+            scrollTop = parentEl.getScroll().top;
+            viewHeight = parentEl.getViewSize().height;
+            //Normalize y by the scroll position for the parent element.  Need to move it into the coordinate space
+            //of the view.
+            normalY = y - scrollTop;
+            max = this.maxHeight ? this.maxHeight : viewHeight - normalY;
+            if(full > viewHeight) {
+                max = viewHeight;
+                //Set returnY equal to (0,0) in view space by reducing y by the value of normalY
+                returnY = y - normalY;
+            } else if(max < full) {
+                returnY = y - (full - max);
+                max = full;
+            }
         }else{
             max = this.getHeight();
+        }
+        // Always respect maxHeight 
+        if (this.maxHeight){
+            max = Math.min(this.maxHeight, max);
         }
         if(full > max && max > 0){
             this.activeMax = max - this.scrollerHeight * 2 - this.el.getFrameWidth('tb') - Ext.num(this.el.shadowOffset, 0);
@@ -513,6 +447,7 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
             this.el.select('.x-menu-scroller').setDisplayed('none');
         }
         this.ul.dom.scrollTop = 0;
+        return returnY;
     },
 
     createScrollers : function(){
@@ -573,9 +508,11 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
      * @param {Boolean} deep (optional) True to hide all parent menus recursively, if any (defaults to false)
      */
     hide : function(deep){
-        this.deepHide = deep;
-        Ext.menu.Menu.superclass.hide.call(this);
-        delete this.deepHide;
+        if (!this.isDestroyed) {
+            this.deepHide = deep;
+            Ext.menu.Menu.superclass.hide.call(this);
+            delete this.deepHide;
+        }
     },
 
     // private
@@ -612,8 +549,8 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
          return c;
     },
 
-    applyDefaults : function(c){
-        if(!Ext.isString(c)){
+    applyDefaults : function(c) {
+        if (!Ext.isString(c)) {
             c = Ext.menu.Menu.superclass.applyDefaults.call(this, c);
             var d = this.internalDefaults;
             if(d){
@@ -629,10 +566,10 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
     },
 
     // private
-    getMenuItem : function(config){
-       if(!config.isXType){
-            if(!config.xtype && Ext.isBoolean(config.checked)){
-                return new Ext.menu.CheckItem(config)
+    getMenuItem : function(config) {
+        if (!config.isXType) {
+            if (!config.xtype && Ext.isBoolean(config.checked)) {
+                return new Ext.menu.CheckItem(config);
             }
             return Ext.create(config, this.defaultType);
         }
@@ -643,7 +580,7 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
      * Adds a separator bar to the menu
      * @return {Ext.menu.Item} The menu item that was added
      */
-    addSeparator : function(){
+    addSeparator : function() {
         return this.add(new Ext.menu.Separator());
     },
 
@@ -652,8 +589,10 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
      * @param {Mixed} el The element or DOM node to add, or its id
      * @return {Ext.menu.Item} The menu item that was added
      */
-    addElement : function(el){
-        return this.add(new Ext.menu.BaseItem(el));
+    addElement : function(el) {
+        return this.add(new Ext.menu.BaseItem({
+            el: el
+        }));
     },
 
     /**
@@ -661,7 +600,7 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
      * @param {Ext.menu.Item} item The menu item to add
      * @return {Ext.menu.Item} The menu item that was added
      */
-    addItem : function(item){
+    addItem : function(item) {
         return this.add(item);
     },
 
@@ -670,7 +609,7 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
      * @param {Object} config A MenuItem config object
      * @return {Ext.menu.Item} The menu item that was added
      */
-    addMenuItem : function(config){
+    addMenuItem : function(config) {
         return this.add(this.getMenuItem(config));
     },
 
@@ -685,6 +624,7 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
 
     //private
     onDestroy : function(){
+        Ext.EventManager.removeResizeListener(this.hide, this);
         var pm = this.parentMenu;
         if(pm && pm.activeChild == this){
             delete pm.activeChild;
@@ -692,7 +632,6 @@ Ext.menu.Menu = Ext.extend(Ext.Container, {
         delete this.parentMenu;
         Ext.menu.Menu.superclass.onDestroy.call(this);
         Ext.menu.MenuMgr.unregister(this);
-        Ext.EventManager.removeResizeListener(this.hide, this);
         if(this.keyNav) {
             this.keyNav.disable();
         }
@@ -829,7 +768,7 @@ Ext.menu.MenuMgr = function(){
        if(m.parentMenu){
           m.getEl().setZIndex(parseInt(m.parentMenu.getEl().getStyle("z-index"), 10) + 3);
           m.parentMenu.activeChild = m;
-       }else if(last && last.isVisible()){
+       }else if(last && !last.isDestroyed && last.isVisible()){
           m.getEl().setZIndex(parseInt(last.getEl().getStyle("z-index"), 10) + 3);
        }
    }
@@ -862,18 +801,6 @@ Ext.menu.MenuMgr = function(){
        }
    }
 
-   // private
-   function onBeforeCheck(mi, state){
-       if(state){
-           var g = groups[mi.group];
-           for(var i = 0, l = g.length; i < l; i++){
-               if(g[i] != mi){
-                   g[i].setChecked(false);
-               }
-           }
-       }
-   }
-
    return {
 
        /**
@@ -881,7 +808,7 @@ Ext.menu.MenuMgr = function(){
         * @return {Boolean} success True if any active menus were hidden.
         */
        hideAll : function(){
-            return hideAll();  
+            return hideAll();
        },
 
        // private
@@ -936,7 +863,6 @@ Ext.menu.MenuMgr = function(){
                    groups[g] = [];
                }
                groups[g].push(menuItem);
-               menuItem.on("beforecheckchange", onBeforeCheck);
            }
        },
 
@@ -945,7 +871,23 @@ Ext.menu.MenuMgr = function(){
            var g = menuItem.group;
            if(g){
                groups[g].remove(menuItem);
-               menuItem.un("beforecheckchange", onBeforeCheck);
+           }
+       },
+       
+       // private
+       onCheckChange: function(item, state){
+           if(item.group && state){
+               var group = groups[item.group],
+                   i = 0,
+                   len = group.length,
+                   current;
+                   
+               for(; i < len; i++){
+                   current = group[i];
+                   if(current != item){
+                       current.setChecked(false);
+                   }
+               }
            }
        },
 
@@ -1015,7 +957,7 @@ Ext.menu.BaseItem = Ext.extend(Ext.Component, {
      */
     hideOnClick : true,
     /**
-     * @cfg {Number} clickHideDelay Length of time in milliseconds to wait before hiding after a click (defaults to 100)
+     * @cfg {Number} clickHideDelay Length of time in milliseconds to wait before hiding after a click (defaults to 1)
      */
     clickHideDelay : 1,
 
@@ -1024,33 +966,33 @@ Ext.menu.BaseItem = Ext.extend(Ext.Component, {
 
     // private
     actionMode : "container",
-    
+
     initComponent : function(){
         Ext.menu.BaseItem.superclass.initComponent.call(this);
         this.addEvents(
-	        /**
-	         * @event click
-	         * Fires when this item is clicked
-	         * @param {Ext.menu.BaseItem} this
-	         * @param {Ext.EventObject} e
-	         */
-	        'click',
-	        /**
-	         * @event activate
-	         * Fires when this item is activated
-	         * @param {Ext.menu.BaseItem} this
-	         */
-	        'activate',
-	        /**
-	         * @event deactivate
-	         * Fires when this item is deactivated
-	         * @param {Ext.menu.BaseItem} this
-	         */
-	        'deactivate'
-	    );
-	    if(this.handler){
-	        this.on("click", this.handler, this.scope);
-	    }
+            /**
+             * @event click
+             * Fires when this item is clicked
+             * @param {Ext.menu.BaseItem} this
+             * @param {Ext.EventObject} e
+             */
+            'click',
+            /**
+             * @event activate
+             * Fires when this item is activated
+             * @param {Ext.menu.BaseItem} this
+             */
+            'activate',
+            /**
+             * @event deactivate
+             * Fires when this item is deactivated
+             * @param {Ext.menu.BaseItem} this
+             */
+            'deactivate'
+        );
+        if(this.handler){
+            this.on("click", this.handler, this.scope);
+        }
     },
 
     // private
@@ -1156,15 +1098,17 @@ Ext.menu.TextItem = Ext.extend(Ext.menu.BaseItem, {
      */
     itemCls : "x-menu-text",
     
-    constructor : function(config){
-        if(typeof config == 'string'){
-            config = {text: config}
+    constructor : function(config) {
+        if (typeof config == 'string') {
+            config = {
+                text: config
+            };
         }
         Ext.menu.TextItem.superclass.constructor.call(this, config);
     },
 
     // private
-    onRender : function(){
+    onRender : function() {
         var s = document.createElement("span");
         s.className = this.itemCls;
         s.innerHTML = this.text;
@@ -1257,6 +1201,12 @@ Ext.menu.Item = Ext.extend(Ext.menu.BaseItem, {
      * @cfg {Number} showDelay Length of time in milliseconds to wait before showing this item (defaults to 200)
      */
     showDelay: 200,
+    
+    /**
+     * @cfg {String} altText The altText to use for the icon, if it exists. Defaults to <tt>''</tt>.
+     */
+    altText: '',
+    
     // doc'd in BaseItem
     hideDelay: 200,
 
@@ -1280,7 +1230,7 @@ Ext.menu.Item = Ext.extend(Ext.menu.BaseItem, {
                         ' target="{hrefTarget}"',
                     '</tpl>',
                  '>',
-                     '<img src="{icon}" class="x-menu-item-icon {iconCls}"/>',
+                     '<img alt="{altText}" src="{icon}" class="x-menu-item-icon {iconCls}"/>',
                      '<span class="x-menu-item-text">{text}</span>',
                  '</a>'
              );
@@ -1303,7 +1253,8 @@ Ext.menu.Item = Ext.extend(Ext.menu.BaseItem, {
             hrefTarget: this.hrefTarget,
             icon: this.icon || Ext.BLANK_IMAGE_URL,
             iconCls: this.iconCls || '',
-            text: this.itemText||this.text||'&#160;'
+            text: this.itemText||this.text||'&#160;',
+            altText: this.altText || ''
         };
     },
 
@@ -1443,7 +1394,7 @@ Ext.menu.CheckItem = Ext.extend(Ext.menu.Item, {
 
     /**
      * @cfg {Boolean} checked True to initialize this checkbox as checked (defaults to false).  Note that
-     * if this checkbox is part of a radio group (group = true) only the last item in the group that is
+     * if this checkbox is part of a radio group (group = true) only the first item in the group that is
      * initialized with checked = true will be rendered as checked.
      */
     checked: false,
@@ -1506,12 +1457,14 @@ Ext.menu.CheckItem = Ext.extend(Ext.menu.Item, {
      * @param {Boolean} suppressEvent (optional) True to prevent the checkchange event from firing (defaults to false)
      */
     setChecked : function(state, suppressEvent){
-        if(this.checked != state && this.fireEvent("beforecheckchange", this, state) !== false){
+        var suppress = suppressEvent === true;
+        if(this.checked != state && (suppress || this.fireEvent("beforecheckchange", this, state) !== false)){
+            Ext.menu.MenuMgr.onCheckChange(this, state);
             if(this.container){
                 this.container[state ? "addClass" : "removeClass"]("x-menu-item-checked");
             }
             this.checked = state;
-            if(suppressEvent !== true){
+            if(!suppress){
                 this.fireEvent("checkchange", this, state);
             }
         }

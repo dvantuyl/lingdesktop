@@ -1,8 +1,8 @@
 /*!
- * Ext JS Library 3.1.0
- * Copyright(c) 2006-2009 Ext JS, LLC
- * licensing@extjs.com
- * http://www.extjs.com/license
+ * Ext JS Library 3.3.1
+ * Copyright(c) 2006-2010 Sencha Inc.
+ * licensing@sencha.com
+ * http://www.sencha.com/license
  */
 /**
  * @class Ext.MessageBox
@@ -181,19 +181,17 @@ Ext.MessageBox = function(){
             if(!dlg.isVisible() && !opt.width){
                 dlg.setSize(this.maxWidth, 100); // resize first so content is never clipped from previous shows
             }
-            msgEl.update(text || '&#160;');
+            // Append a space here for sizing. In IE, for some reason, it wraps text incorrectly without one in some cases
+            msgEl.update(text ? text + ' ' : '&#160;');
 
-            var iw = iconCls != '' ? (iconEl.getWidth() + iconEl.getMargins('lr')) : 0;
-            var mw = msgEl.getWidth() + msgEl.getMargins('lr');
-            var fw = dlg.getFrameWidth('lr');
-            var bw = dlg.body.getFrameWidth('lr');
-            if (Ext.isIE && iw > 0){
-                //3 pixels get subtracted in the icon CSS for an IE margin issue,
-                //so we have to add it back here for the overall width to be consistent
-                iw += 3;
-            }
-            var w = Math.max(Math.min(opt.width || iw+mw+fw+bw, this.maxWidth),
-                        Math.max(opt.minWidth || this.minWidth, bwidth || 0));
+            var iw = iconCls != '' ? (iconEl.getWidth() + iconEl.getMargins('lr')) : 0,
+                mw = msgEl.getWidth() + msgEl.getMargins('lr'),
+                fw = dlg.getFrameWidth('lr'),
+                bw = dlg.body.getFrameWidth('lr'),
+                w;
+                
+            w = Math.max(Math.min(opt.width || iw+mw+fw+bw, opt.maxWidth || this.maxWidth),
+                    Math.max(opt.minWidth || this.minWidth, bwidth || 0));
 
             if(opt.prompt === true){
                 activeTextEl.setWidth(w-iw-fw-bw);
@@ -204,6 +202,7 @@ Ext.MessageBox = function(){
             if(Ext.isIE && w == bwidth){
                 w += 4; //Add offset when the content width is smaller than the buttons.    
             }
+            msgEl.update(text || '&#160;');
             dlg.setSize(w, 'auto').center();
             return this;
         },
@@ -362,7 +361,7 @@ Ext.Msg.show({
                     d.focusEl = db;
                 }
             }
-            if(opt.iconCls){
+            if(Ext.isDefined(opt.iconCls)){
               d.setIconClass(opt.iconCls);
             }
             this.setIcon(Ext.isDefined(opt.icon) ? opt.icon : bufferIcon);
@@ -491,7 +490,8 @@ Ext.MessageBox.ERROR
                 msg : msg,
                 buttons: this.OK,
                 fn: fn,
-                scope : scope
+                scope : scope,
+                minWidth: this.minWidth
             });
             return this;
         },
@@ -514,7 +514,8 @@ Ext.MessageBox.ERROR
                 buttons: this.YESNO,
                 fn: fn,
                 scope : scope,
-                icon: this.QUESTION
+                icon: this.QUESTION,
+                minWidth: this.minWidth
             });
             return this;
         },
@@ -539,7 +540,7 @@ Ext.MessageBox.ERROR
                 msg : msg,
                 buttons: this.OKCANCEL,
                 fn: fn,
-                minWidth:250,
+                minWidth: this.minPromptWidth,
                 scope : scope,
                 prompt:true,
                 multiline: multiline,
@@ -611,10 +612,16 @@ Ext.MessageBox.ERROR
         minWidth : 100,
         /**
          * The minimum width in pixels of the message box if it is a progress-style dialog.  This is useful
-         * for setting a different minimum width than text-only dialogs may need (defaults to 250)
+         * for setting a different minimum width than text-only dialogs may need (defaults to 250).
          * @type Number
          */
         minProgressWidth : 250,
+        /**
+         * The minimum width in pixels of the message box if it is a prompt dialog.  This is useful
+         * for setting a different minimum width than text-only dialogs may need (defaults to 250).
+         * @type Number
+         */
+        minPromptWidth: 250,
         /**
          * An object containing the default button text strings that can be overriden for localized language support.
          * Supported properties are: ok, cancel, yes and no.  Generally you should include a locale-specific

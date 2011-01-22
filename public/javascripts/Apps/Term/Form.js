@@ -90,8 +90,8 @@ Term.Form = Ext.extend(Desktop.App, {
         });
 
 
-        //setup mainBar
-        var mainBar = [
+        //setup toolbar
+        var toolbar = [
         {
             text: 'Save',
             iconCls: 'dt-icon-save',
@@ -106,7 +106,7 @@ Term.Form = Ext.extend(Desktop.App, {
         if (ic.instanceId) {
 
             //add delete button
-            mainBar.push({
+            toolbar.push({
                 text: 'Delete',
                 iconCls: 'dt-icon-delete',
                 handler: function() {
@@ -132,7 +132,7 @@ Term.Form = Ext.extend(Desktop.App, {
         //apply all components to this app instance
         Ext.apply(this, {
             items: this.form,
-            mainBar: mainBar
+            tbar: toolbar
         });
 
         //call App initComponent

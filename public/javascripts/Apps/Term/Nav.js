@@ -8,8 +8,8 @@ Term.Nav = Ext.extend(Desktop.App, {
 
         var tree = new Term.Tree();
 
-        //setup mainBar
-        var mainBar = [
+        //setup toolbar
+        var toolbar = [
         {
             text: 'New Termset',
             iconCls: 'dt-icon-add',
@@ -42,7 +42,7 @@ Term.Nav = Ext.extend(Desktop.App, {
 
         //apply all components to this app instance
         Ext.apply(this, {
-            mainBar: mainBar,
+            tbar: toolbar,
             items: tree
         });
 
@@ -105,15 +105,15 @@ Term.Nav = Ext.extend(Desktop.App, {
 
         this.on('nodeclick',
         function(node, e) {
-            Desktop.workspace.getMainBar().showButton('edit', this);
-            Desktop.workspace.getMainBar().showButton('new_term', this);
+            this.showButton('edit');
+            this.showButton('new_term');
         });
         this.on('containerclick',
         function() {
             var selected = tree.getSelectionModel().getSelectedNode();
             if (!selected) {
-                Desktop.workspace.getMainBar().hideButton('edit', this);
-                Desktop.workspace.getMainBar().hideButton('new_term', this);
+                this.hideButton('edit');
+                this.hideButton('new_term');
             }
         });
 
