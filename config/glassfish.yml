@@ -18,7 +18,7 @@ http:
     address: 0.0.0.0
 
     # context root. The default value is '/'
-    contextroot: /lingdesktop
+    contextroot: /
 
     # Grizzly is NIO based HTTP libraries used by GlassFish gem
     grizzly:

@@ -1,8 +1,8 @@
 GIT
   remote: git://github.com/andreasronge/neo4j.git
-  revision: c3f699d13da7d826de6561178111acfbcc72347c
+  revision: 618dea54591f5f996adf1c941b7102ce15bb9cd5
   specs:
-    neo4j (1.0.0.beta.26-java)
+    neo4j (1.0.0.beta.27-java)
       activemodel (>= 3.0.0)
       orm_adapter (>= 0.0.3)
       railties (>= 3.0.0)
@@ -46,7 +46,7 @@ GEM
       activemodel (= 3.0.3)
       activesupport (= 3.0.3)
     activesupport (3.0.3)
-    addressable (2.2.3)
+    addressable (2.2.4)
     arel (2.0.7)
     bcrypt-ruby (2.1.4-java)
     bouncy-castle-java (1.5.0145.2)
@@ -80,7 +80,7 @@ GEM
       bouncy-castle-java
     jruby-rack (1.0.5)
     json (1.4.6-java)
-    mail (2.2.14)
+    mail (2.2.15)
       activesupport (>= 2.3.6)
       i18n (>= 0.4.0)
       mime-types (~> 1.16)

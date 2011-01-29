@@ -127,7 +127,7 @@ namespace :neo4j do
       demo = User.new(
         :email => 'demo@lingdesktop.org',
         :name => 'Lingdesktop Demo',
-        :description => "Demonstration User for Lingdesktop"
+        :description => "Demonstration User for Lingdesktop",
         :is_admin => false,
         :is_public => true,
         :password => 'demodemo',

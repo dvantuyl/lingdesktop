@@ -30,18 +30,22 @@ Also inits the store with admin and demo users
   
 To run these rake tasks separately:
 
-  > jruby -S rake neo4j:gold
+  > jruby -S rake neo4j:delete
   > jruby -S rake neo4j:users
+  > jruby -S rake neo4j:gold
+  
   
 == Starting the server
 
  > jruby -S rails server
- 
+  
 ..or to test on the production java environement
 
  > jruby -S glassfish
  
- Open your browser to http:0.0.0.0:3000
+
+Open your browser to http:0.0.0.0:3000
+ 
  
 == Production Server Setup
 
