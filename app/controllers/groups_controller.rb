@@ -83,7 +83,13 @@ class GroupsController < ApplicationController
     end
   end
   
-  def delete
+  def destroy
+    @group = Group.find(params[:id])
+    @group.destroy
+    
+    render :json => {
+      :success => true
+    }
     
   end
   

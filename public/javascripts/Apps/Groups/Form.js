@@ -178,10 +178,16 @@ Groups.Form = Ext.extend(Desktop.App, {
               if (btn == 'yes') {
 
                   Ext.Ajax.request({
-                      url: 'members/' + ic.instanceId + '.json',
+                      url: 'groups/' + ic.instanceId + '.json',
                       method: 'POST',
                       success: function() {
-                          this.destroy();
+                        var groups_store = Ext.StoreMgr.get('groups_index');
+                        if (groups_store) {groups_store.reload();}
+                        
+                        var community_store = Ext.StoreMgr.get('community_index');
+                        if (community_store) {community_store.reload();}
+                        
+                        this.destroy();
                       },
                       params: {
                           '_method': 'DELETE'
