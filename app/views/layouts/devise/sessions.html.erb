@@ -1,0 +1,23 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title><%= h(yield(:title) || "Login - Lingdesktop") %></title>
+    <%= csrf_meta_tag %>
+    <%= stylesheet_link_tag 'sessions' %>
+    <%= yield(:head) %>
+  </head>
+  <body>
+    <div id="container">
+      <%- flash.each do |name, msg| -%>
+        <%= content_tag :div, msg, :id => "flash_#{name}" if msg.is_a?(String) %>
+      <%- end -%>
+
+      <p><%= link_to 'Back to Lingdesktop', root_path %></p>
+
+      <div style="clear:both"></div>
+
+      <%= yield %>
+    </div>
+  </body>
+</html>
