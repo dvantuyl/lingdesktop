@@ -15,26 +15,20 @@
 class RDF_Context < Neo4j::Model
 
   # The uri property is utilized as an id of this node. Each CTX_Context should have a unique uri.
-  #
+  #g
   # @return [String]  context uri of a named graph
   property :created_at
-  property :uri_esc
-  index :uri_esc
+  property :name
+  property :description
+  property :is_public, :default => true
+  
+  validates :name, :presence => true
   
   has_n(:statements).from(RDF_Statement, :contexts)
   
-  validates :uri_esc, :presence => true, :uniqueness => true
-
-  def uri
-    self[:uri_esc].uri_unesc
-  end
-  
-  
-  def localname
-    self.uri.gsub(/([^\/]*\/|[^#]*#)/, "")
-  end
-  
-  
+  index :name
+  index :is_public
+    
   def followers
     self.incoming(:follows).to_a
   end
@@ -58,21 +52,21 @@ class RDF_Context < Neo4j::Model
   def statements
     self.incoming(:contexts).to_a
   end
-
-
-  # Singleton method for creating a context only if one isn't found.
-  # 
-  # @param [String]  URI of the context
-  # @return [CTX_Context]
-  def self.find_or_create(args)
-    RDF_Context.find(args) || RDF_Context.create(args)
-  end
-    
   
   def copy_from_context(context_node)
     context_node.statements.each do |statement|
       statement.add_context(self)
     end
+  end
+  
+  def to_hash
+    {
+      :id => self.id,
+      :name => self.name,
+      :description => self.description,
+      :is_public => self.is_public,
+      :is_group => (self.class.to_s == "Group" ? true : false)
+    }
   end
   
 end

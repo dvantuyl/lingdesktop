@@ -1,16 +1,6 @@
 require "spec_helper"
 
-shared_examples_for "All Contexts" do
-  
-  describe "#find_or_create" do   
-    
-    it "should only have one" do
-      RDF_Context.find_or_create(:uri_esc => @context_one.uri_esc)
-      
-      RDF_Context.all(:uri_esc => @context_one.uri_esc).size.should == 1    
-    end      
-  end
-  
+shared_examples_for "All Contexts" do 
   
   describe "#follow", :type => :transactional do
     before(:each) do
@@ -69,8 +59,17 @@ end
 
 describe RDF_Context do
   before(:each) do
-    @context_one = RDF_Context.create(:uri_esc => "http://context.one".uri_esc)
-    @context_two = RDF_Context.create(:uri_esc => "http://context.two".uri_esc)
+    @context_one = RDF_Context.create(:name => "test one")
+    @context_two = RDF_Context.create(:name => "test two")
+  end
+  
+  it_should_behave_like "All Contexts"
+end
+
+describe Group do
+  before(:each) do
+    @context_one = Group.create(:name => "test one")
+    @context_two = Group.create(:name => "test two")
   end
   
   it_should_behave_like "All Contexts"

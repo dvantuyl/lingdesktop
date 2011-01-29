@@ -84,12 +84,12 @@ describe RDF_Resource do
     
   end
   
-  context "given statements in store " do
+  context "given statements in store ", :type => :transactional do
     before(:each) do
       @literal = RDF_Literal.create(:lang => "en", :value => "English")
       @resource_one = RDF_Resource.create(:uri_esc => "http://test.one".uri_esc)
       @resource_two = RDF_Resource.create(:uri_esc => "http://test.two".uri_esc)
-      @context = RDF_Context.create(:uri_esc => "http://context.test".uri_esc)
+      @context = RDF_Context.create(:name => "test context")
       @predicate_one = RDF.type
       @predicate_two = RDF::RDFS.label
       @statement_one = RDF_Statement.init_by_quad(

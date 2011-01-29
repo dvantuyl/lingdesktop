@@ -4,7 +4,8 @@
 .dt-icon-cog {background-image: url('../../images/icons/cog.png') !important;}
 .dt-icon-add {background-image: url('../../images/icons/add.gif') !important;}
 .dt-icon-user {background-image: url('../../images/icons/user.png') !important;}
-.dt-icon-group {background-image: url('../../images/icons/group.jpg') !important;}
+.dt-icon-groups {background-image: url('../../images/icons/group.png') !important;}
+.dt-icon-followers {background-image: url('../../images/icons/followers.png') !important;}
 .dt-icon-book {background-image: url('../../images/icons/book.png') !important;}
 .dt-icon-grid {background-image: url('../../images/icons/grid.png') !important;}
 .dt-icon-save {background-image: url('../../images/icons/save.gif') !important;}
@@ -19,6 +20,7 @@
 .dt-icon-edit {background-image: url('../../images/icons/edit.png') !important;}
 .dt-icon-view {background-image: url('../../images/icons/view.png') !important;}
 .dt-icon-term {background-image: url('../../images/icons/term.png') !important;}
+.dt-icon-community {background-image: url('../../images/icons/community.png') !important;}
 .dt-auth-google {background-image: url('../../images/authbuttons/google_64.png') no-repeat !important;}
 .dt-auth-yahoo {background-image: url('../../images/authbuttons/yahoo_64.png') no-repeat !important;}
 .dt-auth-openid {background-image: url('../../images/authbuttons/openid_64.png') no-repeat !important;}

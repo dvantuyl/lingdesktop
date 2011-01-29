@@ -60,7 +60,7 @@ User.Index = Ext.extend(Desktop.App, {
             }),
             listeners: {
                 rowclick: function(g, index) {
-                    Desktop.workspace.getMainBar().showButton('edit', _this);
+                    _this.showButton('edit');
                 },
                 rowdblclick: function(g, index) {
                     var record = g.getStore().getAt(index);

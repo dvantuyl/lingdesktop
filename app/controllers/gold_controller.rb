@@ -2,11 +2,11 @@
 # Gold Controller
 #
 class GoldController < ApplicationController
-  before_filter :init_context
+  before_filter :init_context, :only => [:show, :subclasses, :individuals, :followers]
 
   def show
-    find_resource
-
+    @resource = RDF_Resource.find(:uri_esc => RDF::GOLD[params[:id]].uri_esc)
+    
     respond_to do |format|
       format.html #show.html.erb
       format.json do
@@ -37,9 +37,7 @@ class GoldController < ApplicationController
 
 
   def subclasses
-    find_resource
-    
-   
+    @resource = RDF_Resource.find(:uri_esc => RDF::GOLD[params[:id]].uri_esc)
     @subclasses = @resource.get_subjects(RDF::RDFS.subClassOf => {:context => @context})
 
     respond_to do |format|
@@ -77,8 +75,7 @@ class GoldController < ApplicationController
 
 
   def individuals
-    find_resource
-    
+    @resource = RDF_Resource.find(:uri_esc => RDF::GOLD[params[:id]].uri_esc)
     @individuals = @resource.get_subjects(RDF.type => {:context => @context})
     
     respond_to do |format|
@@ -115,25 +112,7 @@ class GoldController < ApplicationController
 
   def init_context
     @lang = "en"
-    @context = RDF_Context.find(:uri_esc =>"http://purl.org/linguistics/gold".uri_esc)
+    @context = User.find(:email => "gold@lingdesktop.org").context
   end
-
-  def find_resource
-    
-    @resource = RDF_Resource.find(:uri_esc => RDF::GOLD[params[:id]].uri_esc)
-
-    if @resource.nil? then
-      respond_to do |format|
-        format.html #error.html.erb
-        format.json do
-          render :json => {:error => "Resource '#{params[:id]}' not found."}
-        end
-      end
-    end
-    
-  end
-
-
-
 
 end

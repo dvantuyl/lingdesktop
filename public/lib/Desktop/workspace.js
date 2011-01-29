@@ -87,7 +87,7 @@ Desktop.workspace = function() {
         },
 
         onAppUnfocus: function() {
-            toolbar.clearAppMenu();
+            //toolbar.clearAppMenu();
         },
 
         getMainBar: function() {
@@ -197,7 +197,6 @@ Desktop.workspace = function() {
 } ();
 
 var dropZoneOverrides = {
-    ddGroup: 'resource',
     onContainerOver: function(ddSrc, evtObj, ddData) {
         var destGrid = this.grid;
         var tgtEl = evtObj.getTarget();

@@ -1,30 +1,22 @@
 class Group < RDF_Context
-  
-  property :name, :comment
-  
-  index :name
-  
-  validates :name, :presence => true
 
+  has_one(:curator).from(User, :groups)
   
-
-  def self.gen_uri_esc
-    uuid = UUIDTools::UUID.timestamp_create.to_s
-    "http://purl.org/linguistics/lingdesktop/groups/#{uuid}".uri_esc
+  def members
+    self.following
   end
   
-  
-  def set(args)
-    self.set_members(args["members"]) if args.has_key?("members")
-    self.name = args["name"] if args.has_key?("name")   
-    self.comment = args["comment"] if args.has_key?("comment")
-    return self
+  def set_members(members)
+    # clear current members
+    self.members.each do |context| 
+      self.unfollow(context)
+    end
+    
+    # replace with members array from parameters
+    JSON.parse(members).each do |context_id|
+      context = RDF_Context.find(context_id)      
+      self.follow(context)
+    end
   end
-  
-  
 
-  
-  
-
-  
 end

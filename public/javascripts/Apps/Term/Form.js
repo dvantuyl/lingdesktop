@@ -14,13 +14,13 @@ Term.Form = Ext.extend(Desktop.App, {
             allowBlank: false,
             requiredField: true,
             name: 'rdfs:label',
-            width: 165,
+            width: 165
         });
         
         var abbreviation = new Ext.form.TextField({
             fieldLabel: 'Abbreviation',
             name: 'gold:abbreviation',
-            width: 165,
+            width: 165
         });
 
         var comment = new Ext.form.TextArea({
@@ -196,6 +196,8 @@ Term.Form = Ext.extend(Desktop.App, {
             this);
         },
         this);
+        
+        Desktop.AppMgr.display('ontology_gold');
     }
 });
 

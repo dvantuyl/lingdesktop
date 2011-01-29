@@ -4,7 +4,7 @@ Ontology.Tree = Ext.extend(Ext.tree.TreePanel, {
 	rootVisible: false,
 	autoScroll: true,
 	enableDrag : true,
-	ddGroup : 'resource',
+	ddGroup : 'gold',
 	initComponent : function(){
 		var ic = this.initialConfig;
 		

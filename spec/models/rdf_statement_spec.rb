@@ -2,12 +2,12 @@ require "spec_helper"
 
 describe RDF_Statement do
 
-  describe "#init_by_quad" do
+  describe "#init_by_quad", :type => :transactional do
     before(:each) do
       @subject = RDF_Resource.create(:uri_esc => "http://test.subject".uri_esc)
       @predicate = "http://test.predicate"
       @object = RDF_Resource.create(:uri_esc => "http://test.object".uri_esc)
-      @context = RDF_Context.create(:uri_esc => "http://test.context".uri_esc)
+      @context = RDF_Context.create(:name => "test context")
     end
    
    it "should create and return quad" do
@@ -20,6 +20,8 @@ describe RDF_Statement do
      )
      node.save
      
+     finish_tx
+     
      RDF_Statement.all.first.should == node
      node.subject.should == @subject
      node.predicate_uri.should == @predicate
@@ -28,13 +30,13 @@ describe RDF_Statement do
    end    
   end
   
-  context "statement exists in neo4j store" do
+  context "statement exists in neo4j store", :type => :transactional do
     before(:each) do
       @subject = RDF_Resource.create(:uri_esc => "http://test.subject".uri_esc)
       @predicate = "http://test.predicate"
       @object = RDF_Resource.create(:uri_esc => "http://test.object".uri_esc)
-      @context = RDF_Context.create(:uri_esc => "http://test.context".uri_esc)
-      @context_two = RDF_Context.create(:uri_esc => "http://test.context.two".uri_esc)
+      @context = RDF_Context.create(:name => "context one")
+      @context_two = RDF_Context.create(:name => "context two")
       @statement = RDF_Statement.init_by_quad(
           :subject => @subject,
           :predicate_uri_esc => @predicate.uri_esc,
@@ -42,11 +44,14 @@ describe RDF_Statement do
           :context => @context
        )
        @statement.save
+       
     end
     
     describe "#find_by_quad" do
     
       it "should find a statment by subject, predicate, object, context" do
+        
+        finish_tx
         RDF_Statement.find_by_quad(
           :subject => @subject,
           :predicate_uri_esc => @predicate.uri_esc,
@@ -56,6 +61,7 @@ describe RDF_Statement do
       end
       
       it "should find a statment by predicate, object, context" do
+        finish_tx
         RDF_Statement.find_by_quad(
           :predicate_uri_esc => @predicate.uri_esc,
           :object => @object,
@@ -64,6 +70,7 @@ describe RDF_Statement do
       end
       
       it "should find a statment by subject, predicate, context" do
+        finish_tx
         RDF_Statement.find_by_quad(
           :subject => @subject,
           :predicate_uri_esc => @predicate.uri_esc,
@@ -72,6 +79,7 @@ describe RDF_Statement do
       end
       
       it "should find a statment by subject, predicate, object" do
+        finish_tx
         RDF_Statement.find_by_quad(
           :subject => @subject,
           :predicate_uri_esc => @predicate.uri_esc,
@@ -80,6 +88,7 @@ describe RDF_Statement do
       end
       
       it "should find a statment by predicate, context" do
+        finish_tx
         RDF_Statement.find_by_quad(
           :predicate_uri_esc => @predicate.uri_esc,
           :context => @context
@@ -87,6 +96,7 @@ describe RDF_Statement do
       end
       
       it "should find a statment by subject, predicate" do
+        finish_tx
         RDF_Statement.find_by_quad(
           :subject => @subject,
           :predicate_uri_esc => @predicate.uri_esc
@@ -94,6 +104,7 @@ describe RDF_Statement do
       end
       
       it "should find a statment by predicate, object" do
+        finish_tx
         RDF_Statement.find_by_quad(
           :predicate_uri_esc => @predicate.uri_esc,
           :object => @object
@@ -101,7 +112,7 @@ describe RDF_Statement do
       end
     end
     
-    describe "#find_or_init", :type => :transactional do
+    describe "#find_or_init" do
       
       it "should find and not create when one exists" do
         @new_statement = RDF_Statement.find_or_init(
@@ -127,14 +138,14 @@ describe RDF_Statement do
           :context => @context
         )
         @new_statement.save
-        
         finish_tx
+        
         @new_statement.should_not == @statement
         
         RDF_Statement.all.size.should == 2
       end
       
-      it "should find the statement and add context_two" do
+      it "should find the statement and add context_two", :type => :transactional do
         @new_statement = RDF_Statement.find_or_init(
           :subject => @subject,
           :predicate_uri_esc => @predicate.uri_esc,
@@ -151,12 +162,12 @@ describe RDF_Statement do
       
     end
     
-    describe "link test", :type => :transactional do
+    describe "link test" do
       
       it "should link both ways to RDF_Resource" do
         sub = RDF_Resource.create(:uri_esc => "http://subject.test".uri_esc)
         obj = RDF_Resource.create(:uri_esc => "http://object.test".uri_esc)
-        con = RDF_Context.create(:uri_esc => "http://context.test".uri_esc)
+        con = RDF_Context.create(:name => "context test")
         st = RDF_Statement.init_by_quad(
           :subject => sub,
           :predicate_uri_esc => "http://predicate.test".uri_esc,
@@ -165,6 +176,7 @@ describe RDF_Statement do
         )
         st.save
         
+        finish_tx
         sub.incoming(:subject).to_a.should == [st]
       end     
     end  
@@ -175,8 +187,8 @@ describe RDF_Statement do
       @subject = RDF_Resource.create(:uri_esc => "http://test.subject".uri_esc)
       @predicate = "http://test.predicate"
       @object = RDF_Resource.create(:uri_esc => "http://test.object".uri_esc)
-      @context = RDF_Context.create(:uri_esc => "http://test.context".uri_esc)
-      @context_two = RDF_Context.create(:uri_esc => "http://test.context_two".uri_esc)
+      @context = RDF_Context.create(:name => "context one")
+      @context_two = RDF_Context.create(:name => "context two")
       @statement_one = RDF_Statement.init_by_quad(
           :subject => @subject,
           :predicate_uri_esc => @predicate.uri_esc,

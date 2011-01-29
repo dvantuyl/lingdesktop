@@ -1,8 +1,7 @@
-Ext.ns("Ontology.DropGrid");
+Ext.ns("Groups");
 
-Ontology.DropGrid = Ext.extend(Ext.grid.GridPanel, {
+Groups.DropGrid = Ext.extend(Ext.grid.GridPanel, {
 	enableDragDrop : true,
-	ddGroup : 'resource',
 	
 	initComponent : function(){
 		
@@ -17,15 +16,10 @@ Ontology.DropGrid = Ext.extend(Ext.grid.GridPanel, {
 			iconCls: 'dt-icon-view',
 			handler: function(){
 				var record = selectionModel.getSelected();
-				var label = record.get('RDF_label');
-				var sid = record.get('sid');
-				var localname = record.get('localname');
+				var name = record.get('name');
+				var id = record.get('id');
 		
-				Desktop.AppMgr.display(
-					'ontology_class_view', 
-					localname, 
-					{sid: sid, title: label}
-				);
+				Desktop.AppMgr.display('contexts_view', id, {title: name});
 			}
 		},{
 			text: 'Remove',
@@ -42,23 +36,18 @@ Ontology.DropGrid = Ext.extend(Ext.grid.GridPanel, {
 			tbar : tbar
 		});
 		
-		Ontology.DropGrid.superclass.initComponent.call(this);
+		Groups.DropGrid.superclass.initComponent.call(this);
 		
 		this.on('rowdblclick', function(g, index){
-			var record = g.getStore().getAt(index);
-			var label = record.get('RDFS_label');
-			var sid = record.get('sid');
-			var localname = record.get('localname');
+			var record = selectionModel.getSelected();
+			var name = record.get('name');
+			var id = record.get('id');
 	
-			Desktop.AppMgr.display(
-				'ontology_class_view', 
-				localname, 
-				{sid: sid, title: label}
-			);
+			Desktop.AppMgr.display('contexts_view', id, {title: name});
 		});
 		
 		this.on('render', function(){
-		  dropZoneOverrides.ddGroup = 'gold';
+		  dropZoneOverrides.ddGroup = 'community';
 			var hasMeaningDZCfg = Ext.apply({},dropZoneOverrides, {
 				grid : _this
 			});
@@ -66,8 +55,10 @@ Ontology.DropGrid = Ext.extend(Ext.grid.GridPanel, {
 		});
 		
 		this.on('datadrop', function(store, data){
-			if (!store.getById(data.uri)) {
-				var p = new store.recordType(data, data.localname); // create new record
+			if (!store.getById(data.id.toString()) // dont allow context that's already been added
+			  && (!_this.groupId || _this.groupId != data.id)) { //dont allow group to follow this group
+			  
+				var p = new store.recordType(data, data.name); // create new record
 				store.insert(0, p); // insert a new record into the store (also see add)
 			}
         	Desktop.AppMgr.setFocused(_this);			

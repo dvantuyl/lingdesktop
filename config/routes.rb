@@ -59,7 +59,20 @@ Lingdesktop::Application.routes.draw do
   devise_for :users, :path => 'accounts',
     :path_names => { :sign_in => 'login', :sign_out => 'logout' }
   
-  resources :help, :users
+  resources :help, :contexts
+  
+  resources :groups do
+    member do
+      get 'members'
+    end
+  end
+  
+  resources :users do
+    resources :groups, :only => [:index]
+    member do
+      get 'followers'
+    end
+  end
   
   resources :termsets do
     resources :terms, :only => [:index]

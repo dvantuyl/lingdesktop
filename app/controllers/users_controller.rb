@@ -6,6 +6,8 @@
 #
 class UsersController < ApplicationController
   around_filter Neo4j::Rails::Transaction, :only => [:create, :update, :destroy]
+  before_filter :find_user, :only => [:show, :update, :destroy, :followers]
+  before_filter :clean_checkboxes, :only => [:create, :update]
 
   def index
     
@@ -23,7 +25,6 @@ class UsersController < ApplicationController
   end
 
   def show
-    find_user
 
     respond_to do |format|
       format.html #show.html.erb
@@ -38,16 +39,7 @@ class UsersController < ApplicationController
   end
   
   def create
-    # build user URI
-    
-    
-    # clean is_admin checkbox
-    if (params.has_key?(:is_admin) && params[:is_admin].empty?)
-      params[:is_admin] = false
-    elsif (params.has_key?(:is_admin) && params[:is_admin] == "true")
-      params[:is_admin] = true
-    end
-    
+
     # Create new user
     user = User.new(params)
 
@@ -65,15 +57,7 @@ class UsersController < ApplicationController
   end
   
   def update
-    find_user
-    
-    # clean is_admin checkbox
-    if (params.has_key?(:is_admin) && params[:is_admin].empty?)
-      params[:is_admin] = false
-    elsif (params.has_key?(:is_admin) && params[:is_admin] == "true")
-      params[:is_admin] = true
-    end
-    
+
     # Update User
     @user.update_attributes(params)
     
@@ -92,7 +76,21 @@ class UsersController < ApplicationController
   end
   
   def destroy
-    find_user
+    #TODO
+  end
+  
+  def followers
+    @followers = @user.context.followers
+    
+    # return json
+    respond_to do |format|
+      format.json do
+        render :json => {
+          :data => @followers.collect {|follower| follower.to_hash},
+          :total => @followers.count
+        }
+      end
+    end
   end
   
   private
@@ -108,6 +106,21 @@ class UsersController < ApplicationController
       @user = User.find(params[:id])
     end
 
+  end
+  
+  def clean_checkboxes
+    # clean is_admin checkbox
+    if (params.has_key?(:is_admin) && params[:is_admin].empty?)
+      params[:is_admin] = false
+    elsif (params.has_key?(:is_admin) && params[:is_admin] == "true")
+      params[:is_admin] = true
+    end
+    
+    if (params.has_key?(:is_public) && params[:is_public].empty?)
+      params[:is_public] = false
+    elsif (params.has_key?(:is_public) && params[:is_public] == "true")
+      params[:is_public] = true
+    end
   end
 
 end

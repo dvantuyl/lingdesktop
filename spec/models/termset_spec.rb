@@ -2,7 +2,7 @@ require "spec_helper"
 
 describe Termset do
   before(:each) do
-    @context = RDF_Context.create(:uri_esc => "http://context.test".uri_esc)
+    @context = RDF_Context.create(:name => "context one")
   end
   
   describe "#gen_uri_esc" do
@@ -13,7 +13,7 @@ describe Termset do
     
   end
   
-  describe "#create_in_context" do
+  describe "#create_in_context", :type => :transactional do
 
     it "should have type" do
       
