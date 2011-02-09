@@ -1,6 +1,6 @@
-Ext.ns("Term.Set");
+Ext.ns("Termsets");
 
-Term.Set.Form = Ext.extend(Desktop.App, {
+Termsets.Form = Ext.extend(Desktop.App, {
     frame: true,
     autoScroll: true,
 
@@ -93,7 +93,7 @@ Term.Set.Form = Ext.extend(Desktop.App, {
         });
 
         //call App initComponent
-        User.Form.superclass.initComponent.call(this);
+        Termsets.Form.superclass.initComponent.call(this);
 
 
         //event handlers
@@ -150,9 +150,9 @@ Term.Set.Form = Ext.extend(Desktop.App, {
     }
 });
 
-Desktop.AppMgr.registerApp(Term.Set.Form, {
+Desktop.AppMgr.registerApp(Termsets.Form, {
     title: 'Edit Term Set',
     iconCls: 'dt-icon-term',
-    appId: 'term_set_form',
+    appId: 'termsets_form',
     dockContainer: Desktop.CENTER
 });

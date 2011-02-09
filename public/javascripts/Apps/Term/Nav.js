@@ -52,7 +52,7 @@ Term.Nav = Ext.extend(Desktop.App, {
         this.on('new_termset',
         function() {
             Desktop.AppMgr.display(
-            'term_set_form',
+            'termsets_form',
             null,
             {
                 node: tree.getRootNode()
@@ -88,7 +88,7 @@ Term.Nav = Ext.extend(Desktop.App, {
         function(node, e) {
             var selected = tree.getSelectionModel().getSelectedNode();
             if (selected.attributes["rdf:type"] == 'http://purl.org/linguistics/gold/Termset') {
-                Desktop.AppMgr.display('term_set_form', selected.attributes.localname, {
+                Desktop.AppMgr.display('termsets_form', selected.attributes.localname, {
                     title: selected.attributes["rdfs:label"],
                     node: tree.getRootNode()
                     //give tree's root node so that the form can refresh the entire tree on save

@@ -59,6 +59,22 @@ class RDF_Context < Neo4j::Model
     end
   end
   
+  def resource_counts
+    counts = {}
+    
+    #statements = self.incoming(:contexts).find{|node| node[:predicate_uri_esc] == RDF.type.uri_esc }
+    
+    self.statements.each do |statement|
+      if statement.predicate_uri_esc == RDF.type.uri_esc then
+        type = statement.object.localname.to_sym
+        counts[type] = 0 unless counts.has_key?(type)
+        counts[type] += 1
+      end
+    end
+    
+    return counts
+  end
+  
   def to_hash
     {
       :id => self.id,

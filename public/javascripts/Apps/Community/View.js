@@ -12,8 +12,7 @@ Community.View = Ext.extend(Desktop.App, {
 		Ext.apply(this, {
 			autoLoad: {
 				url: 'contexts/' + ic.instanceId,
-				method: 'GET',
-				params: {sid: ic.sid}
+				method: 'GET'
 			}
 		});
 		

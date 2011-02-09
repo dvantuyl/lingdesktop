@@ -70,20 +70,21 @@ Desktop.AppMgr = function(){
 			//set instanceId to one given or 
 			var instanceId=(instanceId?instanceId:null);
 			
-			//set sid
-			if(!params.sid){
-				var userid = Ext.util.Cookies.get('userid');
-				params.sid = userid;
+			//set contextId
+			if(!params.contextId){
+				var current_user = Desktop.workspace.getCurrentUser();
+				params.contextId = current_user.id;
 			}
+
 			
-			//setup instances space for sid
-			if(!config.instances[params.sid]){
-				config.instances[params.sid] = {}
+			//setup instances space for contextId
+			if(!config.instances[params.contextId]){
+				config.instances[params.contextId] = {}
 			}
 			
 			//get singleton Instance based on instanceId
-			if (config.instances[params.sid][instanceId]) {
-				instance = config.instances[params.sid][instanceId];
+			if (config.instances[params.contextId][instanceId]) {
+				instance = config.instances[params.contextId][instanceId];
 				
 			//or create a new instance if there isn't one
 			}else {
@@ -117,7 +118,7 @@ Desktop.AppMgr = function(){
 					if(focused == i){
 						Desktop.AppMgr.unFocus();
 					}
-					delete config.instances[i.sid][i.instanceId];
+					delete config.instances[i.contextId][i.instanceId];
 				});
 				
 				//let workspace know that the user clicked on the instance thereby focusing it.
@@ -133,7 +134,7 @@ Desktop.AppMgr = function(){
 				});
 				
 				//add the instance to app instances container
-				config.instances[params.sid][instanceId] = instance;
+				config.instances[params.contextId][instanceId] = instance;
 			}
 		
 			//check to make sure the dock panel that the app uses is expanded

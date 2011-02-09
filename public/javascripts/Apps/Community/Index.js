@@ -63,8 +63,9 @@ Community.Index = Ext.extend(Desktop.App, {
     });
 
     //setup toolbar
-    var toolbar = [
-    {
+    var toolbar = {
+      height: 25,
+      items:[{
         text: 'View',
         itemId: 'view',
         iconCls: 'dt-icon-view',
@@ -73,8 +74,8 @@ Community.Index = Ext.extend(Desktop.App, {
             this.fireEvent('view')
         },
         scope: this
-    }
-    ];
+      }]
+    };
 
     //apply all components to this app instance
     Ext.apply(this, {

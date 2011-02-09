@@ -11,6 +11,7 @@ User.Form = Ext.extend(Desktop.App, {
         //setup fields
         var name = new Ext.form.TextField({
             fieldLabel: 'Name',
+            requiredField: true,
             name: 'name',
             width: 165,
         });
@@ -18,6 +19,7 @@ User.Form = Ext.extend(Desktop.App, {
         var email = new Ext.form.TextField({
             fieldLabel: 'Email',
             name: 'email',
+            requiredField: true,
             width: 165,
             regex: /^([\w\-\'\-]+)(\.[\w-\'\-]+)*@([\w\-]+\.){1,5}([A-Za-z]){2,4}$/
         });
@@ -75,6 +77,7 @@ User.Form = Ext.extend(Desktop.App, {
         var is_public = new Ext.form.Checkbox({
             fieldLabel: 'Public',
             name: 'is_public',
+            checked: true,
             submitValue: false,
             handler: function(chkbox, checked) {
                 hidden_public.setValue(checked);

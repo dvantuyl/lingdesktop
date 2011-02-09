@@ -3,10 +3,36 @@
 #
 class TermsetsController < ApplicationController
   around_filter Neo4j::Rails::Transaction, :only => [:create, :update, :destroy]
-  before_filter :find_resource, :only => [:show, :update, :destroy]
   before_filter :init_context
 
   def index
+    @termsets = Termset.type.get_subjects(RDF.type => {:context => @context})
+    
+
+    render :json => {
+          :data => (@termsets.collect do |termset|
+            termset.to_hash(
+              "rdf:type" => {
+                :first => true,
+                :simple_value => :uri,
+                :context => @context},
+
+              "rdfs:label" => { 
+                :first => true,
+                :simple_value => :value,
+                :context => @context},
+
+              "rdfs:comment" => {
+                :first => true,
+                :simple_value => :value,
+                :context => @context})
+          end),
+          :total => @termsets.length
+    }
+
+  end
+
+  def tree
     termsets = Termset.type.get_subjects(RDF.type => {:context => @context})
     
     respond_to do |format|
@@ -37,12 +63,13 @@ class TermsetsController < ApplicationController
   end
   
   def show
+    @termset = Termset.find(:uri_esc => (RDF::LD.termsets.to_s + "/" + params[:id]).uri_esc)
     
     respond_to do |format|
       format.html #show.html.erb
       format.json do
         render :json => {
-          :data => @resource.to_hash(
+          :data => @termset.to_hash(
            "rdf:type" => {
              :first => true,
              :simple_value => :uri,
@@ -66,8 +93,8 @@ class TermsetsController < ApplicationController
 
 
   def create
-    @resource = Termset.create_in_context(@context)
-    @resource.set(params, @context)
+    @termset = Termset.create_in_context(@context)
+    @termset.set(params, @context)
   
     respond_to do |format|
       format.json do
@@ -78,7 +105,8 @@ class TermsetsController < ApplicationController
   
   
   def update
-    @resource.set(params, @context)
+    @termset = Termset.find(:uri_esc => (RDF::LD.termsets.to_s + "/" + params[:id]).uri_esc)
+    @termset.set(params, @context)
   
     respond_to do |format|
       format.json do
@@ -88,7 +116,8 @@ class TermsetsController < ApplicationController
   end
   
   def destroy
-    @resource.remove_context(@context)
+    @termset = Termset.find(:uri_esc => (RDF::LD.termsets.to_s + "/" + params[:id]).uri_esc)
+    @termset.remove_context(@context)
     
     respond_to do |format|
       format.json do
@@ -101,23 +130,12 @@ class TermsetsController < ApplicationController
   private
   
   def init_context
-    @context = current_user.context
+    if params.has_key?(:context_id) then
+      @context = RDF_Context.find(params[:context_id])
+    else
+      @context = current_user.context
+    end
   end
   
-  def find_resource
-    
-    @resource = Termset.find(:uri_esc => (RDF::LD.termsets.to_s + "/" + params[:id]).uri_esc)
-
-
-    if @resource.nil? then
-      respond_to do |format|
-        format.html #error.html.erb
-        format.json do
-          render :json => {:error => "Resource '#{params[:id]}' not found."}
-        end
-      end
-    end
-    
-  end
  
 end

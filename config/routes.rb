@@ -75,10 +75,17 @@ Lingdesktop::Application.routes.draw do
   end
   
   resources :termsets do
-    resources :terms, :only => [:index]
+    collection do
+      get 'tree'
+    end
+    resources :terms do
+      collection do
+        get 'tree'
+      end
+    end
   end
   
-  resources :terms, :except => [:index] do
+  resources :terms do
     member do
       get 'hasMeaning'
     end

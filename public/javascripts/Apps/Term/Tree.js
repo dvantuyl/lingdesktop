@@ -17,7 +17,7 @@ Term.Tree = Ext.extend(Ext.tree.TreePanel, {
 
         //init tree loader
         var loader = new Ext.tree.TreeLoader({
-            url: 'termsets.json',
+            url: 'termsets/tree.json',
             requestMethod: 'GET'
         });
 
@@ -32,7 +32,7 @@ Term.Tree = Ext.extend(Ext.tree.TreePanel, {
 
                 //open tree in new term_nav
                 Desktop.AppMgr.display(
-                'term_set_form',
+                'termsets_form',
                 node.attributes.localname,
                 {
                     title: text
@@ -62,10 +62,10 @@ Term.Tree = Ext.extend(Ext.tree.TreePanel, {
         loader.on("beforeload",
         function(treeLoader, node) {
             if (node.attributes["rdf:type"] == 'http://purl.org/linguistics/gold/Termset') {
-                treeLoader.url = 'termsets/' + node.attributes.localname + '/terms.json';
+                treeLoader.url = 'termsets/' + node.attributes.localname + '/terms/tree.json';
             }
             else {
-                treeLoader.url = 'termsets.json';
+                treeLoader.url = 'termsets/tree.json';
             }
             //treeLoader.baseParams.sid = node.attributes.sid;
         },

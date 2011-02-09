@@ -6,10 +6,18 @@
 
 <hr/>
 
+<ul>
+  <% @context.resource_counts.each_pair do |type, count| %>
+    <li><%= link_to_resources( type, @context.id ) %> : <%= count %></li>
+  <% end %>
+</ul>
+
+<hr/>
+
 <strong class="label">Description:</strong>
 
 	<p class="indent">
 	  <%= @context.description %>	
-	</p>  
-
+	</p> 
+	
 </div>
