@@ -77,7 +77,10 @@ Lingdesktop::Application.routes.draw do
   resources :termsets do
     collection do
       get 'tree'
-    end
+    end    
+    member do
+      post 'clone'
+    end   
     resources :terms do
       collection do
         get 'tree'
@@ -88,6 +91,7 @@ Lingdesktop::Application.routes.draw do
   resources :terms do
     member do
       get 'hasMeaning'
+      post 'clone'
     end
   end
   

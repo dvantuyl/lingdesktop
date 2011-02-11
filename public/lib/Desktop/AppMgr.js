@@ -20,6 +20,7 @@ Desktop.AppMgr = function(){
 			config.iconCls=(config.iconCls?config.iconCls:'dt-icon-cog');
 			config.displayMenu = (config.displayMenu?config.displayMenu:null); //optional (null to not display in any menus
 			config.test=(config.test?true:false);
+			config.contextBar=(config.contextBar?true:false);
 			config.appId = (config.appId?config.appId:null); //required
 			config.dockContainer = (config.dockContainer?config.dockContainer:Desktop.CENTER);
 			
@@ -98,8 +99,12 @@ Desktop.AppMgr = function(){
 				}
 				
 				params.iconCls = config.iconCls;
+				params.contextBar = config.contextBar;
+				params.controller = config.controller;
 				params.appId = config.appId;
 				params.instanceId = instanceId;
+				
+				
 						
 				//dock the instance with the rest of the app instances if there are any or set to the one specified
 				if(focused && config.appId == focused.appId){

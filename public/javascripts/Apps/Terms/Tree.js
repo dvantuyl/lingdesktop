@@ -32,7 +32,7 @@ Term.Tree = Ext.extend(Ext.tree.TreePanel, {
 
                 //open tree in new term_nav
                 Desktop.AppMgr.display(
-                'termsets_form',
+                'termsets_edit',
                 node.attributes.localname,
                 {
                     title: text

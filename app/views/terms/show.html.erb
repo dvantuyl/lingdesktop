@@ -17,4 +17,17 @@
 	</p>  
 <% end %>
 
+<strong class="label">Gold Mapping:</strong>
+
+<ul>
+  <% @meaning_nodes.each do |meaning| %>
+    <li>
+      <% label = meaning.get_objects(RDF::RDFS.label => {:first=> true, :simple_value => :value, :context => @gold_context}) %>
+      <%= link_to_dtapp(label, 'ontology_class_view', meaning.localname) %>
+      &nbsp;:&nbsp;
+      <%= meaning.get_objects(RDF::RDFS.comment => {:first=> true, :simple_value => :value, :context => @gold_context}) %>
+    </li>
+  <% end %>
+</ul>
+
 </div>

@@ -63,7 +63,9 @@ class RDF_Resource < Neo4j::Model
     
     resource_hash = {
       :uri => self.uri,
-      :localname => self.localname}
+      :localname => self.localname,
+      :creator_id => self.created_by.id,
+      :creator_name => self.created_by.name}
 
     predicates.each do |key, args|
       result = nil
@@ -151,6 +153,11 @@ class RDF_Resource < Neo4j::Model
     
     #filter
     self.class.filter_results(result, args)
+  end
+  
+  def created_by
+    statement = self.incoming(:subject).find{|node| node[:predicate_uri_esc] == RDF.type.uri_esc }
+    statement.created_by
   end
   
   

@@ -10,7 +10,7 @@ User.Index = Ext.extend(Desktop.App, {
             // store configs
             autoDestroy: true,
             url: 'users.json',
-            storeId: 'user_index',
+            storeId: 'users_index',
             // reader configs
             root: 'data',
             fields: ['name', 'email', 'id', 'localname',

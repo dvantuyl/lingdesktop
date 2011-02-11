@@ -66,6 +66,7 @@ class TermsController < ApplicationController
   
   def show
     @term = Term.find(:uri_esc => (RDF::LD.terms.to_s + "/" + params[:id]).uri_esc)
+    @meaning_nodes = @term.get_objects(RDF::GOLD.hasMeaning => {:context => @context})
 
     respond_to do |format|
       format.html #show.html.erb
@@ -163,6 +164,21 @@ class TermsController < ApplicationController
           end),
           :total => @meaning_nodes.length
         })
+      end
+    end
+  end
+  
+  def clone
+    @term = Term.find(:uri_esc => (RDF::LD.termsets.to_s + "/" + params[:id]).uri_esc)
+    @from_context = RDF_Context.find(params[:from_id])
+    
+    if @from_context != current_user.context then
+      @term.copy_context(@from_context, current_user.context)
+    end
+    
+    respond_to do |format|
+      format.json do
+        render :json => {:success => true}
       end
     end
   end

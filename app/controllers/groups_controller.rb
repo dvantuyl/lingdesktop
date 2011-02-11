@@ -45,6 +45,7 @@ class GroupsController < ApplicationController
   end
   
   def create
+    
     @group = Group.new(
       :name => params[:name],
       :description => params[:description],

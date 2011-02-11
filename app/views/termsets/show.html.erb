@@ -17,4 +17,19 @@
 	</p>  
 <% end %>
 
+<hr/>
+
+<strong class="label">Terms:</strong>
+
+<ul>
+  <% @terms.each do |term| %>
+    <li>
+      <% label = term.get_objects(RDF::RDFS.label => {:first=> true, :simple_value => :value, :context => @context}) %>
+      <%= link_to_dtapp(label, 'terms_view', term.localname, @context.id ) %>
+      &nbsp;:&nbsp;
+      <%= term.get_objects(RDF::RDFS.comment => {:first=> true, :simple_value => :value, :context => @context}) %>
+    </li>
+  <% end %>
+</ul>
+
 </div>

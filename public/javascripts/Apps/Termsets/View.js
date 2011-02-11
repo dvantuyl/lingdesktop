@@ -24,6 +24,8 @@ Termsets.View = Ext.extend(Desktop.App, {
 Desktop.AppMgr.registerApp(Termsets.View, {
 	title: 'Termsets View',
 	appId: 'termsets_view',
-	iconCls: 'dt-icon-term',
+	iconCls: 'dt-icon-term',	
+	contextBar: true,
+	controller: 'termsets',
 	dockContainer: Desktop.CENTER
 });

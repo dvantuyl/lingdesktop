@@ -25,5 +25,7 @@ Desktop.AppMgr.registerApp(Term.View, {
 	title: 'term View',
 	appId: 'terms_view',
 	iconCls: 'dt-icon-term',
+	contextBar: true,
+	controller: 'terms',
 	dockContainer: Desktop.CENTER
 });

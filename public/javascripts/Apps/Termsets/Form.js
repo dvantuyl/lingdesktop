@@ -1,6 +1,6 @@
-Ext.ns("Term");
+Ext.ns("Termsets");
 
-Term.Form = Ext.extend(Desktop.App, {
+Termsets.Form = Ext.extend(Desktop.App, {
     frame: true,
     autoScroll: true,
 
@@ -9,19 +9,14 @@ Term.Form = Ext.extend(Desktop.App, {
         var ic = this.initialConfig;
         //configuration given to Desktop.App
         //setup fields
-        var orthographicRep = new Ext.form.TextField({
-            fieldLabel: 'Term Name',
+        var label = new Ext.form.TextField({
+            fieldLabel: 'What do you want to call your termset?',
             allowBlank: false,
             requiredField: true,
             name: 'rdfs:label',
-            width: 165
+            width: 165,
         });
-        
-        var abbreviation = new Ext.form.TextField({
-            fieldLabel: 'Abbreviation',
-            name: 'gold:abbreviation',
-            width: 165
-        });
+
 
         var comment = new Ext.form.TextArea({
             height: 100,
@@ -30,41 +25,12 @@ Term.Form = Ext.extend(Desktop.App, {
             name: 'rdfs:comment'
         });
 
-        //setup hasMeaningGrid GOLD Grid
-        var hasMeaningGrid = new Ontology.DropGrid({
-            height: 150,
-            fieldLabel: 'Please select and drag a concept from the ontology to the space below.',
-            stripeRows: true,
-            store: new Ext.data.JsonStore({
-                // store configs
-                autoDestroy: true,
-                url: 'terms/' + ic.instanceId + '/hasMeaning.json',
-                // reader configs
-                root: 'data',
-                idProperty: 'uri',
-                fields: ['rdf:type', 'rdfs:comment', 'uri', 'rdfs:label', 'localname']
-            }),
-            colModel: new Ext.grid.ColumnModel({
-                columns: [
-                {
-                    header: 'Label',
-                    dataIndex: 'rdfs:label'
-                },
-                {
-                    header: 'Definition',
-                    dataIndex: 'rdfs:comment'
-                }
-                ]
-            }),
-        });
-
 
         //setup form
         this.form = new Ext.FormPanel({
             labelAlign: 'top',
             frame: true,
             width: 700,
-            url: 'users',
             baseParams: {
                 format: 'json'
             },
@@ -73,20 +39,13 @@ Term.Form = Ext.extend(Desktop.App, {
                 border: false,
                 items: [{
                     layout: 'form',
-                    labelWidth: 90,
+                    //labelWidth: 90,
                     columnWidth: .5,
                     border: false,
-                    items: orthographicRep
-                },
-                {
-                    layout: 'form',
-                    labelWidth: 90,
-                    columnWidth: .5,
-                    border: false,
-                    items: abbreviation
+                    items: label
                 }]
             },
-            comment, hasMeaningGrid]
+            comment]
         });
 
 
@@ -117,17 +76,15 @@ Term.Form = Ext.extend(Desktop.App, {
 
             //Load server -> form values if we have the ic.instance_id
             var id = ic.instanceId;
-            this.form.form.url = 'terms/' + id + '.json';
+            this.form.form.url = 'termsets/' + id + '.json';
             this.form.load({
                 method: 'GET'
             });
-
-            hasMeaningGrid.getStore().load({
-                method: 'GET'
-            });
         } else {
-            this.form.form.url = 'terms.json';
+            this.form.form.url = 'termsets';
         }
+
+
 
         //apply all components to this app instance
         Ext.apply(this, {
@@ -136,35 +93,37 @@ Term.Form = Ext.extend(Desktop.App, {
         });
 
         //call App initComponent
-        User.Form.superclass.initComponent.call(this);
+        Termsets.Form.superclass.initComponent.call(this);
+
 
         //event handlers
         this.on('save',
         function() {
-            var hasMeaningUris = hasMeaningGrid.store.collect('uri');
+
             var save_config = {
-                scope: this,
-                params: {
-                    "gold:hasMeaning": Ext.encode(hasMeaningUris)
-                }
+                scope: this
             };
-            
-            if (ic.node) {
-                save_config.params["gold:memberOf"] = ic.node.attributes.uri
-            }
-            
+            //var store = Ext.StoreMgr.get('termset_index');
+
             if (ic.instanceId) {
-                save_config.params['_method'] = 'PUT';
+                save_config.params = {
+                    '_method': 'PUT'
+                };
             }
-            
-            save_config.success = function() {
+            save_config.success = function(form, action) {
                 if (ic.node && ic.node.getOwnerTree()) {
-                    ic.node.getLoader().load(ic.node);
+                    ic.node.reload();
                 }
-                //check to make sure the term nav is still open before refreshing
+                Desktop.AppMgr.display(
+                    'terms_view',
+                    ic.instanceId,
+                    {
+                        title: ic.title,
+                        contextId : ic.contextId
+                    }
+                );
                 this.destroy();
             }
-
             this.form.getForm().submit(save_config);
         },
         this);
@@ -172,15 +131,14 @@ Term.Form = Ext.extend(Desktop.App, {
         this.on('delete',
         function() {
             Ext.Msg.confirm('Delete', 'Are you sure you want to delete?',
-            
             function(btn) {
                 if (btn == 'yes') {
-                    
+                    var id = ic.instanceId;
                     Ext.Ajax.request({
-                        url: 'terms/' + ic.instanceId + '.json',
+                        url: 'termsets/' + id + '.json',
                         method: 'POST',
                         success: function() {
-                            if (ic.node && ic.node.getOwnerTree()) {
+                            if (ic.node.getOwnerTree()) {
                                 ic.node.reload();
                             }
                             //check to make sure the term nav is still open before refreshing
@@ -196,14 +154,12 @@ Term.Form = Ext.extend(Desktop.App, {
             this);
         },
         this);
-        
-        Desktop.AppMgr.display('ontology_gold');
     }
 });
 
-Desktop.AppMgr.registerApp(Term.Form, {
-    title: 'Edit Term',
+Desktop.AppMgr.registerApp(Termsets.Form, {
+    title: 'Edit Term Set',
     iconCls: 'dt-icon-term',
-    appId: 'term_form',
+    appId: 'termsets_edit',
     dockContainer: Desktop.CENTER
 });
