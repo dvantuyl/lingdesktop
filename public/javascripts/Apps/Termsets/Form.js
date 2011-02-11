@@ -111,14 +111,16 @@ Termsets.Form = Ext.extend(Desktop.App, {
                 };
             }
             save_config.success = function(form, action) {
+                var data = action.result.data;
+
                 if (ic.node && ic.node.getOwnerTree()) {
                     ic.node.reload();
                 }
                 Desktop.AppMgr.display(
-                    'terms_view',
-                    ic.instanceId,
+                    'termsets_view',
+                    data.localname,
                     {
-                        title: ic.title,
+                        title : data["rdfs:label"],
                         contextId : ic.contextId
                     }
                 );

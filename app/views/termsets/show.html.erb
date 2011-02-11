@@ -21,7 +21,7 @@
 
 <strong class="label">Terms:</strong>
 
-<ul>
+<ul class="indent">
   <% @terms.each do |term| %>
     <li>
       <% label = term.get_objects(RDF::RDFS.label => {:first=> true, :simple_value => :value, :context => @context}) %>

@@ -17,9 +17,11 @@
 	</p>  
 <% end %>
 
+<hr/>
+
 <strong class="label">Gold Mapping:</strong>
 
-<ul>
+<ul class="indent">
   <% @meaning_nodes.each do |meaning| %>
     <li>
       <% label = meaning.get_objects(RDF::RDFS.label => {:first=> true, :simple_value => :value, :context => @gold_context}) %>

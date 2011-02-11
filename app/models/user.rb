@@ -1,5 +1,5 @@
 class User < Neo4j::Model
-  devise :database_authenticatable, :trackable, :token_authenticatable
+  devise :database_authenticatable, :trackable
 
   attr_accessible :email, :password, :password_confirmation, :is_admin, :remember_me, :created_at, :last_sign_in_at,
     :is_public, :name, :description

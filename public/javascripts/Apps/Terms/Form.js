@@ -157,16 +157,18 @@ Term.Form = Ext.extend(Desktop.App, {
                 save_config.params['_method'] = 'PUT';
             }
             
-            save_config.success = function() {
+            save_config.success = function(form, action) {
+                var data = action.result.data;
+                
                 if (ic.node && ic.node.getOwnerTree()) {
                     ic.node.getLoader().load(ic.node);
                 }
                 
                 Desktop.AppMgr.display(
                     'terms_view',
-                    ic.instanceId,
+                    data.localname,
                     {
-                        title: ic.title,
+                        title : data["rdfs:label"],
                         contextId : ic.contextId
                     }
                 );

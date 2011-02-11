@@ -46,12 +46,12 @@ Desktop.App = Ext.extend(Ext.Panel, {
 	    
 	    //current context
 	    Ext.Ajax.request({
-          url: 'contexts/' + ic.contextId + '.json',
+          url: 'contexts/' + current_user.context_id + '.json',
           success: function(response, opts) {
             var obj = Ext.decode(response.responseText);
             var contextBar = this.getBottomToolbar();
             contextBar.add(
-              'Current:',
+              'Current View:',
               {
                 xtype: 'button',
                 iconCls: (obj.data.is_group ? 'dt-icon-groups' : 'dt-icon-user'),

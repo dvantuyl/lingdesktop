@@ -107,7 +107,15 @@ class TermsController < ApplicationController
   
     respond_to do |format|
       format.json do
-        render :json => {:success => true}
+        render :json => {
+          :data => @term.to_hash(
+            "rdfs:label" => { 
+              :first => true,
+              :simple_value => :value,
+              :context => @context}
+            ), 
+          :success => true
+        }
       end
     end
   end
@@ -120,7 +128,15 @@ class TermsController < ApplicationController
   
     respond_to do |format|
       format.json do
-        render :json => {:success => true}
+        render :json => {
+          :data => @term.to_hash(
+            "rdfs:label" => { 
+              :first => true,
+              :simple_value => :value,
+              :context => @context}
+            ), 
+          :success => true
+        }
       end
     end
   end

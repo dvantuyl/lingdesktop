@@ -74,7 +74,7 @@ Desktop.AppMgr = function(){
 			//set contextId
 			if(!params.contextId){
 				var current_user = Desktop.workspace.getCurrentUser();
-				params.contextId = current_user.id;
+				params.contextId = current_user.context_id;
 			}
 
 			
