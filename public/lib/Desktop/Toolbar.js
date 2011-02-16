@@ -78,10 +78,10 @@ Ext.ns("Desktop");
 			    Desktop.AppMgr.display('community_index');
 			  }
 			},
-			{text: 'Groups', itemId: 'groups', hidden:true, iconCls: 'dt-icon-groups',
+			{text: 'My Groups', itemId: 'groups', hidden:true, iconCls: 'dt-icon-groups',
 			  handler: function(){
 			    var current_user = Desktop.workspace.getCurrentUser();
-			    Desktop.AppMgr.display('groups_index', current_user.id, {title: 'Groups'});
+			    Desktop.AppMgr.display('groups_index', current_user.id, {title: 'My Groups'});
 			  }
 			},
 			{text: 'Followers', itemId: 'followers', hidden:true, iconCls: 'dt-icon-followers',

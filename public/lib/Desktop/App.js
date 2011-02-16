@@ -46,7 +46,7 @@ Desktop.App = Ext.extend(Ext.Panel, {
 	    
 	    //current context
 	    Ext.Ajax.request({
-          url: 'contexts/' + current_user.context_id + '.json',
+          url: 'contexts/' + ic.contextId + '.json',
           success: function(response, opts) {
             var obj = Ext.decode(response.responseText);
             var contextBar = this.getBottomToolbar();

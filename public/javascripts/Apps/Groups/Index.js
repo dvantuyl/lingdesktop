@@ -107,7 +107,7 @@ Groups.Index = Ext.extend(Desktop.App, {
 });
 
 Desktop.AppMgr.registerApp(Groups.Index, {
-  title: 'Groups',
+  title: 'My Groups',
   iconCls: 'dt-icon-groups',
   appId: 'groups_index',
   dockContainer: Desktop.CENTER

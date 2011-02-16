@@ -157,8 +157,6 @@ Groups.Form = Ext.extend(Desktop.App, {
           save_config.success = function() {
               this.destroy();
               
-              Desktop.AppMgr.display('groups_index');
-              
               var groups_store = Ext.StoreMgr.get('groups_index');
               if (groups_store) {groups_store.reload();}
               
