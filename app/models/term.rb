@@ -34,7 +34,6 @@ class Term < RDF_Resource
     self.set_label(args["rdfs:label"], context_node) if args.has_key?("rdfs:label")
     self.set_comment(args["rdfs:comment"], context_node) if args.has_key?("rdfs:comment")
     self.set_abbreviation(args["gold:abbreviation"], context_node) if args.has_key?("gold:abbreviation")
-    self.set_memberOf(args["gold:memberOf"], context_node) if args.has_key?("gold:memberOf")
     self.set_hasMeaning(args["gold:hasMeaning"], context_node) if args.has_key?("gold:hasMeaning")    
     
     return self
@@ -58,16 +57,7 @@ class Term < RDF_Resource
     ).save
   end
   
-  def set_memberOf(termset_uri, context_node)
-    termset_node = Termset.find(:uri_esc => termset_uri.uri_esc)
-    
-    RDF_Statement.find_or_init(
-      :subject => self,
-      :predicate_uri_esc => RDF::GOLD.memberOf.uri_esc,
-      :object => termset_node,
-      :context => context_node
-    ).save
-  end
+
   
   
   def set_hasMeaning(meaning_uris, context_node)

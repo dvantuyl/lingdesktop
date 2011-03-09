@@ -32,38 +32,6 @@ class TermsController < ApplicationController
 
   end
 
-  def tree
-    @termset = Termset.find(:uri_esc => (RDF::LD.termsets.to_s + "/" + params[:termset_id]).uri_esc)
-    @terms = @termset.get_subjects(RDF::GOLD.memberOf => {:context => @context})
-    
-    respond_to do |format|
-      format.json do
-        render :json => (@terms.collect do |term|
-          term.to_hash(
-           "rdf:type" => {
-             :first => true, 
-             :simple_value => :uri,
-             :context => @context},
-
-           "rdfs:label" => {
-             :first => true, 
-             :simple_value => :value, 
-             :context => @context},
-
-           "text"=> {
-             :predicate => RDF::RDFS.label,
-             :first => true, 
-             :simple_value => :value, 
-             :context => @context}).merge({
-            
-           "leaf" => true
-               
-            })
-        end)
-      end
-    end
-  end
-  
   def show
     @term = Term.find(:uri_esc => (RDF::LD.terms.to_s + "/" + params[:id]).uri_esc)
     @meaning_nodes = @term.get_objects(RDF::GOLD.hasMeaning => {:context => @context})
@@ -185,7 +153,7 @@ class TermsController < ApplicationController
   end
   
   def clone
-    @term = Term.find(:uri_esc => (RDF::LD.termsets.to_s + "/" + params[:id]).uri_esc)
+    @term = Term.find(:uri_esc => (RDF::LD.terms.to_s + "/" + params[:id]).uri_esc)
     @from_context = RDF_Context.find(params[:from_id])
     
     if @from_context != current_user.context then

@@ -1,6 +1,6 @@
-Ext.ns("Term");
+Ext.ns("Terms");
 
-Term.Form = Ext.extend(Desktop.App, {
+Terms.Edit = Ext.extend(Desktop.App, {
     frame: true,
     autoScroll: true,
 
@@ -134,9 +134,12 @@ Term.Form = Ext.extend(Desktop.App, {
             items: this.form,
             tbar: toolbar
         });
+        
+        //open helper apps
+        Desktop.AppMgr.display('ontology_gold');
 
         //call App initComponent
-        User.Form.superclass.initComponent.call(this);
+        Terms.Edit.superclass.initComponent.call(this);
 
         //event handlers
         this.on('save',
@@ -159,10 +162,9 @@ Term.Form = Ext.extend(Desktop.App, {
             
             save_config.success = function(form, action) {
                 var data = action.result.data;
-                
-                if (ic.node && ic.node.getOwnerTree()) {
-                    ic.node.getLoader().load(ic.node);
-                }
+
+                var terms_store = Ext.StoreMgr.get('terms_index');
+                if (terms_store) {terms_store.reload();}
                 
                 Desktop.AppMgr.display(
                     'terms_view',
@@ -191,9 +193,8 @@ Term.Form = Ext.extend(Desktop.App, {
                         url: 'terms/' + ic.instanceId + '.json',
                         method: 'POST',
                         success: function() {
-                            if (ic.node && ic.node.getOwnerTree()) {
-                                ic.node.reload();
-                            }
+                            var terms_store = Ext.StoreMgr.get('terms_index');
+                            if (terms_store) {terms_store.reload();}
                             //check to make sure the term nav is still open before refreshing
                             this.destroy();
                         },
@@ -208,11 +209,11 @@ Term.Form = Ext.extend(Desktop.App, {
         },
         this);
         
-        Desktop.AppMgr.display('ontology_gold');
+        
     }
 });
 
-Desktop.AppMgr.registerApp(Term.Form, {
+Desktop.AppMgr.registerApp(Terms.Edit, {
     title: 'Edit Term',
     iconCls: 'dt-icon-term',
     appId: 'terms_edit',

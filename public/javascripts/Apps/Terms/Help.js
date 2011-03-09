@@ -1,23 +1,23 @@
-Ext.ns("Termset");
+Ext.ns("Terms");
 
-Termset.Help = Ext.extend(Desktop.App, {
+Terms.Help = Ext.extend(Desktop.App, {
 	frame: true,
 	initComponent : function() {		
 		//apply all components to this app instance
 		Ext.apply(this, {
 			autoLoad: {
-				url: 'help/termset',
+				url: 'help/terms',
 				method: 'GET'
 			}
 		});
  		
- 		Termset.Help.superclass.initComponent.call(this);
+ 		Terms.Help.superclass.initComponent.call(this);
  	}
 });
 
-Desktop.AppMgr.registerApp(Termset.Help, {
-	title: 'Termset Help',
-	appId: 'termset_help',
+Desktop.AppMgr.registerApp(Terms.Help, {
+	title: 'Terms Help',
+	appId: 'terms_help',
 	iconCls: 'dt-icon-term',
 	dockContainer: Desktop.CENTER,
 	displayMenu: 'help'
