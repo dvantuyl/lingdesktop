@@ -177,7 +177,6 @@ Terms.Edit = Ext.extend(Desktop.App, {
                 
                 this.destroy();
             }
-
             this.form.getForm().submit(save_config);
         },
         this);
@@ -188,7 +187,6 @@ Terms.Edit = Ext.extend(Desktop.App, {
             
             function(btn) {
                 if (btn == 'yes') {
-                    
                     Ext.Ajax.request({
                         url: 'terms/' + ic.instanceId + '.json',
                         method: 'POST',
@@ -208,8 +206,6 @@ Terms.Edit = Ext.extend(Desktop.App, {
             this);
         },
         this);
-        
-        
     }
 });
 
