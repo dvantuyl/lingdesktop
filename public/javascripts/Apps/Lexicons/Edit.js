@@ -105,13 +105,25 @@ Lexicons.Edit = Ext.extend(Desktop.App, {
                 };
             }
 
-            save_config.success = function() {
-                this.destroy();
+            save_config.success = function(form, action) {
+                var data = action.result.data;
+                
 
                 var lexicons_store = Ext.StoreMgr.get('lexicons_index');
                 if (lexicons_store) {
                     lexicons_store.reload();
                 }
+                
+                Desktop.AppMgr.display(
+                    'lexicons_view',
+                    data.localname,
+                    {
+                        title : data["rdfs:label"],
+                        contextId : ic.contextId
+                    }
+                );
+                
+                this.destroy();
             }
 
             this.form.getForm().submit(save_config);

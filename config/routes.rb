@@ -61,7 +61,11 @@ Lingdesktop::Application.routes.draw do
   
   resources :help, :contexts
   
-  resources :lexicons
+  resources :lexicons do
+    member do
+      post 'clone'
+    end
+  end
   
   resources :groups do
     member do
@@ -73,20 +77,6 @@ Lingdesktop::Application.routes.draw do
     resources :groups, :only => [:index]
     member do
       get 'followers'
-    end
-  end
-  
-  resources :termsets do
-    collection do
-      get 'tree'
-    end    
-    member do
-      post 'clone'
-    end   
-    resources :terms do
-      collection do
-        get 'tree'
-      end
     end
   end
   
