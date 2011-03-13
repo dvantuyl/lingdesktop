@@ -107,6 +107,11 @@ Terms.Index = Ext.extend(Desktop.App, {
           });
 
         });
+        
+        this.on('render',
+        function() {
+            store.reload();
+        });
 
         Desktop.AppMgr.display('terms_help');
     }

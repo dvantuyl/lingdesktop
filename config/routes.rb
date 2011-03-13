@@ -61,6 +61,8 @@ Lingdesktop::Application.routes.draw do
   
   resources :help, :contexts
   
+  resources :lexicons
+  
   resources :groups do
     member do
       get 'members'
