@@ -1,17 +1,14 @@
-##
-# Termsets Controller
-#
-class TermsController < ApplicationController
+class <%= controller_class_name %>Controller < ApplicationController
   around_filter Neo4j::Rails::Transaction, :only => [:create, :update, :destroy, :clone]
   before_filter :init_context
 
+  # GET <%= route_url %>.json
   def index
-    @terms = Term.type.get_subjects(RDF.type => {:context => @context})
+    @<%= plural_name %> = <%= class_name %>.type.get_subjects(RDF.type => {:context => @context})
     
-
     render :json => {
-          :data => (@terms.collect do |term|
-            term.to_hash(
+          :data => (@<%= plural_name %>.collect do |<%= singular_name %>|
+            <%= singular_name %>.to_hash(
               "rdf:type" => {
                 :first => true,
                 :simple_value => :uri,
@@ -27,20 +24,21 @@ class TermsController < ApplicationController
                 :simple_value => :value,
                 :context => @context})
           end),
-          :total => @terms.length
+          :total => @<%= plural_name %>.length
     }
 
   end
 
+  # GET <%= route_url %>/1
+  # GET <%= route_url %>/1.json
   def show
-    @term = Term.find(:uri_esc => (RDF::LD.terms.to_s + "/" + params[:id]).uri_esc)
-    @meaning_nodes = @term.get_objects(RDF::GOLD.hasMeaning => {:context => @context})
+    @<%= singular_name %> = <%= class_name %>.find(:uri_esc => (RDF::LD.<%= plural_name %>.to_s + "/" + params[:id]).uri_esc)
 
     respond_to do |format|
       format.html #show.html.erb
       format.json do
         render :json => {
-          :data => @term.to_hash(
+          :data => @<%= singular_name %>.to_hash(
            "rdf:type" => {
              :first => true,
              :simple_value => :uri,
@@ -54,29 +52,23 @@ class TermsController < ApplicationController
            "rdfs:comment" => {
              :first => true,
              :simple_value => :value,
-             :context => @context},
-             
-            "gold:abbreviation" => {
-              :first => true,
-              :simple_value => :value,
-              :context => @context
-            }),
-             
+             :context => @context}),
+
            :success => true
         }
       end
     end
   end
 
-
+  # POST <%= route_url %>.json
   def create
-    @term = Term.create_in_context(@context)
-    @term.set(params, @context)
+    @<%= singular_name %> = <%= class_name %>.create_in_context(@context)
+    @<%= singular_name %>.set(params, @context)
   
     respond_to do |format|
       format.json do
         render :json => {
-          :data => @term.to_hash(
+          :data => @<%= singular_name %>.to_hash(
             "rdfs:label" => { 
               :first => true,
               :simple_value => :value,
@@ -88,16 +80,16 @@ class TermsController < ApplicationController
     end
   end
   
-  
+  # PUT <%= route_url %>/1.json
   def update
-    @term = Term.find(:uri_esc => (RDF::LD.terms.to_s + "/" + params[:id]).uri_esc)
+    @<%= singular_name %> = <%= class_name %>.find(:uri_esc => (RDF::LD.<%= plural_name %>.to_s + "/" + params[:id]).uri_esc)
     
-    @term.set(params, @context)
+    @<%= singular_name %>.set(params, @context)
   
     respond_to do |format|
       format.json do
         render :json => {
-          :data => @term.to_hash(
+          :data => @<%= singular_name %>.to_hash(
             "rdfs:label" => { 
               :first => true,
               :simple_value => :value,
@@ -109,10 +101,11 @@ class TermsController < ApplicationController
     end
   end
   
+  # DELETE <%= route_url %>/1.json
   def destroy
-    @term = Term.find(:uri_esc => (RDF::LD.terms.to_s + "/" + params[:id]).uri_esc)
+    @<%= singular_table_name %> = <%= class_name %>.find(:uri_esc => (RDF::LD.<%= plural_name %>.to_s + "/" + params[:id]).uri_esc)
     
-    @term.remove_context(@context)
+    @<%= singular_name %>.remove_context(@context)
     
     respond_to do |format|
       format.json do
@@ -121,43 +114,13 @@ class TermsController < ApplicationController
     end
   end
   
-  def hasMeaning
-    @term = Term.find(:uri_esc => (RDF::LD.terms.to_s + "/" + params[:id]).uri_esc)
-    @meaning_nodes = @term.get_objects(RDF::GOLD.hasMeaning => {:context => @context})
-    
-    respond_to do |format|
-      format.html #individuals.html.erb
-      format.json do 
-        render :json => ({
-          :data => (@meaning_nodes.collect do |node|
-            node.to_hash(
-              "rdf:type" => {
-                :first => true, 
-                :simple_value => :uri, 
-                :context => @gold_context},
-                
-              "rdfs:label" => { 
-                :first => true, 
-                :simple_value => :value, 
-                :context => @gold_context},
-                
-              "rdfs:comment" => {
-                :first => true, 
-                :simple_value => :value, 
-                :context => @gold_context})
-          end),
-          :total => @meaning_nodes.length
-        })
-      end
-    end
-  end
   
   def clone
-    @term = Term.find(:uri_esc => (RDF::LD.terms.to_s + "/" + params[:id]).uri_esc)
+    @<%= singular_name %> = <%= class_name %>.find(:uri_esc => (RDF::LD.<%= plural_name %>.to_s + "/" + params[:id]).uri_esc)
     @from_context = RDF_Context.find(params[:from_id])
     
     if @from_context != current_user.context then
-      @term.copy_context(@from_context, current_user.context)
+      @<%= singular_name %>.copy_context(@from_context, current_user.context)
     end
     
     respond_to do |format|
@@ -176,8 +139,6 @@ class TermsController < ApplicationController
     else
       @context = current_user.context
     end
-
-    @gold_context = RDF_Context.find(:uri_esc =>"http://purl.org/linguistics/gold".uri_esc)
   end
   
 end

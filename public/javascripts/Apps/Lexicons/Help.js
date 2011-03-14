@@ -11,7 +11,7 @@ Lexicons.Help = Ext.extend(Desktop.App, {
 			}
 		});
  		
- 		Terms.Help.superclass.initComponent.call(this);
+ 		Lexicons.Help.superclass.initComponent.call(this);
  	}
 });
 

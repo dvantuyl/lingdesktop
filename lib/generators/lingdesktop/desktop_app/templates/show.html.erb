@@ -1,0 +1,20 @@
+<div class='resource-show'>
+<h2>
+	<%%= @<%= singular_name %>.get_objects(RDF::RDFS.label => {:first=> true, :simple_value => :value, :context => @context}) %>
+	<br/>
+	<span style="font-size: 0.6em;">
+		<a href='<%%= @<%= singular_name %>.uri %>' target="_blank"><%%= @<%= singular_name %>.uri %></a>
+	</span>
+</h2>
+
+<hr/>
+
+<strong class="label">Description:</strong>
+
+<%% @<%= singular_name %>.get_objects(RDF::RDFS.comment => {:simple_value => :value, :context => @context}).each do |comment| %>
+	<p class="indent">
+	  <%%= "#{comment}" %>	
+	</p>  
+<%% end %>
+
+</div>

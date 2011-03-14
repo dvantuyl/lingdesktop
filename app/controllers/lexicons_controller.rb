@@ -1,5 +1,5 @@
 class LexiconsController < ApplicationController
-  around_filter Neo4j::Rails::Transaction, :only => [:create, :update, :destroy]
+  around_filter Neo4j::Rails::Transaction, :only => [:create, :update, :destroy, :clone]
   before_filter :init_context
 
   def index
