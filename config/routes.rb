@@ -1,5 +1,7 @@
 Lingdesktop::Application.routes.draw do
 
+  resources :lexical_items do post 'clone', :on => :member  end
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
