@@ -116,9 +116,8 @@ LexicalItems.Index = Ext.extend(Desktop.App, {
 });
 
 Desktop.AppMgr.registerApp(LexicalItems.Index, {
-    title: 'LexicalItems',
+    title: 'Lexical Items',
     iconCls: 'dt-icon-lexical_items',
     appId: 'lexical_items_index',
-    displayMenu: 'user',
     dockContainer: Desktop.WEST
 });
