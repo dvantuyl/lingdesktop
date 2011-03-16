@@ -1,20 +1,24 @@
 #!/usr/bin/env ruby
 
 require "rubygems"
+require "rdf"
 require "rdf/raptor"
 require "rdf/ntriples"
 
-## IMPORT GOLD ##
-owlgraph = RDF::Graph.load(
-  File.expand_path('../../db/slash_gold-2009.owl', __FILE__), 
-  {:format => :rdfxml}
-)
+puts RDF::Raptor.available? 
 
-RDF::Writer.open(File.expand_path('../../db/slash_gold-2009.nt', __FILE__)) do |writer|
-   owlgraph.each_statement do |statement|
-     writer << statement
-   end
+## IMPORT GOLD ##
+owlgraph = RDF::Graph.load("db/load/gold-2010.rdf")
+
+
+RDF::Writer.open("db/load/gold-2010.nt") do |writer|
+  owlgraph.each_statement do |statement|
+    writer << statement
+  end
 end
+
+
+
 
 puts "RDFXML to ntriples conversion complete." 
 

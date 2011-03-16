@@ -12,7 +12,7 @@ namespace :neo4j do
 
     ## IMPORT GOLD ##
     graph = RDF::Graph.load(
-      File.expand_path('../../../db/slash_gold-2009.nt', __FILE__)
+      File.expand_path('../../../db/load/gold-2010.nt', __FILE__)
     )
     
 

@@ -10,6 +10,7 @@ gem 'neo4j', :git => 'git://github.com/andreasronge/neo4j.git'
 gem 'jruby-openssl'
 gem 'jruby-rack'
 gem 'rdf'
+gem 'rdf-rdfxml'
 gem 'glassfish'
 gem 'uuidtools'
 
