@@ -216,7 +216,7 @@ class RDF_Resource < Neo4j::Model
     result = self.filter_simple_value(result, args[:simple_value]) if args.has_key?(:simple_value)
     result = self.filter_first(result) if args.has_key?(:first)
     result = self.filter_empty_xor(result, args[:empty_xor]) if args.has_key?(:empty_xor)
-    
+
     return result
   end
   

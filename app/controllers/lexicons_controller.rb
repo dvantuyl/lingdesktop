@@ -5,6 +5,8 @@ class LexiconsController < ApplicationController
   def index
     @lexicons = Lexicon.type.get_subjects(RDF.type => {:context => @context})
     
+    total = @lexicons.length
+    @lexicons = @lexicons[params[:start].to_i, params[:limit].to_i] if(params[:start] && params[:limit])
 
     render :json => {
           :data => (@lexicons.collect do |lexicon|
@@ -24,7 +26,7 @@ class LexiconsController < ApplicationController
                 :simple_value => :value,
                 :context => @context})
           end),
-          :total => @lexicons.length
+          :total => total
     }
 
   end

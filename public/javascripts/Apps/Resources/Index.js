@@ -1,14 +1,19 @@
 Ext.ns("Resource");
 
 Resource.Index = Ext.extend(Desktop.App, {
-    layout: 'fit',
+  frame: false,
+  autoScroll: false,
+  layout: 'fit',
 
     initComponent: function() {
         var ic = this.initialConfig;
+        var _this = this;
 
         //setup store
         var store = new Ext.data.JsonStore({
             // store configs
+            autoLoad: {params:{start: 0, limit: _this.pageSize}},
+            restful: true,
             autoDestroy: true,
             url: ic.instanceId + ".json?context_id=" + ic.contextId,
             // reader configs
@@ -61,6 +66,10 @@ Resource.Index = Ext.extend(Desktop.App, {
                     );
                 }
             },
+            bbar: new Ext.PagingToolbar({
+              pageSize: _this.pageSize,
+              store: store
+            }),
             scope: this
         });
 
@@ -105,11 +114,6 @@ Resource.Index = Ext.extend(Desktop.App, {
             );
         },
         this);
-
-        this.on('render',
-        function() {
-            store.load();
-        });
     }
 });
 

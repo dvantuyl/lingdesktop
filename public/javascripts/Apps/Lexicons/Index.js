@@ -4,8 +4,11 @@ Lexicons.Index = Ext.extend(Desktop.App, {
     frame: false,
     autoScroll: false,
     layout: 'fit',
+    
     initComponent: function() {
 
+        var ic = this.initialConfig;
+        var _this = this;
 
         //setup toolbar
         var toolbar = [
@@ -30,11 +33,11 @@ Lexicons.Index = Ext.extend(Desktop.App, {
         }
         ];
         
-        var ic = this.initialConfig;
-
         //setup store
         var store = new Ext.data.JsonStore({
             // store configs
+            autoLoad: {params:{start: 0, limit: _this.pageSize}},
+            restful: true,
             autoDestroy: true,
             url: "lexicons.json",
             // reader configs
@@ -44,7 +47,6 @@ Lexicons.Index = Ext.extend(Desktop.App, {
         });
 
         //setup grid
-        var _this = this;
         var grid = new Ext.grid.GridPanel({
             store: store,
             stripeRows: true,
@@ -73,6 +75,10 @@ Lexicons.Index = Ext.extend(Desktop.App, {
                     _this.fireEvent('edit');
                 }
             },
+            bbar: new Ext.PagingToolbar({
+              pageSize: _this.pageSize,
+              store: store
+            }),
             scope: this
         });
 
@@ -104,11 +110,6 @@ Lexicons.Index = Ext.extend(Desktop.App, {
               title: label
           });
 
-        });
-        
-        this.on('render',
-        function() {
-            store.reload();
         });
 
         Desktop.AppMgr.display('lexicons_help');

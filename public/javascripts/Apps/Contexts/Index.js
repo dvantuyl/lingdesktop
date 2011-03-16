@@ -2,12 +2,18 @@ Ext.ns("Community");
 
 Community.Index = Ext.extend(Desktop.App, {
   layout: 'fit',
+  frame: false,
+  autoScroll: false,
   
   initComponent : function(){
+    
+    var _this = this;
     
     //setup store
     var store = new Ext.data.JsonStore({
         // store configs
+        autoLoad: {params:{start: 0, limit: _this.pageSize}},
+        restful: true,
         autoDestroy: true,
         url: 'contexts.json',
         storeId: 'community_index',
@@ -17,7 +23,6 @@ Community.Index = Ext.extend(Desktop.App, {
     });
   
     //setup grid
-    var _this = this;
     var grid = new Ext.grid.GridPanel({
         enableDrag : true,
         ddGroup : 'community',
@@ -59,7 +64,11 @@ Community.Index = Ext.extend(Desktop.App, {
                 var record = g.getStore().getAt(index);
                 Desktop.AppMgr.display('community_view', record.get('id'), {title: record.get('name')});
             }
-        }
+        },
+        bbar: new Ext.PagingToolbar({
+          pageSize: _this.pageSize,
+          store: store
+        })
     });
 
     //setup toolbar
@@ -91,11 +100,6 @@ Community.Index = Ext.extend(Desktop.App, {
     function() {
         var record = grid.getSelectionModel().getSelected();
         Desktop.AppMgr.display('community_view', record.get('id'), {title: record.get('name')});
-    });
-
-    this.on('render',
-    function() {
-        store.reload();
     });
   }
 });

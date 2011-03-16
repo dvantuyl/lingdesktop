@@ -2,9 +2,13 @@ class <%= controller_class_name %>Controller < ApplicationController
   around_filter Neo4j::Rails::Transaction, :only => [:create, :update, :destroy, :clone]
   before_filter :init_context
 
-  # GET <%= route_url %>.json
+  # GET <%= route_url %>.json?start=0&limit=50
   def index
     @<%= plural_name %> = <%= class_name %>.type.get_subjects(RDF.type => {:context => @context})
+    
+    # pageing filter
+    total = @<%= plural_name %>.length
+    @<%= plural_name %> = @<%= plural_name %>[params[:start].to_i, params[:limit].to_i] if(params[:start] && params[:limit])
     
     render :json => {
           :data => (@<%= plural_name %>.collect do |<%= singular_name %>|
@@ -24,7 +28,7 @@ class <%= controller_class_name %>Controller < ApplicationController
                 :simple_value => :value,
                 :context => @context})
           end),
-          :total => @<%= plural_name %>.length
+          :total => total
     }
 
   end
@@ -114,7 +118,7 @@ class <%= controller_class_name %>Controller < ApplicationController
     end
   end
   
-  
+  # POST <%= route_url %>/1/clone.json?from_id=2
   def clone
     @<%= singular_name %> = <%= class_name %>.find(:uri_esc => (RDF::LD.<%= plural_name %>.to_s + "/" + params[:id]).uri_esc)
     @from_context = RDF_Context.find(params[:from_id])

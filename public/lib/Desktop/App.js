@@ -12,7 +12,7 @@ Desktop.App = Ext.extend(Ext.Panel, {
 	closeAction: 'close',
 	dockonly: true,
 	autoScroll: true,
-    //stateful: false,
+	pageSize: 50,
 	plugins: [new Ext.ux.DockPanel({width: 300, height: 300})],
 	
 	initComponent: function(){

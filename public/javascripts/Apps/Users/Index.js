@@ -1,6 +1,8 @@
 Ext.ns("User");
 
 User.Index = Ext.extend(Desktop.App, {
+    frame: false,
+    autoScroll: false,
     layout: 'fit',
 
     initComponent: function() {
@@ -8,6 +10,8 @@ User.Index = Ext.extend(Desktop.App, {
         //setup store
         var store = new Ext.data.JsonStore({
             // store configs
+            autoLoad: {params:{start: 0, limit: _this.pageSize}},
+            restful: true,
             autoDestroy: true,
             url: 'users.json',
             storeId: 'users_index',
@@ -67,6 +71,10 @@ User.Index = Ext.extend(Desktop.App, {
                     Desktop.AppMgr.display('user_form', record.get('id'), {title: record.get('name')});
                 }
             },
+            bbar: new Ext.PagingToolbar({
+              pageSize: _this.pageSize,
+              store: store
+            }),
             scope: this
         });
 
@@ -111,11 +119,6 @@ User.Index = Ext.extend(Desktop.App, {
         function() {
             var record = grid.getSelectionModel().getSelected();
             Desktop.AppMgr.display('user_form', record.get('id'), {title: record.get('name')});
-        });
-
-        this.on('render',
-        function() {
-            store.reload();
         });
     }
 });

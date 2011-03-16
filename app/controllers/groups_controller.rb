@@ -11,15 +11,18 @@ class GroupsController < ApplicationController
     # retrieve groups
     if params.has_key?(:user_id) then
       user = User.find(params[:user_id])
-      @groups = user.groups
+      @groups = user.groups.to_a
     else
-      @groups = Group.find(:all, :sort => {:name => :asc})
+      @groups = Group.find(:all, :sort => {:name => :asc}).to_a
     end
+    
+    total = @groups.length
+    @groups = @groups[params[:start].to_i, params[:limit].to_i] if(params[:start] && params[:limit])
     
     # return json
     render :json => {
       :data => @groups.collect {|group| group.to_hash},
-      :total => @groups.count
+      :total => total
     }
   end
   

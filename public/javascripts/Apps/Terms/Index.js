@@ -5,7 +5,8 @@ Terms.Index = Ext.extend(Desktop.App, {
     autoScroll: false,
     layout: 'fit',
     initComponent: function() {
-
+        var ic = this.initialConfig;
+        var _this = this;
 
         //setup toolbar
         var toolbar = [
@@ -29,12 +30,12 @@ Terms.Index = Ext.extend(Desktop.App, {
             scope: this
         }
         ];
-        
-        var ic = this.initialConfig;
 
         //setup store
         var store = new Ext.data.JsonStore({
             // store configs
+            autoLoad: {params:{start: 0, limit: _this.pageSize}},
+            restful: true,
             autoDestroy: true,
             url: "terms.json",
             // reader configs
@@ -75,6 +76,10 @@ Terms.Index = Ext.extend(Desktop.App, {
                     _this.fireEvent('edit');
                 }
             },
+            bbar: new Ext.PagingToolbar({
+              pageSize: _this.pageSize,
+              store: store
+            }),
             scope: this
         });
 
@@ -106,11 +111,6 @@ Terms.Index = Ext.extend(Desktop.App, {
               title: label
           });
 
-        });
-        
-        this.on('render',
-        function() {
-            store.reload();
         });
 
         Desktop.AppMgr.display('terms_help');

@@ -13,12 +13,15 @@ class UsersController < ApplicationController
     
     @users = User.find(:all, :sort => {:name => :asc})
     
+    total = @users.length
+    @users = @users[params[:start].to_i, params[:limit].to_i] if(params[:start] && params[:limit])
+    
     respond_to do |format|
       format.html #index.html.erb
       format.json do
         render :json => {
           :data => @users.collect {|user| user.to_hash},
-          :total => @users.length
+          :total => total
         }
       end
     end
@@ -82,12 +85,15 @@ class UsersController < ApplicationController
   def followers
     @followers = @user.context.followers
     
+    total = @followers.length
+    @followers = @followers[params[:start].to_i, params[:limit].to_i] if(params[:start] && params[:limit])
+    
     # return json
     respond_to do |format|
       format.json do
         render :json => {
           :data => @followers.collect {|follower| follower.to_hash},
-          :total => @followers.count
+          :total => total
         }
       end
     end

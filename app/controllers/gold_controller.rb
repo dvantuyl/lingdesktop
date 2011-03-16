@@ -78,6 +78,9 @@ class GoldController < ApplicationController
     @resource = RDF_Resource.find(:uri_esc => RDF::GOLD[params[:id]].uri_esc)
     @individuals = @resource.get_subjects(RDF.type => {:context => @context})
     
+    total = @individuals.length
+    @individuals = @individuals[params[:start].to_i, params[:limit].to_i] if(params[:start] && params[:limit])
+    
     respond_to do |format|
       format.html #individuals.html.erb
       format.json do 
@@ -101,7 +104,7 @@ class GoldController < ApplicationController
                 :lang => @lang, 
                 :context => @context})
           end),
-          :total => @individuals.length
+          :total => total
         })
       end
     end

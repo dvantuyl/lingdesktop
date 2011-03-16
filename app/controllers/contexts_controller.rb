@@ -11,12 +11,15 @@ class ContextsController < ApplicationController
       :all, 
       :conditions => {:is_public => true}, 
       :sort => {:name => :asc}
-    )
+    ).to_a
+    
+    total = @contexts.length
+    @contexts = @contexts[params[:start].to_i, params[:limit].to_i] if(params[:start] && params[:limit])
     
     # return json
     render :json => {
       :data => @contexts.collect {|context| context.to_hash},
-      :total => @contexts.count
+      :total => total
     }
   end
   

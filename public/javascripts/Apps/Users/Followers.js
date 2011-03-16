@@ -6,10 +6,13 @@ User.Followers = Ext.extend(Desktop.App, {
   initComponent : function(){
     
     var ic = this.initialConfig; //configuration given to Desktop.App
+    var _this = this;
 
     //setup store
     var store = new Ext.data.JsonStore({
         // store configs
+        autoLoad: {params:{start: 0, limit: _this.pageSize}},
+        restful: true,
         autoDestroy: true,
         url: 'users/' + ic.instanceId +'/followers.json',
         storeId: 'followers_index',
@@ -19,7 +22,7 @@ User.Followers = Ext.extend(Desktop.App, {
     });
   
     //setup grid
-    var _this = this;
+    
     var grid = new Ext.grid.GridPanel({
         store: store,
         colModel: new Ext.grid.ColumnModel({
@@ -48,7 +51,11 @@ User.Followers = Ext.extend(Desktop.App, {
                 var record = g.getStore().getAt(index);
                 Desktop.AppMgr.display('community_view', record.get('id'), {title: record.get('name')});
             }
-        }
+        },
+        bbar: new Ext.PagingToolbar({
+          pageSize: _this.pageSize,
+          store: store
+        })
     });
 
     //setup toolbar
@@ -79,11 +86,6 @@ User.Followers = Ext.extend(Desktop.App, {
     function() {
         var record = grid.getSelectionModel().getSelected();
         Desktop.AppMgr.display('community_view', record.get('id'), {title: record.get('name')});
-    });
-
-    this.on('render',
-    function() {
-        store.reload();
     });
   }
 });

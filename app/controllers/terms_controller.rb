@@ -8,6 +8,9 @@ class TermsController < ApplicationController
   def index
     @terms = Term.type.get_subjects(RDF.type => {:context => @context})
     
+    total = @terms.length
+    @terms = @terms[params[:start].to_i, params[:limit].to_i] if(params[:start] && params[:limit])
+    
 
     render :json => {
           :data => (@terms.collect do |term|
@@ -27,7 +30,7 @@ class TermsController < ApplicationController
                 :simple_value => :value,
                 :context => @context})
           end),
-          :total => @terms.length
+          :total => total
     }
 
   end

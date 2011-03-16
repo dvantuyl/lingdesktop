@@ -8,11 +8,6 @@ Ontology.Class.View = Ext.extend(Desktop.App, {
 	
 		var ic = this.initialConfig;
 		
-		//setup toolbar 
-		var toolbar = [
-			{text: 'List', iconCls: 'dt-icon-grid', handler:function(){this.fireEvent('individuals')}, scope: this}
-		];
-		
 		//apply all components to this app instance
 		Ext.apply(this, {
 			tbar : toolbar,
@@ -24,16 +19,6 @@ Ontology.Class.View = Ext.extend(Desktop.App, {
 		});
 		
 		Ontology.Class.View.superclass.initComponent.call(this);
-		
-		this.on('individuals', function(){
-			Desktop.AppMgr.display(
-				'ontology_individual_index', 
-				ic.instanceId, 
-				{sid: ic.sid, title: ic.title}
-			);		
-		});
-		
-		this.fireEvent('individuals');
 	}
 });
 
