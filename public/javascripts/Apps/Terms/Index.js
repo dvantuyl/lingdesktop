@@ -8,29 +8,6 @@ Terms.Index = Ext.extend(Desktop.App, {
         var ic = this.initialConfig;
         var _this = this;
 
-        //setup toolbar
-        var toolbar = [
-        {
-            text: 'New',
-            itemId: 'new',
-            iconCls: 'dt-icon-add',
-            handler: function() {
-                this.fireEvent('new')
-            },
-            scope: this
-        },
-        {
-            text: 'Edit',
-            itemId: 'edit',
-            iconCls: 'dt-icon-edit',
-            hidden: true,
-            handler: function() {
-                this.fireEvent('edit')
-            },
-            scope: this
-        }
-        ];
-
         //setup store
         var store = new Ext.data.JsonStore({
             // store configs
@@ -43,6 +20,34 @@ Terms.Index = Ext.extend(Desktop.App, {
             storeId: 'terms_index',
             fields: ["rdfs:label", "rdfs:comment","rdf:type", "uri","localname"]
         });
+        
+        //setup toolbar
+        var toolbar = [
+          {
+              text: 'New',
+              itemId: 'new',
+              iconCls: 'dt-icon-add',
+              handler: function() {
+                  this.fireEvent('new')
+              },
+              scope: this
+          },
+          {
+              text: 'Edit',
+              itemId: 'edit',
+              iconCls: 'dt-icon-edit',
+              hidden: true,
+              handler: function() {
+                  this.fireEvent('edit')
+              },
+              scope: this
+          },
+          '->',
+          new Ext.ux.form.SearchField({
+            store: store,
+            width: 100
+          })
+        ];
 
         //setup grid
         var _this = this;

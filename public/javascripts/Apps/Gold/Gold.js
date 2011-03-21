@@ -6,7 +6,6 @@ Ontology.Gold = Ext.extend(Desktop.App, {
     layout: 'accordion',
     initComponent: function() {
 
-        var sid = 'gold';
         var roots = [
         //{uri:'http://www.w3.org/2002/07/owl#Thing', title:'Root'},
         {
@@ -31,7 +30,6 @@ Ontology.Gold = Ext.extend(Desktop.App, {
         for (var i = 0, len = roots.length; i < len; i++) {
             trees[i] = new Ontology.Tree({
                 title: roots[i].title,
-                sid: sid,
                 localname: roots[i].localname
             });
         }
@@ -55,16 +53,6 @@ Ontology.Gold = Ext.extend(Desktop.App, {
             hidden: true,
             handler: function() {
                 this.fireEvent('expand')
-            },
-            scope: this
-        },
-        {
-            text: 'List',
-            itemId: 'individuals',
-            iconCls: 'dt-icon-grid',
-            hidden: true,
-            handler: function() {
-                this.fireEvent('individuals')
             },
             scope: this
         }
@@ -103,7 +91,6 @@ Ontology.Gold = Ext.extend(Desktop.App, {
         function() {
             var node = this.getLayout().activeItem.getSelectionModel().getSelectedNode();
             var text = node.attributes.text;
-            var sid = node.attributes.sid;
             var localname = node.attributes.localname;
             var roots = [{
                 localname: localname,
@@ -115,7 +102,6 @@ Ontology.Gold = Ext.extend(Desktop.App, {
             'ontology_nav',
             node.attributes.localname,
             {
-                sid: sid,
                 title: text,
                 roots: roots
             }
@@ -127,7 +113,6 @@ Ontology.Gold = Ext.extend(Desktop.App, {
         function() {
             var node = this.getLayout().activeItem.getSelectionModel().getSelectedNode();
             var text = node.attributes.text;
-            var sid = node.attributes.sid;
             var localname = node.attributes.localname;
 
             //open tree in new ontology_nav
@@ -135,7 +120,6 @@ Ontology.Gold = Ext.extend(Desktop.App, {
             'ontology_class_view',
             node.attributes.localname,
             {
-                sid: sid,
                 title: text
             }
             );
@@ -146,14 +130,12 @@ Ontology.Gold = Ext.extend(Desktop.App, {
         function() {
             var node = this.getLayout().activeItem.getSelectionModel().getSelectedNode();
             var text = node.attributes.text;
-            var sid = node.attributes.sid;
             var localname = node.attributes.localname;
 
             Desktop.AppMgr.display(
             'ontology_individual_index',
             localname,
             {
-                sid: sid,
                 title: text
             }
             );

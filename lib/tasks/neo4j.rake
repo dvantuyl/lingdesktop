@@ -16,7 +16,7 @@ namespace :neo4j do
     )
     
 
-    @ctx_node = User.find(:email => "gold@lingdesktop.org").context
+    @ctx_node = User.find(:email => "lingdesktop@lingdesktop.org").context
 
 
     #find all owl classes
@@ -135,16 +135,16 @@ namespace :neo4j do
       )
       demo.save
       
-      gold = User.new(
-        :email => 'gold@lingdesktop.org',
-        :name => 'GOLD',
-        :description => "General Ontology of Linguistic Description",
+      lingdesktop = User.new(
+        :email => 'lingdesktop@lingdesktop.org',
+        :name => 'Lingdesktop',
+        :description => "Lingdesktop base data",
         :is_admin => false,
         :is_public => true,
-        :password => 'goldgold',
-        :password_confirmation => 'goldgold'
+        :password => 'lingdesktop',
+        :password_confirmation => 'lingdesktop'
       )
-      gold.save
+      lingdesktop.save
       
       puts "New users created!"
       puts "-------------------------"
@@ -158,8 +158,53 @@ namespace :neo4j do
     end
   end
   
+  desc "Seed with HumanLanguageVarieties"
+  task :languages => :environment do
+    require 'csv'
+    
+    ctx_node = User.find(:email => "lingdesktop@lingdesktop.org").context
+    hlv_type = HumanLanguageVariety.type
+    
+    # get paths to all parallel text
+    file_path = File.expand_path(File.join(File.dirname(__FILE__),'../../db/load', 'languages.csv'))
+    
+    print "Loading Languages"
+    
+    
+    i = 0  
+    CSV.foreach(file_path) do |columns|   
+      
+      Neo4j::Transaction.run do
+      
+        hlv_node = HumanLanguageVariety.create(:uri_esc => "http://purl.org/linguistics/lingdesktop/human_language_varieties/#{columns[1]}".uri_esc)
+      
+        RDF_Statement.init_by_quad(
+          :subject => hlv_node,
+          :predicate_uri_esc => RDF.type.uri_esc,
+          :object => hlv_type, 
+          :context => ctx_node).save
+
+        #load label
+        label_node = RDF_Literal.create(:value => columns[0], :lang => "en")
+        RDF_Statement.init_by_quad(
+          :subject => hlv_node, 
+          :predicate_uri_esc => RDF::RDFS.label.uri_esc,
+          :object => label_node,
+          :context => ctx_node).save
+
+      end
+
+      print '.' if i % 100 == 0
+      i += 1
+    end
+
+
+    puts "Finished!"
+
+  end
+  
   desc "Seed Neo4j store with GOLD and admins"
-  task :seed => [:delete, :users, :gold] do  
+  task :seed => [:delete, :users, :languages, :gold] do  
   end
   
 end

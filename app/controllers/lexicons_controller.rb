@@ -1,9 +1,8 @@
 class LexiconsController < ApplicationController
   around_filter Neo4j::Rails::Transaction, :only => [:create, :update, :destroy, :clone]
-  before_filter :init_context
 
   def index
-    @lexicons = Lexicon.type.get_subjects(RDF.type => {:context => @context})
+    @lexicons = Lexicon.type.get_subjects(RDF.type => {:context => context, :query => params[:query]})
     
     total = @lexicons.length
     @lexicons = @lexicons[params[:start].to_i, params[:limit].to_i] if(params[:start] && params[:limit])
@@ -14,17 +13,17 @@ class LexiconsController < ApplicationController
               "rdf:type" => {
                 :first => true,
                 :simple_value => :uri,
-                :context => @context},
+                :context => context},
 
               "rdfs:label" => { 
                 :first => true,
                 :simple_value => :value,
-                :context => @context},
+                :context => context},
 
               "rdfs:comment" => {
                 :first => true,
                 :simple_value => :value,
-                :context => @context})
+                :context => context})
           end),
           :total => total
     }
@@ -42,17 +41,17 @@ class LexiconsController < ApplicationController
            "rdf:type" => {
              :first => true,
              :simple_value => :uri,
-             :context => @context},
+             :context => context},
            
            "rdfs:label" => { 
              :first => true,
              :simple_value => :value,
-             :context => @context},
+             :context => context},
            
            "rdfs:comment" => {
              :first => true,
              :simple_value => :value,
-             :context => @context}),
+             :context => context}),
 
            :success => true
         }
@@ -62,8 +61,8 @@ class LexiconsController < ApplicationController
 
 
   def create
-    @lexicon = Lexicon.create_in_context(@context)
-    @lexicon.set(params, @context)
+    @lexicon = Lexicon.create_in_context(context)
+    @lexicon.set(params, context)
   
     respond_to do |format|
       format.json do
@@ -72,7 +71,7 @@ class LexiconsController < ApplicationController
             "rdfs:label" => { 
               :first => true,
               :simple_value => :value,
-              :context => @context}
+              :context => context}
             ), 
           :success => true
         }
@@ -84,7 +83,7 @@ class LexiconsController < ApplicationController
   def update
     @lexicon = Lexicon.find(:uri_esc => (RDF::LD.lexicons.to_s + "/" + params[:id]).uri_esc)
     
-    @lexicon.set(params, @context)
+    @lexicon.set(params, context)
   
     respond_to do |format|
       format.json do
@@ -93,7 +92,7 @@ class LexiconsController < ApplicationController
             "rdfs:label" => { 
               :first => true,
               :simple_value => :value,
-              :context => @context}
+              :context => context}
             ), 
           :success => true
         }
@@ -104,7 +103,7 @@ class LexiconsController < ApplicationController
   def destroy
     @lexicon = Lexicon.find(:uri_esc => (RDF::LD.lexicons.to_s + "/" + params[:id]).uri_esc)
     
-    @lexicon.remove_context(@context)
+    @lexicon.remove_context(context)
     
     respond_to do |format|
       format.json do
@@ -119,7 +118,7 @@ class LexiconsController < ApplicationController
     @from_context = RDF_Context.find(params[:from_id])
     
     if @from_context != current_user.context then
-      @lexicon.copy_context(@from_context, current_user.context)
+      @lexicon.copy_context(@from_context, context)
     end
     
     respond_to do |format|
@@ -128,16 +127,5 @@ class LexiconsController < ApplicationController
       end
     end
   end
-  
-  
-  private
-  
-  def init_context
-    if params.has_key?(:context_id) then
-      @context = RDF_Context.find(params[:context_id])
-    else
-      @context = current_user.context
-    end
-  end
-  
+
 end

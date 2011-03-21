@@ -81,9 +81,14 @@ Resource.Index = Ext.extend(Desktop.App, {
             hidden: true,
             handler: function() {
                 this.fireEvent('view')
-            },
+            },    
             scope: this
-        }];
+        }    ,
+                        '->',
+                        new Ext.ux.form.SearchField({
+                          store: store,
+                          width: 100
+                        })];
 
         //apply all components to this app instance
         Ext.apply(this, {

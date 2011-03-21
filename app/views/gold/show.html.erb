@@ -1,6 +1,6 @@
 <div class='resource-show'>
 <h2>
-	<%= @resource.get_objects(RDF::RDFS.label => {:first=> true, :lang => @lang, :simple_value => :value}) %>
+	<%= @resource.get_objects(RDF::RDFS.label => {:first=> true, :simple_value => :value, :context => @context}) %>
 	<br/>
 	<span style="font-size: 0.6em;">
 		<a href='<%= @resource.uri %>' target="_blank"><%= @resource.uri %></a>
@@ -11,7 +11,7 @@
 
 <strong class="label">Definition:</strong>
 
-<% @resource.get_objects(RDF::RDFS.comment => {:lang => @lang, :simple_value => :value}).each do |comment| %>
+<% @resource.get_objects(RDF::RDFS.comment => {:simple_value => :value, :context => @context}).each do |comment| %>
 	<p class="indent">
 	  <%= "#{comment}" %>	
 	</p>  

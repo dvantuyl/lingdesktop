@@ -19,6 +19,7 @@ class RDF_Context < Neo4j::Model
   # @return [String]  context uri of a named graph
   property :created_at
   property :name
+  property :name_downcase
   property :description
   property :is_public, :default => true
   
@@ -27,7 +28,10 @@ class RDF_Context < Neo4j::Model
   has_n(:statements).from(RDF_Statement, :contexts)
   
   index :name
+  index :name_downcase
   index :is_public
+  
+  before_save {|record| record.name_downcase = record.name.downcase}
     
   def followers
     self.incoming(:follows).to_a

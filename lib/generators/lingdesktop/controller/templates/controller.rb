@@ -1,10 +1,9 @@
 class <%= controller_class_name %>Controller < ApplicationController
   around_filter Neo4j::Rails::Transaction, :only => [:create, :update, :destroy, :clone]
-  before_filter :init_context
 
-  # GET <%= route_url %>.json?start=0&limit=50
+  # GET <%= route_url %>.json?start=0&limit=50&query=foo
   def index
-    @<%= plural_name %> = <%= class_name %>.type.get_subjects(RDF.type => {:context => @context})
+    @<%= plural_name %> = <%= class_name %>.type.get_subjects(RDF.type => {:context => context}, :query => params[:query])
     
     # pageing filter
     total = @<%= plural_name %>.length
@@ -16,17 +15,17 @@ class <%= controller_class_name %>Controller < ApplicationController
               "rdf:type" => {
                 :first => true,
                 :simple_value => :uri,
-                :context => @context},
+                :context => context},
 
               "rdfs:label" => { 
                 :first => true,
                 :simple_value => :value,
-                :context => @context},
+                :context => context},
 
               "rdfs:comment" => {
                 :first => true,
                 :simple_value => :value,
-                :context => @context})
+                :context => context})
           end),
           :total => total
     }
@@ -46,17 +45,17 @@ class <%= controller_class_name %>Controller < ApplicationController
            "rdf:type" => {
              :first => true,
              :simple_value => :uri,
-             :context => @context},
+             :context => context},
            
            "rdfs:label" => { 
              :first => true,
              :simple_value => :value,
-             :context => @context},
+             :context => context},
            
            "rdfs:comment" => {
              :first => true,
              :simple_value => :value,
-             :context => @context}),
+             :context => context}),
 
            :success => true
         }
@@ -66,7 +65,7 @@ class <%= controller_class_name %>Controller < ApplicationController
 
   # POST <%= route_url %>.json
   def create
-    @<%= singular_name %> = <%= class_name %>.create_in_context(@context)
+    @<%= singular_name %> = <%= class_name %>.create_in_context(context)
     @<%= singular_name %>.set(params, @context)
   
     respond_to do |format|
@@ -76,7 +75,7 @@ class <%= controller_class_name %>Controller < ApplicationController
             "rdfs:label" => { 
               :first => true,
               :simple_value => :value,
-              :context => @context}
+              :context => context}
             ), 
           :success => true
         }
@@ -88,7 +87,7 @@ class <%= controller_class_name %>Controller < ApplicationController
   def update
     @<%= singular_name %> = <%= class_name %>.find(:uri_esc => (RDF::LD.<%= plural_name %>.to_s + "/" + params[:id]).uri_esc)
     
-    @<%= singular_name %>.set(params, @context)
+    @<%= singular_name %>.set(params, context)
   
     respond_to do |format|
       format.json do
@@ -97,7 +96,7 @@ class <%= controller_class_name %>Controller < ApplicationController
             "rdfs:label" => { 
               :first => true,
               :simple_value => :value,
-              :context => @context}
+              :context => context}
             ), 
           :success => true
         }
@@ -109,7 +108,7 @@ class <%= controller_class_name %>Controller < ApplicationController
   def destroy
     @<%= singular_table_name %> = <%= class_name %>.find(:uri_esc => (RDF::LD.<%= plural_name %>.to_s + "/" + params[:id]).uri_esc)
     
-    @<%= singular_name %>.remove_context(@context)
+    @<%= singular_name %>.remove_context(context)
     
     respond_to do |format|
       format.json do
@@ -124,24 +123,13 @@ class <%= controller_class_name %>Controller < ApplicationController
     @from_context = RDF_Context.find(params[:from_id])
     
     if @from_context != current_user.context then
-      @<%= singular_name %>.copy_context(@from_context, current_user.context)
+      @<%= singular_name %>.copy_context(@from_context, context)
     end
     
     respond_to do |format|
       format.json do
         render :json => {:success => true}
       end
-    end
-  end
-  
-  
-  private
-  
-  def init_context
-    if params.has_key?(:context_id) then
-      @context = RDF_Context.find(params[:context_id])
-    else
-      @context = current_user.context
     end
   end
   

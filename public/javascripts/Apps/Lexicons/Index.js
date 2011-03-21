@@ -10,6 +10,19 @@ Lexicons.Index = Ext.extend(Desktop.App, {
         var ic = this.initialConfig;
         var _this = this;
 
+        //setup store
+        var store = new Ext.data.JsonStore({
+            // store configs
+            autoLoad: {params:{start: 0, limit: _this.pageSize}},
+            restful: true,
+            autoDestroy: true,
+            url: "lexicons.json",
+            // reader configs
+            root: 'data',
+            storeId: 'lexicons_index',
+            fields: ["rdfs:label", "rdfs:comment","rdf:type", "uri","localname"]
+        });
+
         //setup toolbar
         var toolbar = [
         {
@@ -30,21 +43,15 @@ Lexicons.Index = Ext.extend(Desktop.App, {
                 this.fireEvent('edit')
             },
             scope: this
-        }
+        }    ,
+                '->',
+                new Ext.ux.form.SearchField({
+                  store: store,
+                  width: 100
+                })
         ];
         
-        //setup store
-        var store = new Ext.data.JsonStore({
-            // store configs
-            autoLoad: {params:{start: 0, limit: _this.pageSize}},
-            restful: true,
-            autoDestroy: true,
-            url: "lexicons.json",
-            // reader configs
-            root: 'data',
-            storeId: 'lexicons_index',
-            fields: ["rdfs:label", "rdfs:comment","rdf:type", "uri","localname"]
-        });
+
 
         //setup grid
         var grid = new Ext.grid.GridPanel({

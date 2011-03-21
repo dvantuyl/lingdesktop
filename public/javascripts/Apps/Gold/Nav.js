@@ -13,7 +13,7 @@ Ontology.Nav = Ext.extend(Desktop.App, {
             trees[i] = new Ontology.Tree({
                 title: ic.roots[i].title,
                 localname: ic.roots[i].localname,
-                sid: ic.sid
+                contextId: "lingdesktop",
             });
         }
         //setup toolbar
@@ -84,13 +84,13 @@ Ontology.Nav = Ext.extend(Desktop.App, {
         function() {
             var node = this.getLayout().activeItem.getSelectionModel().getSelectedNode();
             var text = node.attributes.text;
-            var sid = node.attributes.sid;
             var localname = node.attributes.localname;
             var uri = node.attributes.uri;
             var roots = [{
                 localname: localname,
                 uri: uri,
-                title: text
+                title: text,
+                contextId: "lingdesktop"
             }];
 
             //open tree in new ontology_nav
@@ -98,7 +98,7 @@ Ontology.Nav = Ext.extend(Desktop.App, {
             'ontology_nav',
             localname,
             {
-                sid: sid,
+                contextId: "lingdesktop",
                 title: text,
                 roots: roots
             }
@@ -110,14 +110,13 @@ Ontology.Nav = Ext.extend(Desktop.App, {
         function() {
             var node = this.getLayout().activeItem.getSelectionModel().getSelectedNode();
             var text = node.attributes.text;
-            var sid = node.attributes.sid;
             var localname = node.attributes.localname;
 
             Desktop.AppMgr.display(
             'ontology_class_view',
             localname,
             {
-                sid: sid,
+                contextId: "lingdesktop",
                 title: text
             }
             );
@@ -128,14 +127,13 @@ Ontology.Nav = Ext.extend(Desktop.App, {
         function() {
             var node = this.getLayout().activeItem.getSelectionModel().getSelectedNode();
             var text = node.attributes.text;
-            var sid = node.attributes.sid;
             var localname = node.attributes.localname;
 
             Desktop.AppMgr.display(
             'ontology_individual_index',
             localname,
             {
-                sid: sid,
+                contextId: "lingdesktop",
                 title: text
             }
             );

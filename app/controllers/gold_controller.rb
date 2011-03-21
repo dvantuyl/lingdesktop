@@ -2,7 +2,6 @@
 # Gold Controller
 #
 class GoldController < ApplicationController
-  before_filter :init_context, :only => [:show, :subclasses, :individuals, :followers]
 
   def show
     @resource = RDF_Resource.find(:uri_esc => RDF::GOLD[params[:id]].uri_esc)
@@ -15,19 +14,17 @@ class GoldController < ApplicationController
            "rdf:type" => {
              :first => true,
              :simple_value => :uri,
-             :context => @context},
+             :context => context},
            
            "rdfs:label" => {
-             :lang => @lang, 
              :first => true,
              :simple_value => :value,
-             :context => @context},
+             :context => context},
            
            "rdfs:comment" => {
-             :lang => @lang,
              :first => true,
              :simple_value => :value,
-             :context => @context}),
+             :context => context}),
              
            :success => true
          }
@@ -38,7 +35,7 @@ class GoldController < ApplicationController
 
   def subclasses
     @resource = RDF_Resource.find(:uri_esc => RDF::GOLD[params[:id]].uri_esc)
-    @subclasses = @resource.get_subjects(RDF::RDFS.subClassOf => {:context => @context})
+    @subclasses = @resource.get_subjects(RDF::RDFS.subClassOf => {:context => context})
 
     respond_to do |format|
       format.html #subclasses.html.erb
@@ -48,26 +45,24 @@ class GoldController < ApplicationController
            "rdf:type" => {
              :first => true, 
              :simple_value => :uri, 
-             :context => @context},
+             :context => context},
              
            "rdfs:label" => {
-             :lang => @lang, 
              :first => true, 
              :simple_value => :value, 
-             :context => @context},
+             :context => context},
              
            "text" => {
              :predicate => RDF::RDFS.label,
-             :lang => @lang, 
              :first => true, 
              :simple_value => :value, 
-             :context => @context},
+             :context => context},
              
            "leaf" => {
              :predicate => RDF::RDFS.subClassOf,
              :subjects => true, 
              :empty_xor => false, 
-             :context => @context})
+             :context => context})
         end)
       end
     end
@@ -76,7 +71,7 @@ class GoldController < ApplicationController
 
   def individuals
     @resource = RDF_Resource.find(:uri_esc => RDF::GOLD[params[:id]].uri_esc)
-    @individuals = @resource.get_subjects(RDF.type => {:context => @context})
+    @individuals = @resource.get_subjects(RDF.type => {:context => context})
     
     total = @individuals.length
     @individuals = @individuals[params[:start].to_i, params[:limit].to_i] if(params[:start] && params[:limit])
@@ -90,32 +85,21 @@ class GoldController < ApplicationController
               "rdf:type" => {
                 :first => true, 
                 :simple_value => :uri, 
-                :context => @context},
+                :context => context},
                 
               "rdfs:label" => {
-                :lang => @lang, 
                 :first => true, 
                 :simple_value => :value, 
-                :context => @context},
+                :context => context},
                 
               "rdfs:comment" => {
                 :first => true, 
-                :simple_value => :value, 
-                :lang => @lang, 
-                :context => @context})
+                :simple_value => :value,  
+                :context => context})
           end),
           :total => total
         })
       end
     end
   end
-
-
-  private
-
-  def init_context
-    @lang = "en"
-    @context = User.find(:email => "gold@lingdesktop.org").context
-  end
-
 end

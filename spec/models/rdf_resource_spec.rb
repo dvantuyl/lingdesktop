@@ -27,10 +27,19 @@ describe RDF_Resource do
   
   context "nodes found and " do
     before(:each) do
+      @context = RDF_Context.create("test")
       @literal_en = RDF_Literal.create(:lang => "en", :value => "English")
       @literal_fr = RDF_Literal.create(:lang => "fr", :value => "French")
       @resource_test = RDF_Resource.create(:uri_esc => "http://test.com".uri_esc)
+
       @nodes = [@literal_en, @literal_fr, @resource_test]
+    end
+  
+    describe "#filter_by_query" do
+      it "should include resource test since it has literal foo" do
+        
+        RDF_Resource.filter_by_query(@nodes, "fo",@context).should include(@resource_test)
+      end
     end
   
     describe "#filter_by_lang" do     

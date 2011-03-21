@@ -7,6 +7,7 @@ class ContextsController < ApplicationController
   def index
     
     # retrieve contexts
+
     @contexts = RDF_Context.find(
       :all, 
       :conditions => {:is_public => true}, 

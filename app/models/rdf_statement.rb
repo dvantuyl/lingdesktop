@@ -62,6 +62,8 @@ class RDF_Statement < Neo4j::Model
    
     # extract the args context option
     context = args[:context]
+    raise "Context can not be nil" if context.nil?
+    
     args.delete(:context)
     
     # first try to find the statement
@@ -80,10 +82,12 @@ class RDF_Statement < Neo4j::Model
   
   def self.init_by_quad( args )
     s, p, o, c = args[:subject], args[:predicate_uri_esc], args[:object], args[:context]
-    
-    if s.nil? || p.nil? || o.nil? || c.nil? then
-      raise "Can not init statement with nil in quad"
-    end
+
+    raise "Can not init statement without a subject" if s.nil?
+    raise "Can not init statement without a predicate" if p.nil?
+    raise "Can not init statement without an object" if o.nil?
+    raise "Can not init statement without a context" if c.nil?
+
 
     #create statement and connect to subject and object
     statement = RDF_Statement.new(:predicate_uri_esc => p)

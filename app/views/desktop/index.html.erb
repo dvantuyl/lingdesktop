@@ -11,14 +11,13 @@
   
   <%# EXT JS %>
   <%= stylesheet_link_tag "/lib/extjs/resources/css/ext-all.css" %>
-  <%= javascript_include_tag "/lib/extjs/adapter/ext/ext-base-debug" if ENV['RAILS_ENV'] == 'development' %>
-  <%= javascript_include_tag "/lib/extjs/adapter/ext/ext-base" if ENV['RAILS_ENV'] == 'production' %>
-  <%= javascript_include_tag "/lib/extjs/ext-all-debug" if ENV['RAILS_ENV'] == 'development' %>
-  <%= javascript_include_tag "/lib/extjs/ext-all" if ENV['RAILS_ENV'] == 'production' %>
+  <%= javascript_include_tag "/lib/extjs/adapter/ext/ext-base" %>
+  <%= javascript_include_tag "/lib/extjs/ext-all" %>
 
   <%# EXT JS PLUGINS %>
   <%= stylesheet_link_tag "/lib/DockPanel/dock.css" %>
   <%= javascript_include_tag "/lib/DockPanel/Ext.ux.DockPanel.js" %>
+  <%= javascript_include_tag "/lib/extjs/ux/SearchField.js" %>
 
   <%# DESKTOP %>
   <%= stylesheet_link_tag :all, 

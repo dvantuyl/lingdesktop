@@ -80,7 +80,7 @@ Desktop.dock.Panel = Ext.extend(Ext.Panel, {
 			if (config.region == 'south') {
 				applyConfig.height = 220;
 			}else{
-				applyConfig.width = 220;
+				applyConfig.width = 230;
 			}
 		}
 		
@@ -107,7 +107,7 @@ Desktop.dock.Panel = Ext.extend(Ext.Panel, {
 					this.setHeight(220);
 				}
 				else {
-					this.setWidth(220);
+					this.setWidth(230);
 				}
 				this.ownerCt.ownerCt.doLayout();
 			}

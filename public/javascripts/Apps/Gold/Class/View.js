@@ -14,7 +14,7 @@ Ontology.Class.View = Ext.extend(Desktop.App, {
 			autoLoad: {
 				url: 'gold/' + ic.instanceId,
 				method: 'GET',
-				params: {sid: ic.sid}
+				params: {context_id: "lingdesktop"}
 			}
 		});
 		

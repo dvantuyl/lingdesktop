@@ -13,12 +13,12 @@ Ontology.Tree = Ext.extend(Ext.tree.TreePanel, {
 			text: 'Invisible Root',
 			draggable: false,
 			localname: ic.localname,
-			sid: ic.sid
+			contextId: "lingdesktop"
 		});
 		
 		//init tree loader
 		var loader = new Ext.tree.TreeLoader({
-			url: 'gold/'+ic.localname+'/subclasses.json',
+			url: 'gold/'+ic.localname+'/subclasses.json?context_id=lingdesktop',
 			requestMethod: 'GET'
 		});
 		
@@ -28,14 +28,13 @@ Ontology.Tree = Ext.extend(Ext.tree.TreePanel, {
 			handler: function(){
 				var node = this.getSelectionModel().getSelectedNode();
 				var text = node.attributes.text;
-				var sid = node.attributes.sid;
 				var localname = node.attributes.localname;
 				
 				//open tree in new ontology_nav
 				Desktop.AppMgr.display(
 					'ontology_class_view', 
 					node.attributes.localname, 
-					{sid: sid, title: text}
+					{contextId: "lingdesktop", title: text}
 				);	
 				
 				//hide context menu
@@ -52,7 +51,6 @@ Ontology.Tree = Ext.extend(Ext.tree.TreePanel, {
 				//extract node attributes
 				var node = this.getSelectionModel().getSelectedNode();
 				var text = node.attributes.text;
-				var sid = node.attributes.sid;
 				var localname = node.attributes.localname;
 				var roots = [{localname: localname,title: text}];
 				
@@ -60,7 +58,7 @@ Ontology.Tree = Ext.extend(Ext.tree.TreePanel, {
 				Desktop.AppMgr.display(
 					'ontology_nav', 
 					node.attributes.text, 
-					{sid: sid, roots: roots}
+					{contextId: "lingdesktop", roots: roots}
 				);
 				
 				//hide context menu
@@ -86,7 +84,7 @@ Ontology.Tree = Ext.extend(Ext.tree.TreePanel, {
 		//set the tree base params to the node attributes
 		loader.on("beforeload", function(treeLoader, node) {
 			treeLoader.url = 'gold/'+node.attributes.localname+'/subclasses.json'
-			treeLoader.baseParams.sid = node.attributes.sid;
+			treeLoader.baseParams.context_id = "lingdesktop";
     	}, this);
 		
 		//on right click
@@ -108,14 +106,13 @@ Ontology.Tree = Ext.extend(Ext.tree.TreePanel, {
 		this.on('dblclick', function(node, e){
 			var node = this.getSelectionModel().getSelectedNode();
 			var text = node.attributes.text;
-			var sid = node.attributes.sid;
 			var localname = node.attributes.localname;
 			
 			//open tree in new ontology_nav
 			Desktop.AppMgr.display(
 				'ontology_class_view', 
 				node.attributes.localname, 
-				{sid: sid, title: text}
+				{contextId: "lingdesktop", title: text}
 			);		
 		},this);
 		
