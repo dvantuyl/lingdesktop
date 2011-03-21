@@ -33,7 +33,7 @@ Desktop.App = Ext.extend(Ext.Panel, {
 	              url: ic.controller + '/' + ic.instanceId + '/clone.json',
 	              params: { from_id : ic.contextId, context_id : current_user.context_id },
 	              success: function(){
-	                Desktop.AppMgr.display(ic.controller + '_edit', ic.instanceId, {title: ic.title});
+	                Desktop.AppMgr.display(ic.controller + '_edit', ic.instanceId, {title: ic.title + ' - edit'});
 	              }
 	            });
 	          }

@@ -79,7 +79,7 @@ Lexicons.Index = Ext.extend(Desktop.App, {
                     _this.showButton('edit');
                 },
                 rowdblclick: function(g, index) {
-                    _this.fireEvent('edit');
+                    _this.fireEvent('view');
                 }
             },
             bbar: new Ext.PagingToolbar({
@@ -114,10 +114,27 @@ Lexicons.Index = Ext.extend(Desktop.App, {
           var localname = record.get("localname");
 
           Desktop.AppMgr.display('lexicons_edit', localname, {
-              title: label
+              title: label + ' - Edit'
           });
 
         });
+        
+        this.on('view',
+          function() {
+            var record = grid.getSelectionModel().getSelected();
+            var label = record.get("rdfs:label");
+            var localname = record.get("localname");
+            
+            Desktop.AppMgr.display(
+                'lexicons_view',
+                localname,
+                {
+                    title : label,
+                    contextId : ic.contextId
+                }
+            );
+          }
+        );
 
         Desktop.AppMgr.display('lexicons_help');
     }
