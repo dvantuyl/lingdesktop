@@ -1,6 +1,6 @@
-Ext.ns("HumanLanguageVarieties");
+Ext.ns("LexicalItems");
 
-HumanLanguageVarieties.Index = Ext.extend(Desktop.App, {
+LexicalItems.Index = Ext.extend(Desktop.App, {
     frame: false,
     autoScroll: false,
     layout: 'fit',
@@ -15,13 +15,13 @@ HumanLanguageVarieties.Index = Ext.extend(Desktop.App, {
            autoLoad: {params:{start: 0, limit: _this.pageSize}},
            restful: true,
            autoDestroy: true,
-           url: "human_language_varieties.json",
+           url: "lexicons/" + ic.instanceId + "/lexical_items.json",
            // reader configs
            root: 'data',
-           storeId: 'human_language_varieties_index',
+           storeId: 'lexical_items_index',
            fields: ["rdfs:label", "rdfs:comment","rdf:type", "uri","localname"]
        });
-       
+
         //setup toolbar
         var toolbar = [
         {
@@ -42,15 +42,13 @@ HumanLanguageVarieties.Index = Ext.extend(Desktop.App, {
                 this.fireEvent('edit')
             },
             scope: this
-        }    ,
-            '->',
-            new Ext.ux.form.SearchField({
-              store: store,
-              width: 100
-            })
+        },
+          '->',
+          new Ext.ux.form.SearchField({
+            store: store,
+            width: 100
+          })
         ];
- 
-
 
         //setup grid
         var grid = new Ext.grid.GridPanel({
@@ -59,10 +57,10 @@ HumanLanguageVarieties.Index = Ext.extend(Desktop.App, {
             colModel: new Ext.grid.ColumnModel({
                 columns: [
                     {
-                        header: 'Name',
+                        header: 'Headword',
                         dataIndex: "rdfs:label"
                     },{
-                        header: 'Description',
+                        header: 'Notes',
                         dataIndex: "rdfs:comment"
                     }
                 ]
@@ -94,15 +92,16 @@ HumanLanguageVarieties.Index = Ext.extend(Desktop.App, {
             items: grid
         });
 
-        HumanLanguageVarieties.Index.superclass.initComponent.call(this);
+        LexicalItems.Index.superclass.initComponent.call(this);
 
         //event handlers
         this.on('new',
         function() {
 
             Desktop.AppMgr.display(
-            'human_language_varieties_edit'
-            //give tree's root node so that the form can refresh the entire tree on save
+            'lexical_items_edit',
+            null,
+            {lexicon_id : ic.instanceId}
             );
         });
 
@@ -112,20 +111,18 @@ HumanLanguageVarieties.Index = Ext.extend(Desktop.App, {
           var label = record.get("rdfs:label");
           var localname = record.get("localname");
 
-          Desktop.AppMgr.display('human_language_varieties_edit', localname, {
-              title: label
+          Desktop.AppMgr.display('lexical_items_edit', localname, {
+              title: label,
+              lexicon_id: ic.instanceId
           });
 
         });
-
-        Desktop.AppMgr.display('human_language_varieties_help');
     }
 });
 
-Desktop.AppMgr.registerApp(HumanLanguageVarieties.Index, {
-    title: 'HumanLanguageVarieties',
-    iconCls: 'dt-icon-human_language_varieties',
-    appId: 'human_language_varieties_index',
-    displayMenu: 'user',
+Desktop.AppMgr.registerApp(LexicalItems.Index, {
+    title: 'LexicalItems',
+    iconCls: 'dt-icon-lexicons',
+    appId: 'lexical_items_index',
     dockContainer: Desktop.WEST
 });

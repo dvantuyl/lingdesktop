@@ -1,6 +1,6 @@
-Ext.ns("HumanLanguageVarieties");
+Ext.ns("LexicalItems");
 
-HumanLanguageVarieties.Edit = Ext.extend(Desktop.App, {
+LexicalItems.Edit = Ext.extend(Desktop.App, {
     frame: true,
     autoScroll: true,
 
@@ -9,7 +9,7 @@ HumanLanguageVarieties.Edit = Ext.extend(Desktop.App, {
         
         //setup fields
         var name = new Ext.form.TextField({
-            fieldLabel: 'Name',
+            fieldLabel: 'Headword',
             allowBlank: false,
             requiredField: true,
             name: 'rdfs:label',
@@ -19,7 +19,7 @@ HumanLanguageVarieties.Edit = Ext.extend(Desktop.App, {
         var description = new Ext.form.TextArea({
             height: 100,
             width: 685,
-            fieldLabel: 'Description',
+            fieldLabel: 'Notes',
             name: 'rdfs:comment'
         });
 
@@ -28,7 +28,7 @@ HumanLanguageVarieties.Edit = Ext.extend(Desktop.App, {
             labelAlign: 'top',
             frame: true,
             width: 700,
-            url: 'human_language_varieties',
+            url: 'lexical_items',
             baseParams: {
                 format: 'json'
             },
@@ -73,13 +73,13 @@ HumanLanguageVarieties.Edit = Ext.extend(Desktop.App, {
 
             //Load server -> form values if we have the ic.instance_id
             var id = ic.instanceId;
-            this.form.form.url = 'human_language_varieties/' + id + '.json';
+            this.form.form.url = 'lexicons/' + ic.lexicon_id + '/lexical_items/' + id + '.json';
             this.form.load({
                 method: 'GET'
             });
 
         } else {
-            this.form.form.url = 'human_language_varieties.json';
+            this.form.form.url = 'lexicons/' + ic.lexicon_id + '/lexical_items.json';
         }
 
         //apply all components to this app instance
@@ -89,7 +89,7 @@ HumanLanguageVarieties.Edit = Ext.extend(Desktop.App, {
         });
 
         //call App initComponent
-        HumanLanguageVarieties.Edit.superclass.initComponent.call(this);
+        LexicalItems.Edit.superclass.initComponent.call(this);
 
         //event handlers
         this.on('save',
@@ -108,13 +108,13 @@ HumanLanguageVarieties.Edit = Ext.extend(Desktop.App, {
                 var data = action.result.data;
                 
 
-                var human_language_varieties_store = Ext.StoreMgr.get('human_language_varieties_index');
-                if (human_language_varieties_store) {
-                    human_language_varieties_store.reload();
+                var lexical_items_store = Ext.StoreMgr.get('lexical_items_index');
+                if (lexical_items_store) {
+                    lexical_items_store.reload();
                 }
                 
                 Desktop.AppMgr.display(
-                    'human_language_varieties_view',
+                    'lexical_items_view',
                     data.localname,
                     {
                         title : data["rdfs:label"],
@@ -137,12 +137,12 @@ HumanLanguageVarieties.Edit = Ext.extend(Desktop.App, {
                 if (btn == 'yes') {
 
                     Ext.Ajax.request({
-                        url: 'human_language_varieties/' + ic.instanceId + '.json',
+                        url: 'lexical_items/' + ic.instanceId + '.json',
                         method: 'POST',
                         success: function() {
-                            var human_language_varieties_store = Ext.StoreMgr.get('human_language_varieties_index');
-                            if (human_language_varieties_store) {
-                                human_language_varieties_store.reload();
+                            var lexical_items_store = Ext.StoreMgr.get('lexical_items_index');
+                            if (lexical_items_store) {
+                                lexical_items_store.reload();
                             }
 
                             this.destroy();
@@ -160,10 +160,10 @@ HumanLanguageVarieties.Edit = Ext.extend(Desktop.App, {
     }
 });
 
-Desktop.AppMgr.registerApp(HumanLanguageVarieties.Edit, {
-    title: 'Edit Human_language_variety',
-    iconCls: 'dt-icon-human_language_varieties',
-    appId: 'human_language_varieties_edit',
+Desktop.AppMgr.registerApp(LexicalItems.Edit, {
+    title: 'Edit Lexical_item',
+    iconCls: 'dt-icon-lexicons',
+    appId: 'lexical_items_edit',
     dockContainer: Desktop.CENTER
 });
 

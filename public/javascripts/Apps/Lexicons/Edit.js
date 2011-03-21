@@ -61,6 +61,9 @@ Lexicons.Edit = Ext.extend(Desktop.App, {
 
         //condition based on whether this form is an instance of an already instatiated record
         if (ic.instanceId) {
+            
+            //display lexical items
+            Desktop.AppMgr.display('lexical_items_index', ic.instanceId, {title: 'Lexical Items'});
 
             //add delete button
             toolbar.push({

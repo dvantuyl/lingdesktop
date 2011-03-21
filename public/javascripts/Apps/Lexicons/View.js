@@ -17,6 +17,8 @@ Lexicons.View = Ext.extend(Desktop.App, {
 			}
 		});
 		
+		Desktop.AppMgr.display('lexical_items_index', ic.instanceId, {title: 'Lexical Items'});
+		
 		Lexicons.View.superclass.initComponent.call(this);
 	}
 });
