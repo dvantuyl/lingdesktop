@@ -20,7 +20,7 @@ LexicalItems.Index = Ext.extend(Desktop.App, {
            // reader configs
            root: 'data',
            storeId: 'lexical_items_index',
-           fields: ["rdfs:label", "rdfs:comment","rdf:type", "uri","localname"]
+           fields: ["gold:inLanguage", "rdfs:label", "rdfs:comment","rdf:type", "uri","localname"]
        });
 
         //setup toolbar
@@ -61,8 +61,8 @@ LexicalItems.Index = Ext.extend(Desktop.App, {
                         header: 'Headword',
                         dataIndex: "rdfs:label"
                     },{
-                        header: 'Notes',
-                        dataIndex: "rdfs:comment"
+                        header: 'Language Code',
+                        dataIndex: "gold:inLanguage"
                     }
                 ]
             }),

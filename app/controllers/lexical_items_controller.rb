@@ -20,6 +20,8 @@ class LexicalItemsController < ApplicationController
     
     render :json => {
           :data => (@lexical_items.collect do |lexical_item|
+            language = lexical_item.linguistic_sign(context).language(context)
+            
             lexical_item.to_hash(
               "rdf:type" => {
                 :first => true,
@@ -34,7 +36,9 @@ class LexicalItemsController < ApplicationController
               "rdfs:comment" => {
                 :first => true,
                 :simple_value => :value,
-                :context => context})
+                :context => context}).merge({
+                  "gold:inLanguage" => (language.nil? ? "" : language.localname)
+                })
           end),
           :total => total
     }
