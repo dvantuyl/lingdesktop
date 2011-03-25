@@ -171,32 +171,38 @@ namespace :neo4j do
     print "Loading Languages"
     
     
+    
     i = 0  
     CSV.foreach(file_path) do |columns|   
       
       Neo4j::Transaction.run do
       
         hlv_node = HumanLanguageVariety.create(:uri_esc => "http://purl.org/linguistics/lingdesktop/human_language_varieties/#{columns[1]}".uri_esc)
-      
-        RDF_Statement.init_by_quad(
-          :subject => hlv_node,
-          :predicate_uri_esc => RDF.type.uri_esc,
-          :object => hlv_type, 
-          :context => ctx_node).save
+
+        statement = RDF_Statement.new(:predicate_uri_esc => RDF.type.uri_esc)
+        statement.outgoing(:subject) << hlv_node
+        statement.outgoing(:object) << hlv_type
+        statement.outgoing(:contexts) << ctx_node
+        statement.outgoing(:created_by) << ctx_node
+        statement.save
 
         #load label
         label_node = RDF_Literal.create(:value => columns[0], :lang => "en")
-        RDF_Statement.init_by_quad(
-          :subject => hlv_node, 
-          :predicate_uri_esc => RDF::RDFS.label.uri_esc,
-          :object => label_node,
-          :context => ctx_node).save
+          
+        statement = RDF_Statement.new(:predicate_uri_esc => RDF::RDFS.label.uri_esc)
+        statement.outgoing(:subject) << hlv_node
+        statement.outgoing(:object) << label_node
+        statement.outgoing(:contexts) << ctx_node
+        statement.outgoing(:created_by) << ctx_node
+        statement.save
 
-      end
+      end 
 
       print '.' if i % 100 == 0
       i += 1
     end
+    
+
 
 
     puts "Finished!"
