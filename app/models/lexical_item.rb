@@ -26,8 +26,6 @@ class LexicalItem < RDF_Resource
       :context => context_node
     ).save
     
-    linguistic_sign(context_node)
-    
     return node.set(args, context_node)
   end
   

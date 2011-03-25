@@ -134,7 +134,7 @@ LexicalizedConcepts.Index = Ext.extend(Desktop.App, {
           }
         );
 
-        Desktop.AppMgr.display('lexicalized_concepts_help');
+        //Desktop.AppMgr.display('lexicalized_concepts_help');
     }
 });
 
