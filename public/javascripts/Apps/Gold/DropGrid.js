@@ -17,14 +17,13 @@ Ontology.DropGrid = Ext.extend(Ext.grid.GridPanel, {
 			iconCls: 'dt-icon-view',
 			handler: function(){
 				var record = selectionModel.getSelected();
-				var label = record.get('RDF_label');
-				var sid = record.get('sid');
+				var label = record.get('rdfs:label');
 				var localname = record.get('localname');
 		
 				Desktop.AppMgr.display(
 					'ontology_class_view', 
 					localname, 
-					{sid: sid, title: label}
+					{title: label}
 				);
 			}
 		},{
@@ -46,14 +45,13 @@ Ontology.DropGrid = Ext.extend(Ext.grid.GridPanel, {
 		
 		this.on('rowdblclick', function(g, index){
 			var record = g.getStore().getAt(index);
-			var label = record.get('RDFS_label');
-			var sid = record.get('sid');
+			var label = record.get('rdfs:label');
 			var localname = record.get('localname');
 	
 			Desktop.AppMgr.display(
 				'ontology_class_view', 
 				localname, 
-				{sid: sid, title: label}
+				{title: label}
 			);
 		});
 		

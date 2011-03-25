@@ -1,12 +1,19 @@
 Lingdesktop::Application.routes.draw do
 
+  resources :lexicalized_concepts do post 'clone', :on => :member  end
+
   devise_for :users, :path => 'accounts',
     :path_names => { :sign_in => 'login', :sign_out => 'logout' }
   
   resources :help, :contexts
   
   resources :human_language_varieties do post 'clone', :on => :member  end
-  resources :lexical_items do post 'clone', :on => :member  end
+  resources :lexical_items do 
+    member do
+      post 'clone'
+      get 'hasProperty'
+    end
+  end
   
   resources :lexicons do
     resources :lexical_items

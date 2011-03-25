@@ -1,8 +1,9 @@
 class LexiconsController < ApplicationController
   around_filter Neo4j::Rails::Transaction, :only => [:create, :update, :destroy, :clone]
+  before_filter :authenticate_user!, :only => [:create, :update, :destroy, :clone]
 
   def index
-    @lexicons = Lexicon.type.get_subjects(RDF.type => {:context => context, :query => params[:query]})
+    @lexicons = Lexicon.type.get_subjects(RDF.type => {:context => context, :query => "*#{params[:query]}*"})
     
     total = @lexicons.length
     @lexicons = @lexicons[params[:start].to_i, params[:limit].to_i] if(params[:start] && params[:limit])

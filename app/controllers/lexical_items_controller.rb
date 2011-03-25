@@ -1,5 +1,6 @@
 class LexicalItemsController < ApplicationController
   around_filter Neo4j::Rails::Transaction, :only => [:create, :update, :destroy, :clone]
+  before_filter :authenticate_user!, :only => [:create, :update, :destroy, :clone]
 
   
   # GET /lexical_items.json?start=0&limit=50&query=foo
@@ -8,9 +9,9 @@ class LexicalItemsController < ApplicationController
     
     if params.has_key?(:lexicon_id)
       lexicon = Lexicon.find(:uri_esc => (RDF::LD.lexicons.to_s + "/" + params[:lexicon_id]).uri_esc)
-      @lexical_items = lexicon.get_subjects(RDF::GOLD.memberOf => {:context => context}, :query => params[:query])
+      @lexical_items = lexicon.get_subjects(RDF::GOLD.memberOf => {:context => context, :query => params[:query]})
     else
-      @lexical_items = LexicalItem.type.get_subjects(RDF.type => {:context => context}, :query => params[:query])
+      @lexical_items = LexicalItem.type.get_subjects(RDF.type => {:context => context, :query => params[:query]})
     end
     
     # pageing filter
@@ -44,6 +45,11 @@ class LexicalItemsController < ApplicationController
   # GET /lexical_items/1.json
   def show
     @lexical_item = LexicalItem.find(:uri_esc => (RDF::LD.lexical_items.to_s + "/" + params[:id]).uri_esc)
+    
+    @language = @lexical_item.linguistic_sign(context).language(context)
+    @meaning = @lexical_item.linguistic_sign(context).hasMeaning(context)
+    @property_nodes = @lexical_item.linguistic_sign(context).hasProperties(context)
+    lingdesktop_context
 
     respond_to do |format|
       format.html #show.html.erb
@@ -63,7 +69,12 @@ class LexicalItemsController < ApplicationController
            "rdfs:comment" => {
              :first => true,
              :simple_value => :value,
-             :context => context}),
+             :context => context}
+            ).merge({
+              "gold:inLanguage" => (@language.nil? ? "" : @language.localname),
+              "gold:hasMeaning" => (@meaning.nil? ? "" : @meaning.uri),
+              "hasMeaning:label" => (@meaning.nil? ? "" : @meaning.label(context).value)
+            }),
 
            :success => true
         }
@@ -75,9 +86,7 @@ class LexicalItemsController < ApplicationController
   def create
     @lexical_item = LexicalItem.create_in_context(context)
     
-    params.merge!({"gold:memberOf" => params[:lexicon_id]}) if params.has_key?(:lexicon_id)
-    
-    @lexical_item.set(params, @context)
+    @lexical_item.set(params, context)
   
     respond_to do |format|
       format.json do
@@ -97,8 +106,6 @@ class LexicalItemsController < ApplicationController
   # PUT /lexical_items/1.json
   def update
     @lexical_item = LexicalItem.find(:uri_esc => (RDF::LD.lexical_items.to_s + "/" + params[:id]).uri_esc)
-    
-    params.merge!({"gold:memberOf" => params[:lexicon_id]}) if params.has_key?(:lexicon_id)
     
     @lexical_item.set(params, context)
   
@@ -142,6 +149,37 @@ class LexicalItemsController < ApplicationController
     respond_to do |format|
       format.json do
         render :json => {:success => true}
+      end
+    end
+  end
+  
+  def hasProperty
+    @lexical_item = LexicalItem.find(:uri_esc => (RDF::LD.lexical_items.to_s + "/" + params[:id]).uri_esc)
+    @property_nodes = @lexical_item.linguistic_sign(context).hasProperties(context)
+    
+    respond_to do |format|
+      format.html #individuals.html.erb
+      format.json do 
+        render :json => ({
+          :data => (@property_nodes.collect do |node|
+            node.to_hash(
+              "rdf:type" => {
+                :first => true, 
+                :simple_value => :uri, 
+                :context => lingdesktop_context},
+                
+              "rdfs:label" => { 
+                :first => true, 
+                :simple_value => :value, 
+                :context => lingdesktop_context},
+                
+              "rdfs:comment" => {
+                :first => true, 
+                :simple_value => :value, 
+                :context => lingdesktop_context})
+          end),
+          :total => @property_nodes.length
+        })
       end
     end
   end

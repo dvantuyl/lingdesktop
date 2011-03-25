@@ -1,6 +1,6 @@
-Ext.ns("LexicalItems");
+Ext.ns("LexicalizedConcepts");
 
-LexicalItems.Index = Ext.extend(Desktop.App, {
+LexicalizedConcepts.Index = Ext.extend(Desktop.App, {
     frame: false,
     autoScroll: false,
     layout: 'fit',
@@ -15,11 +15,10 @@ LexicalItems.Index = Ext.extend(Desktop.App, {
            autoLoad: {params:{start: 0, limit: _this.pageSize}},
            restful: true,
            autoDestroy: true,
-           url: "lexicons/" + ic.instanceId + "/lexical_items.json",
-           params: {context_id : ic.contextId},
+           url: "lexicalized_concepts.json",
            // reader configs
            root: 'data',
-           storeId: 'lexical_items_index',
+           storeId: 'lexicalized_concepts_index',
            fields: ["rdfs:label", "rdfs:comment","rdf:type", "uri","localname"]
        });
 
@@ -53,15 +52,17 @@ LexicalItems.Index = Ext.extend(Desktop.App, {
 
         //setup grid
         var grid = new Ext.grid.GridPanel({
+            ddGroup : 'hasMeaning',
+            enableDragDrop :true,
             store: store,
             stripeRows: true,
             colModel: new Ext.grid.ColumnModel({
                 columns: [
                     {
-                        header: 'Headword',
+                        header: 'Name',
                         dataIndex: "rdfs:label"
                     },{
-                        header: 'Notes',
+                        header: 'Description',
                         dataIndex: "rdfs:comment"
                     }
                 ]
@@ -93,16 +94,14 @@ LexicalItems.Index = Ext.extend(Desktop.App, {
             items: grid
         });
 
-        LexicalItems.Index.superclass.initComponent.call(this);
+        LexicalizedConcepts.Index.superclass.initComponent.call(this);
 
         //event handlers
         this.on('new',
         function() {
 
             Desktop.AppMgr.display(
-            'lexical_items_edit',
-            null,
-            {lexicon_id : ic.instanceId}
+            'lexicalized_concepts_edit'
             );
         });
 
@@ -112,9 +111,8 @@ LexicalItems.Index = Ext.extend(Desktop.App, {
           var label = record.get("rdfs:label");
           var localname = record.get("localname");
 
-          Desktop.AppMgr.display('lexical_items_edit', localname, {
-              title: label + ' - Edit',
-              lexicon_id: ic.instanceId
+          Desktop.AppMgr.display('lexicalized_concepts_edit', localname, {
+              title: label + ' - Edit'
           });
 
         });
@@ -126,7 +124,7 @@ LexicalItems.Index = Ext.extend(Desktop.App, {
             var localname = record.get("localname");
             
             Desktop.AppMgr.display(
-                'lexical_items_view',
+                'lexicalized_concepts_view',
                 localname,
                 {
                     title : label,
@@ -135,12 +133,15 @@ LexicalItems.Index = Ext.extend(Desktop.App, {
             );
           }
         );
+
+        Desktop.AppMgr.display('lexicalized_concepts_help');
     }
 });
 
-Desktop.AppMgr.registerApp(LexicalItems.Index, {
-    title: 'LexicalItems',
-    iconCls: 'dt-icon-lexicons',
-    appId: 'lexical_items_index',
+Desktop.AppMgr.registerApp(LexicalizedConcepts.Index, {
+    title: 'LexicalizedConcepts',
+    iconCls: 'dt-icon-lexicalized_concepts',
+    appId: 'lexicalized_concepts_index',
+    displayMenu: 'user',
     dockContainer: Desktop.WEST
 });

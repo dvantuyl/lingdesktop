@@ -1,9 +1,10 @@
 class HumanLanguageVarietiesController < ApplicationController
   around_filter Neo4j::Rails::Transaction, :only => [:create, :update, :destroy, :clone]
+  before_filter :authenticate_user!, :only => [:create, :update, :destroy, :clone]
 
   # GET /human_language_varieties.json?start=0&limit=50
   def index
-    @human_language_varieties = HumanLanguageVariety.type.get_subjects(RDF.type => {:context => context, :query => params[:query]})
+    @human_language_varieties = HumanLanguageVariety.type.get_subjects(RDF.type => {:context => context, :query_begin => params[:query]})
     
     # pageing filter
     total = @human_language_varieties.length
@@ -21,11 +22,13 @@ class HumanLanguageVarietiesController < ApplicationController
                 :first => true,
                 :simple_value => :value,
                 :context => context},
-
-              "rdfs:comment" => {
-                :first => true,
-                :simple_value => :value,
-                :context => context})
+              
+              "text" => {
+                   :predicate => RDF::RDFS.label,
+                   :first => true, 
+                   :simple_value => :value, 
+                   :context => context}
+                )
           end),
           :total => total
     }

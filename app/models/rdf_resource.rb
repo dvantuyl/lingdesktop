@@ -20,6 +20,14 @@ class RDF_Resource < Neo4j::Model
     self[:uri_esc].uri_unesc
   end
   
+  def label(context_node)
+    @label_node ||= self.get_objects(RDF::RDFS.label => {:context => context_node}).first
+  end
+  
+  def type(context_node)
+    @type_node ||= self.get_objects(RDF.type => {:context => context_node}).first
+  end
+  
   def set_label(label, context_node)
     label_node = RDF_Literal.find_or_create(:value => label, :lang => "en")
     
@@ -213,6 +221,7 @@ class RDF_Resource < Neo4j::Model
   def self.filter_results(result, args)
     
     result = self.filter_by_query(result, args[:query], args[:context]) if args.has_key?(:query)
+    result = self.filter_by_query_begin(result, args[:query_begin], args[:context]) if args.has_key?(:query_begin)
     result = self.filter_by_lang(result, args[:lang]) if args.has_key?(:lang)
     result = self.filter_simple_value(result, args[:simple_value]) if args.has_key?(:simple_value)
     result = self.filter_first(result) if args.has_key?(:first)
@@ -225,6 +234,19 @@ class RDF_Resource < Neo4j::Model
     return result if (query.nil? || query.empty?)
     
     literal_ids = RDF_Literal.all("value_downcase: *#{query.downcase}*").collect{|l| l.id}
+
+    result.delete_if do |node|
+      label_ids = node.get_objects(RDF::RDFS.label => {:context => context}).collect{|l| l.id}
+        
+      intersection = (literal_ids & label_ids)
+      intersection.empty?
+    end.compact
+  end
+  
+  def self.filter_by_query_begin(result = [], query = "", context = nil)
+    return result if (query.nil? || query.empty?)
+    
+    literal_ids = RDF_Literal.all("value_downcase: #{query.downcase}*").collect{|l| l.id}
 
     result.delete_if do |node|
       label_ids = node.get_objects(RDF::RDFS.label => {:context => context}).collect{|l| l.id}

@@ -1,6 +1,6 @@
 <div class='resource-show'>
 <h2>
-	<%= @lexicon.get_objects(RDF::RDFS.label => {:first=> true, :simple_value => :value, :context => @context}) %>
+	<%= "#{@lexicon.label(@context).value} (Lexicon)" %>
 	<br/>
 	<span style="font-size: 0.6em;">
 		<a href='<%= @lexicon.uri %>' target="_blank"><%= @lexicon.uri %></a>

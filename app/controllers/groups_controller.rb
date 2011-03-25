@@ -3,6 +3,7 @@
 #
 class GroupsController < ApplicationController
   around_filter Neo4j::Rails::Transaction, :only => [:create, :update, :destroy]
+  before_filter :authenticate_user!, :only => [:create, :update, :destroy]
   
   # GET /users/1/groups
   # GET /groups

@@ -22,7 +22,81 @@ LexicalItems.Edit = Ext.extend(Desktop.App, {
             fieldLabel: 'Notes',
             name: 'rdfs:comment'
         });
-
+        
+        var langStore = new Ext.data.JsonStore({
+          autoDestroy: true,
+          restful: true,
+          url: 'human_language_varieties.json?context_id=lingdesktop',
+          totalProperty: 'total',
+          fields: ['localname', 'text'],
+          root: 'data'   
+        });
+        
+        var langCombo = new Ext.form.ComboBox({
+          fieldLabel: 'Language (Name / ISO 639-3 code)',
+          store: langStore,
+          allowBlank: false,
+          requiredField: true,
+          minChars : 3,
+          hideTrigger:true,
+          hiddenName: 'gold:inLanguage',
+          valueField : 'localname',
+          displayField : 'text'
+        });
+        
+        //setup hasPropertyGrid GOLD Grid
+        var hasPropertyGrid = new Ontology.DropGrid({
+            height: 150,
+            fieldLabel: 'Linguistic Properties (Please select and drag a concept from the ontology to the space below)',
+            stripeRows: true,
+            store: new Ext.data.JsonStore({
+                // store configs
+                autoDestroy: true,
+                url: 'lexical_items/' + ic.instanceId + '/hasProperty.json',
+                // reader configs
+                root: 'data',
+                idProperty: 'uri',
+                fields: ['rdf:type', 'rdfs:comment', 'uri', 'rdfs:label', 'localname']
+            }),
+            colModel: new Ext.grid.ColumnModel({
+                columns: [
+                {
+                    header: 'Label',
+                    dataIndex: 'rdfs:label'
+                },
+                {
+                    header: 'Definition',
+                    dataIndex: 'rdfs:comment'
+                }
+                ]
+            }),
+        });
+        
+        var hasMeaningLabel = new Ext.form.TextField({
+            fieldLabel: 'Lexicalized Concept',
+            emptyText: 'Drag from lexical concepts list',
+            readOnly: true,
+            name: 'hasMeaning:label',
+            width: 165
+        });
+        
+        hasMeaningLabel.on('afterrender', function(){
+          var hasMeaningDropTargetEl = hasMeaningLabel.getEl().dom;
+          var hasMeaningDropTarget = new Ext.dd.DropTarget(hasMeaningDropTargetEl, {
+            ddGroup : 'hasMeaning',
+            notifyDrop : function(ddSource, e, data){
+              var record = ddSource.dragData.selections[0];
+              hasMeaningLabel.setValue(record.get('rdfs:label'));
+              hasMeaningUri.setValue(record.get('uri'));
+              return(true);
+            }
+          });
+        });
+        
+        var hasMeaningUri = new Ext.form.Hidden({
+          name: 'gold:hasMeaning'
+        });
+        
         //setup form
         this.form = new Ext.FormPanel({
             labelAlign: 'top',
@@ -34,15 +108,23 @@ LexicalItems.Edit = Ext.extend(Desktop.App, {
             },
             items: [{
                 layout: 'column',
-                border: false,
-                items: [{
+                columnWidth: .5,
+                items: {
                     layout: 'form',
-                    labelWidth: 90,
-                    columnWidth: .5,
-                    border: false,
-                    items: name
-                }]
-            },
+                    
+                    //border: false,
+                    items: [name,langCombo]
+                  }
+              },{
+                  layout: 'column',
+                  columnWidth: .5,
+                  items: {
+                    layout: 'form',
+                    //border: false,
+                    items: [hasMeaningLabel,hasMeaningUri ]
+                  }
+              },
+            hasPropertyGrid  ,
             description]
         });
 
@@ -77,6 +159,10 @@ LexicalItems.Edit = Ext.extend(Desktop.App, {
             this.form.load({
                 method: 'GET'
             });
+            
+            hasPropertyGrid.getStore().load({
+                method: 'GET'
+            });
 
         } else {
             this.form.form.url = 'lexicons/' + ic.lexicon_id + '/lexical_items.json';
@@ -94,20 +180,22 @@ LexicalItems.Edit = Ext.extend(Desktop.App, {
         //event handlers
         this.on('save',
         function() {
+            var hasPropertyUris = hasPropertyGrid.store.collect('uri');
+          
             var save_config = {
-              scope: this
+              scope: this,
+              params: {
+                "gold:hasProperty": Ext.encode(hasPropertyUris)
+              }
             };
 
             if (ic.instanceId) {
-                save_config.params = {
-                    '_method': 'PUT'
-                };
+                save_config.params['_method'] = 'PUT';
             }
 
             save_config.success = function(form, action) {
                 var data = action.result.data;
                 
-
                 var lexical_items_store = Ext.StoreMgr.get('lexical_items_index');
                 if (lexical_items_store) {
                     lexical_items_store.reload();

@@ -1,6 +1,6 @@
 <div class='resource-show'>
 <h2>
-	<%%= @<%= singular_name %>.get_objects(RDF::RDFS.label => {:first=> true, :simple_value => :value, :context => @context}) %>
+	<%%= "#{@<%= singular_name %>.label(@context).value} (<%= singular_name.capitolize %>)" %>
 	<br/>
 	<span style="font-size: 0.6em;">
 		<a href='<%%= @<%= singular_name %>.uri %>' target="_blank"><%%= @<%= singular_name %>.uri %></a>

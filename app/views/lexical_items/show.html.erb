@@ -1,6 +1,6 @@
 <div class='resource-show'>
 <h2>
-	<%= @lexical_item.get_objects(RDF::RDFS.label => {:first=> true, :simple_value => :value, :context => @context}) %>
+	<%= "#{@lexical_item.label(@context).value} (Lexical Item)" %>
 	<br/>
 	<span style="font-size: 0.6em;">
 		<a href='<%= @lexical_item.uri %>' target="_blank"><%= @lexical_item.uri %></a>
@@ -9,7 +9,31 @@
 
 <hr/>
 
-<strong class="label">Description:</strong>
+<% unless @language.nil? then %>
+  <strong class="label">Language:</strong>
+  <p class="indent">
+    <%= "#{@language.label(nil).value} (#{@language.localname})" %>
+  </p>
+<% end %>
+
+<% unless @meaning.nil? then %>
+  <strong class="label">Meaning:</strong>
+  <p class="indent">
+    <%= link_to_dtapp(@meaning.label(@context).value, 'lexicalized_concepts_view', @meaning.localname, @context.id) %>
+  </p>
+<% end %>
+
+<strong class="label">Linguistic Properties:</strong>
+
+<ul class="indent">
+  <% @property_nodes.each do |meaning| %>
+    <li>
+      <%= link_to_dtapp(meaning.label(@lingdesktop_context).value, 'ontology_class_view', meaning.localname) %>
+    </li>
+  <% end %>
+</ul>
+
+<strong class="label">Notes:</strong>
 
 <% @lexical_item.get_objects(RDF::RDFS.comment => {:simple_value => :value, :context => @context}).each do |comment| %>
 	<p class="indent">

@@ -138,7 +138,7 @@ namespace :neo4j do
       lingdesktop = User.new(
         :email => 'lingdesktop@lingdesktop.org',
         :name => 'Lingdesktop',
-        :description => "Lingdesktop base data",
+        :description => "Lingdesktop system data",
         :is_admin => false,
         :is_public => true,
         :password => 'lingdesktop',

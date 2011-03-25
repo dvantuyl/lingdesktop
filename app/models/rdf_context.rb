@@ -85,7 +85,8 @@ class RDF_Context < Neo4j::Model
       :name => self.name,
       :description => self.description,
       :is_public => self.is_public,
-      :is_group => (self.class.to_s == "Group" ? true : false)
+      :is_group => (self.class.to_s == "Group" ? true : false),
+      :resource_counts => resource_counts
     }
   end
   

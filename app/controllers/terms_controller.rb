@@ -3,6 +3,7 @@
 #
 class TermsController < ApplicationController
   around_filter Neo4j::Rails::Transaction, :only => [:create, :update, :destroy, :clone]
+  before_filter :authenticate_user!, :only => [:create, :update, :destroy, :clone]
 
   def index
     @terms = Term.type.get_subjects(RDF.type => {:context => context, :query => params[:query]})

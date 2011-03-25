@@ -49,10 +49,12 @@ class Termset < RDF_Resource
   end
   
   def remove_context(context_node)
-    super
+
     
     # remove context from terms
     self.terms(context_node).each {|term| term.remove_context(context_node)}
+    
+    super(context_node)
    
   end
 end

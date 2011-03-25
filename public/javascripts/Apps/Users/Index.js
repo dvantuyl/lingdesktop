@@ -7,6 +7,8 @@ User.Index = Ext.extend(Desktop.App, {
 
     initComponent: function() {
 
+        var _this = this;
+        
         //setup store
         var store = new Ext.data.JsonStore({
             // store configs
@@ -25,7 +27,6 @@ User.Index = Ext.extend(Desktop.App, {
         });
 
         //setup grid
-        var _this = this;
         var grid = new Ext.grid.GridPanel({
             store: store,
             colModel: new Ext.grid.ColumnModel({

@@ -1,6 +1,6 @@
 <div class='resource-show'>
 <h2>
-	<%= @term.get_objects(RDF::RDFS.label => {:first=> true, :simple_value => :value, :context => @context}) %>
+  <%= "#{@term.label(@context).value} (Term)" %>
 	<br/>
 	<span style="font-size: 0.6em;">
 		<a href='<%= @term.uri %>' target="_blank"><%= @term.uri %></a>
@@ -24,8 +24,7 @@
 <ul class="indent">
   <% @meaning_nodes.each do |meaning| %>
     <li>
-      <% label = meaning.get_objects(RDF::RDFS.label => {:first=> true, :simple_value => :value, :context => @ld_context}) %>
-      <%= link_to_dtapp(label, 'ontology_class_view', meaning.localname) %>
+      <%= link_to_dtapp(meaning.label(@lingdesktop_context).value, 'ontology_class_view', meaning.localname) %>
       &nbsp;:&nbsp;
       <%= meaning.get_objects(RDF::RDFS.comment => {:first=> true, :simple_value => :value, :context => @ld_context}) %>
     </li>

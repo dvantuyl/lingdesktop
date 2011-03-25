@@ -17,6 +17,7 @@ Desktop.App = Ext.extend(Ext.Panel, {
 	
 	initComponent: function(){
 	  var ic = this.initialConfig;
+    var _this = this;
 
 	  if(ic.contextBar){
 	    var contextBar = [];
@@ -29,13 +30,7 @@ Desktop.App = Ext.extend(Ext.Panel, {
 	          text: 'Edit',
 	          iconCls: 'dt-icon-edit',
 	          handler: function(){
-	            Ext.Ajax.request({
-	              url: ic.controller + '/' + ic.instanceId + '/clone.json',
-	              params: { from_id : ic.contextId, context_id : current_user.context_id },
-	              success: function(){
-	                Desktop.AppMgr.display(ic.controller + '_edit', ic.instanceId, {title: ic.title + ' - edit'});
-	              }
-	            });
+              _this.fireEvent('clone')
 	          }
 	        },
 	        {
@@ -97,6 +92,16 @@ Desktop.App = Ext.extend(Ext.Panel, {
 	  }
 	  
 	  Desktop.App.superclass.initComponent.call(this);
+	  
+	  this.on('clone', function(){
+	    Ext.Ajax.request({
+        url: ic.controller + '/' + ic.instanceId + '/clone.json',
+        params: { from_id : ic.contextId },
+        success: function(){
+          Desktop.AppMgr.display(ic.controller + '_edit', ic.instanceId, {title: ic.title + ' - edit'});
+        }
+      });
+	  });
 	},
 	
 	getState: function(){

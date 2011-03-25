@@ -1,70 +1,34 @@
-Ext.ns("Terms");
+Ext.ns("LexicalizedConcepts");
 
-Terms.Edit = Ext.extend(Desktop.App, {
+LexicalizedConcepts.Edit = Ext.extend(Desktop.App, {
     frame: true,
     autoScroll: true,
 
-    initComponent: function() {
-
+    initComponent: function() {     
         var ic = this.initialConfig;
-        //configuration given to Desktop.App
+        
         //setup fields
-        var orthographicRep = new Ext.form.TextField({
-            fieldLabel: 'Term Name',
+        var name = new Ext.form.TextField({
+            fieldLabel: 'Name',
             allowBlank: false,
             requiredField: true,
             name: 'rdfs:label',
             width: 165
         });
-        
-        var abbreviation = new Ext.form.TextField({
-            fieldLabel: 'Abbreviation',
-            name: 'gold:abbreviation',
-            width: 165
-        });
 
-        var comment = new Ext.form.TextArea({
+        var description = new Ext.form.TextArea({
             height: 100,
             width: 685,
-            fieldLabel: 'Comment',
+            fieldLabel: 'Description',
             name: 'rdfs:comment'
         });
-
-        //setup hasMeaningGrid GOLD Grid
-        var hasMeaningGrid = new Ontology.DropGrid({
-            height: 150,
-            fieldLabel: 'Please select and drag a concept from the ontology to the space below',
-            stripeRows: true,
-            store: new Ext.data.JsonStore({
-                // store configs
-                autoDestroy: true,
-                url: 'terms/' + ic.instanceId + '/hasMeaning.json',
-                // reader configs
-                root: 'data',
-                idProperty: 'uri',
-                fields: ['rdf:type', 'rdfs:comment', 'uri', 'rdfs:label', 'localname']
-            }),
-            colModel: new Ext.grid.ColumnModel({
-                columns: [
-                {
-                    header: 'Label',
-                    dataIndex: 'rdfs:label'
-                },
-                {
-                    header: 'Definition',
-                    dataIndex: 'rdfs:comment'
-                }
-                ]
-            }),
-        });
-
 
         //setup form
         this.form = new Ext.FormPanel({
             labelAlign: 'top',
             frame: true,
             width: 700,
-            url: 'users',
+            url: 'lexicalized_concepts',
             baseParams: {
                 format: 'json'
             },
@@ -76,19 +40,11 @@ Terms.Edit = Ext.extend(Desktop.App, {
                     labelWidth: 90,
                     columnWidth: .5,
                     border: false,
-                    items: orthographicRep
-                },
-                {
-                    layout: 'form',
-                    labelWidth: 90,
-                    columnWidth: .5,
-                    border: false,
-                    items: abbreviation
+                    items: name
                 }]
             },
-            comment, hasMeaningGrid]
+            description]
         });
-
 
         //setup toolbar
         var toolbar = [
@@ -117,16 +73,13 @@ Terms.Edit = Ext.extend(Desktop.App, {
 
             //Load server -> form values if we have the ic.instance_id
             var id = ic.instanceId;
-            this.form.form.url = 'terms/' + id + '.json';
+            this.form.form.url = 'lexicalized_concepts/' + id + '.json';
             this.form.load({
                 method: 'GET'
             });
 
-            hasMeaningGrid.getStore().load({
-                method: 'GET'
-            });
         } else {
-            this.form.form.url = 'terms.json';
+            this.form.form.url = 'lexicalized_concepts.json';
         }
 
         //apply all components to this app instance
@@ -134,36 +87,34 @@ Terms.Edit = Ext.extend(Desktop.App, {
             items: this.form,
             tbar: toolbar
         });
-        
-        //open helper apps
-        Desktop.AppMgr.display('ontology_gold');
 
         //call App initComponent
-        Terms.Edit.superclass.initComponent.call(this);
+        LexicalizedConcepts.Edit.superclass.initComponent.call(this);
 
         //event handlers
         this.on('save',
         function() {
-            var hasMeaningUris = hasMeaningGrid.store.collect('uri');
             var save_config = {
-                scope: this,
-                params: {
-                    "gold:hasMeaning": Ext.encode(hasMeaningUris)
-                }
+              scope: this
             };
-            
+
             if (ic.instanceId) {
-                save_config.params['_method'] = 'PUT';
+                save_config.params = {
+                    '_method': 'PUT'
+                };
             }
-            
+
             save_config.success = function(form, action) {
                 var data = action.result.data;
+                
 
-                var terms_store = Ext.StoreMgr.get('terms_index');
-                if (terms_store) {terms_store.reload();}
+                var lexicalized_concepts_store = Ext.StoreMgr.get('lexicalized_concepts_index');
+                if (lexicalized_concepts_store) {
+                    lexicalized_concepts_store.reload();
+                }
                 
                 Desktop.AppMgr.display(
-                    'terms_view',
+                    'lexicalized_concepts_view',
                     data.localname,
                     {
                         title : data["rdfs:label"],
@@ -173,6 +124,7 @@ Terms.Edit = Ext.extend(Desktop.App, {
                 
                 this.destroy();
             }
+
             this.form.getForm().submit(save_config);
         },
         this);
@@ -180,16 +132,19 @@ Terms.Edit = Ext.extend(Desktop.App, {
         this.on('delete',
         function() {
             Ext.Msg.confirm('Delete', 'Are you sure you want to delete?',
-            
+
             function(btn) {
                 if (btn == 'yes') {
+
                     Ext.Ajax.request({
-                        url: 'terms/' + ic.instanceId + '.json',
+                        url: 'lexicalized_concepts/' + ic.instanceId + '.json',
                         method: 'POST',
                         success: function() {
-                            var terms_store = Ext.StoreMgr.get('terms_index');
-                            if (terms_store) {terms_store.reload();}
-                            //check to make sure the term nav is still open before refreshing
+                            var lexicalized_concepts_store = Ext.StoreMgr.get('lexicalized_concepts_index');
+                            if (lexicalized_concepts_store) {
+                                lexicalized_concepts_store.reload();
+                            }
+
                             this.destroy();
                         },
                         params: {
@@ -205,9 +160,10 @@ Terms.Edit = Ext.extend(Desktop.App, {
     }
 });
 
-Desktop.AppMgr.registerApp(Terms.Edit, {
-    title: 'Edit Term',
-    iconCls: 'dt-icon-term',
-    appId: 'terms_edit',
+Desktop.AppMgr.registerApp(LexicalizedConcepts.Edit, {
+    title: 'Edit Lexicalized_concept',
+    iconCls: 'dt-icon-lexicalized_concepts',
+    appId: 'lexicalized_concepts_edit',
     dockContainer: Desktop.CENTER
 });
+

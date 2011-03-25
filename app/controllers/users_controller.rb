@@ -8,13 +8,14 @@ class UsersController < ApplicationController
   around_filter Neo4j::Rails::Transaction, :only => [:create, :update, :destroy]
   before_filter :find_user, :only => [:show, :update, :destroy, :followers]
   before_filter :clean_checkboxes, :only => [:create, :update]
+  before_filter :authenticate_user!
 
   def index
     
-    @users = User.find(:all, :sort => {:name => :asc})
+    @users = User.find(:all, :sort => {:name => :asc}).to_a
     
     total = @users.length
-    @users = @users[params[:start].to_i, params[:limit].to_i] if(params[:start] && params[:limit])
+    @users = @users[params[:start].to_i, params[:limit].to_i] if (params[:start] && params[:limit])
     
     respond_to do |format|
       format.html #index.html.erb

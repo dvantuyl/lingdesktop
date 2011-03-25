@@ -26,16 +26,42 @@ class LexicalItem < RDF_Resource
       :context => context_node
     ).save
     
+    linguistic_sign(context_node)
+    
     return node.set(args, context_node)
+  end
+  
+  def linguistic_sign(context_node)
+    @linguistic_sign ||= _linguistic_sign(context_node)
+  end
+  
+  
+  def _linguistic_sign(context_node)
+    ls_node = self.get_objects(RDF::GOLD.hasLinguisticSign => {:context => context_node}).first
+    
+    ls_node ||= LinguisticSign.create_in_context(context_node)
+    
+    RDF_Statement.find_or_init(
+      :subject => self,
+      :predicate_uri_esc => RDF::GOLD.hasLinguisticSign.uri_esc,
+      :object => ls_node,
+      :context => context_node
+    ).save
+    
+    ls_node
   end
   
    
   def set(args, context_node)
     self.set_label(args["rdfs:label"], context_node) if args.has_key?("rdfs:label")
     self.set_comment(args["rdfs:comment"], context_node) if args.has_key?("rdfs:comment")
-    self.set_memberOf(args["gold:memberOf"], context_node) if args.has_key?("gold:memberOf")
+    self.set_memberOf(args[:lexicon_id], context_node) if args.has_key?(:lexicon_id)
+    linguistic_sign(context_node).set_language(args["gold:inLanguage"], context_node) if args.has_key?("gold:inLanguage")
+    linguistic_sign(context_node).set_hasProperty(args["gold:hasProperty"], context_node) if args.has_key?("gold:hasProperty")
+    linguistic_sign(context_node).set_hasMeaning(args["gold:hasMeaning"], context_node) if args.has_key?("gold:hasMeaning")
     return self
   end
+  
   
   def set_memberOf(lexicon_id, context_node)
     lexicon_node = Lexicon.find(:uri_esc => (RDF::LD.lexicons.to_s + "/" + lexicon_id).uri_esc)
@@ -55,4 +81,21 @@ class LexicalItem < RDF_Resource
     ).save
   end
   
+  def copy_context(from_context, to_context)
+    super
+    
+    # copy context to terms
+    self.linguistic_sign(from_context).copy_context(from_context, to_context)
+  end
+  
+  def remove_context(context_node)
+
+    
+    # remove context from terms
+    self.linguistic_sign(context_node).remove_context(context_node)
+    
+    super(context_node)
+   
+  end
+
 end

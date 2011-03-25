@@ -1,0 +1,20 @@
+<div class='resource-show'>
+<h2>
+	<%= "#{@lexicalized_concept.label(@context).value} (Lexicalized Concept)" %>
+	<br/>
+	<span style="font-size: 0.6em;">
+		<a href='<%= @lexicalized_concept.uri %>' target="_blank"><%= @lexicalized_concept.uri %></a>
+	</span>
+</h2>
+
+<hr/>
+
+<strong class="label">Description:</strong>
+
+<% @lexicalized_concept.get_objects(RDF::RDFS.comment => {:simple_value => :value, :context => @context}).each do |comment| %>
+	<p class="indent">
+	  <%= "#{comment}" %>	
+	</p>  
+<% end %>
+
+</div>
