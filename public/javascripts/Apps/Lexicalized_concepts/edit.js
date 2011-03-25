@@ -144,7 +144,8 @@ LexicalizedConcepts.Edit = Ext.extend(Desktop.App, {
                             if (lexicalized_concepts_store) {
                                 lexicalized_concepts_store.reload();
                             }
-
+                            
+                            Desktop.AppMgr.destroy('lexicalized_concepts_view', ic.contextId, ic.instanceId);
                             this.destroy();
                         },
                         params: {

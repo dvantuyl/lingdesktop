@@ -232,7 +232,8 @@ LexicalItems.Edit = Ext.extend(Desktop.App, {
                             if (lexical_items_store) {
                                 lexical_items_store.reload();
                             }
-
+                            
+                            Desktop.AppMgr.destroy('lexical_items_view', ic.contextId, ic.instanceId);
                             this.destroy();
                         },
                         params: {

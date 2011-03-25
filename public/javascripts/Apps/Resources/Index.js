@@ -9,13 +9,15 @@ Resource.Index = Ext.extend(Desktop.App, {
         var ic = this.initialConfig;
         var _this = this;
 
+        var index_path = (ic.index_path ? ic.index_path : ic.instanceId);
+
         //setup store
         var store = new Ext.data.JsonStore({
             // store configs
             autoLoad: {params:{start: 0, limit: _this.pageSize}},
             restful: true,
             autoDestroy: true,
-            url: ic.instanceId + ".json?context_id=" + ic.contextId,
+            url: index_path + ".json?context_id=" + ic.contextId,
             // reader configs
             root: 'data',
             fields: ["rdfs:label", "rdfs:comment","rdf:type", "uri","localname"]

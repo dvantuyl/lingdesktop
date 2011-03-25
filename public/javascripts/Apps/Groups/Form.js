@@ -185,6 +185,7 @@ Groups.Form = Ext.extend(Desktop.App, {
                         var community_store = Ext.StoreMgr.get('community_index');
                         if (community_store) {community_store.reload();}
                         
+                        Desktop.AppMgr.destroy('groups_view', ic.contextId, ic.instanceId);
                         this.destroy();
                       },
                       params: {

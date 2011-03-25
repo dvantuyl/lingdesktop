@@ -83,70 +83,86 @@ Desktop.AppMgr = function(){
 				config.instances[params.contextId] = {}
 			}
 			
-			//get singleton Instance based on instanceId
+			//delete singleton Instance based on instanceId
 			if (config.instances[params.contextId][instanceId]) {
-				instance = config.instances[params.contextId][instanceId];
-				
-			//or create a new instance if there isn't one
-			}else {
-				//set title
-				if(params.title){
-					//do nothing
-				}else if(instanceId){
-					params.title = instanceId;
-				}else{
-					params.title = config.title;
-				}
-				
-				params.iconCls = config.iconCls;
-				params.contextBar = config.contextBar;
-				params.controller = config.controller;
-				params.appId = config.appId;
-				params.instanceId = instanceId;
-				
-				
-						
-				//dock the instance with the rest of the app instances if there are any or set to the one specified
-				if(focused && config.appId == focused.appId){
-					params.dockContainer = focused.dockContainer;
-				}else{
-					params.dockContainer = config.dockContainer;
-				}
-				Ext.ComponentMgr.get(params.dockContainer + '_container').fireEvent('expandDock');
-
-				
-				//create instance based on config and params
-				instance = new config.app(params);
-		
-				//if the instance is destroyed then remove from the app instances container
-				instance.on('destroy', function(i){
-					if(focused == i){
-						Desktop.AppMgr.unFocus();
-					}
-					delete config.instances[i.contextId][i.instanceId];
-				});
-				
-				//let workspace know that the user clicked on the instance thereby focusing it.
-				instance.on('render',function(i){
-					i.body.on('click', function(){
-						Desktop.AppMgr.setFocused(i);
-					})
-				});
-				
-				//let workspace know that this the user has selected this app's tab thereby focusing it.
-				instance.on('activate',function(i){
-					Desktop.AppMgr.setFocused(i);
-				});
-				
-				//add the instance to app instances container
-				config.instances[params.contextId][instanceId] = instance;
+				config.instances[params.contextId][instanceId].destroy();
 			}
+				
+			//create a new instance if there isn't one
+			//set title
+			if(params.title){
+				//do nothing
+			}else if(instanceId){
+				params.title = instanceId;
+			}else{
+				params.title = config.title;
+			}
+			
+			params.iconCls = config.iconCls;
+			params.contextBar = config.contextBar;
+			params.controller = config.controller;
+			params.appId = config.appId;
+			params.instanceId = instanceId;
+			
+			
+					
+			//dock the instance with the rest of the app instances if there are any or set to the one specified
+			if(focused && config.appId == focused.appId){
+				params.dockContainer = focused.dockContainer;
+			}else{
+				params.dockContainer = config.dockContainer;
+			}
+			Ext.ComponentMgr.get(params.dockContainer + '_container').fireEvent('expandDock');
+
+			
+			//create instance based on config and params
+			instance = new config.app(params);
+	
+			//if the instance is destroyed then remove from the app instances container
+			instance.on('destroy', function(i){
+				if(focused == i){
+					Desktop.AppMgr.unFocus();
+				}
+				delete config.instances[i.contextId][i.instanceId];
+			});
+			
+			//let workspace know that the user clicked on the instance thereby focusing it.
+			instance.on('render',function(i){
+				i.body.on('click', function(){
+					Desktop.AppMgr.setFocused(i);
+				})
+			});
+			
+			//let workspace know that this the user has selected this app's tab thereby focusing it.
+			instance.on('activate',function(i){
+				Desktop.AppMgr.setFocused(i);
+			});
+			
+			//add the instance to app instances container
+			config.instances[params.contextId][instanceId] = instance;
+
 		
 			//check to make sure the dock panel that the app uses is expanded
 			Ext.ComponentMgr.get(instance.dockContainer + '_container').fireEvent('expandDock');
 			
 			//set the instance as the active tab
 			instance.getOwner().activate(instance);
+		},
+		
+		destroy : function(appId, contextId, instanceId){
+		  var config = apps.get(appId);
+		  
+		  if (config){
+		    var contexts = config.instances[contextId]
+		    
+		    if(contexts){		      
+		      var instance = contexts[instanceId]
+		      
+		      if(instance){
+		        instance.destroy();
+		      }
+		    }
+		  } 
 		},
 		
 		unFocus : function(){

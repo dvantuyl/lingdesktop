@@ -17,7 +17,13 @@ Lexicons.View = Ext.extend(Desktop.App, {
 			}
 		});
 		
-		Desktop.AppMgr.display('lexical_items_index', ic.instanceId, {title: 'Lexical Items', context_id: ic.contextId});
+		// display current user's lexical items if in context of current user otherwise display other contexts lexical items
+		var current_user = Desktop.workspace.getCurrentUser();
+		if(current_user.context_id && current_user.context_id == ic.contextId){
+		  Desktop.AppMgr.display('lexical_items_index', ic.instanceId, {title: 'Lexical Items'});
+		}else{
+		  Desktop.AppMgr.display('resource_index', 'lexical_items', {contextId: ic.contextId, index_path: 'lexicons/' + ic.instanceId + '/lexical_items', title: 'Lexical Items'});
+		}
 		
 		Lexicons.View.superclass.initComponent.call(this);
 	}

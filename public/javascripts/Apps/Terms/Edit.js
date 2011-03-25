@@ -162,6 +162,7 @@ Terms.Edit = Ext.extend(Desktop.App, {
                 var terms_store = Ext.StoreMgr.get('terms_index');
                 if (terms_store) {terms_store.reload();}
                 
+                Desktop.AppMgr.destroy('terms_view', ic.contextId, data.localname);
                 Desktop.AppMgr.display(
                     'terms_view',
                     data.localname,
@@ -190,7 +191,9 @@ Terms.Edit = Ext.extend(Desktop.App, {
                             var terms_store = Ext.StoreMgr.get('terms_index');
                             if (terms_store) {terms_store.reload();}
                             //check to make sure the term nav is still open before refreshing
+                            Desktop.AppMgr.destroy('terms_view', ic.contextId, ic.instanceId);
                             this.destroy();
+                            
                         },
                         params: {
                             '_method': 'DELETE'

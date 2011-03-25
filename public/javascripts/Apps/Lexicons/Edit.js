@@ -148,7 +148,9 @@ Lexicons.Edit = Ext.extend(Desktop.App, {
                             if (lexicons_store) {
                                 lexicons_store.reload();
                             }
-
+                            
+                            Desktop.AppMgr.destroy('lexicons_view', ic.contextId, ic.instanceId);
+                            Desktop.AppMgr.destroy('lexical_items_index', ic.contextId, ic.instanceId);
                             this.destroy();
                         },
                         params: {
