@@ -39,6 +39,15 @@ class ContextsController < ApplicationController
             :success => true
           }
         end
+        format.rdf do
+          render :text => (
+            RDF::Writer.for(:ntriples).buffer do |writer|
+              @context.statements.each do |statement|
+                writer << statement.rdf
+              end
+            end
+          )
+        end
       end
     else
       respond_to do |format|

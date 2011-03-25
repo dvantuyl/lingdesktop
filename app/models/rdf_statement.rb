@@ -25,12 +25,12 @@ class RDF_Statement < Neo4j::Model
   index :predicate_uri_esc
   
   def subject
-    self.outgoing(:subject).first
+    @subject ||= self.outgoing(:subject).first
   end
   
   
   def object
-    self.outgoing(:object).first
+    @object ||= self.outgoing(:object).first
   end
   
   
@@ -39,11 +39,25 @@ class RDF_Statement < Neo4j::Model
   end
   
   def contexts
-    self.outgoing(:contexts).to_a
+    @contexts ||= self.outgoing(:contexts).to_a
   end
   
   def created_by
-    self.outgoing(:created_by).first
+    @created_by ||=self.outgoing(:created_by).first
+  end
+  
+  def rdf
+    if object.kind_of?(RDF_Literal)
+      o = RDF::Literal.new(object.value, :language => object.lang)
+    else
+      o = RDF::URI.new(object.uri)
+    end
+    
+    RDF::Statement.new({
+      :subject => RDF::URI.new(subject.uri),
+      :predicate => RDF::URI.new(predicate_uri),
+      :object => o
+    })
   end
   
   
