@@ -170,43 +170,50 @@ namespace :neo4j do
     
     print "Loading Languages"
     
-    
+    @tx = Neo4j::Transaction.new
     
     i = 0  
     CSV.foreach(file_path) do |columns|   
       
-      Neo4j::Transaction.run do
+      load_language(columns, ctx_node, hlv_type)
       
-        hlv_node = HumanLanguageVariety.create(:uri_esc => "http://purl.org/linguistics/lingdesktop/human_language_varieties/#{columns[1]}".uri_esc)
+      if i == 100
+        @tx.success
+        @tx.finish
+        @tx = Neo4j::Transaction.new
+        i = 0
+        print '.'
+      end
 
-        statement = RDF_Statement.new(:predicate_uri_esc => RDF.type.uri_esc)
-        statement.outgoing(:subject) << hlv_node
-        statement.outgoing(:object) << hlv_type
-        statement.outgoing(:contexts) << ctx_node
-        statement.outgoing(:created_by) << ctx_node
-        statement.save
-
-        #load label
-        label_node = RDF_Literal.create(:value => columns[0], :lang => "en")
-          
-        statement = RDF_Statement.new(:predicate_uri_esc => RDF::RDFS.label.uri_esc)
-        statement.outgoing(:subject) << hlv_node
-        statement.outgoing(:object) << label_node
-        statement.outgoing(:contexts) << ctx_node
-        statement.outgoing(:created_by) << ctx_node
-        statement.save
-
-      end 
-
-      print '.' if i % 100 == 0
       i += 1
     end
     
-
-
+    @tx.success
+    @tx.finish
 
     puts "Finished!"
 
+  end
+  
+  def load_language(columns, ctx_node, hlv_type)
+    hlv_node = HumanLanguageVariety.create(:uri_esc => "http://purl.org/linguistics/lingdesktop/human_language_varieties/#{columns[1]}".uri_esc)
+
+    statement = RDF_Statement.new(:predicate_uri_esc => RDF.type.uri_esc)
+    statement.outgoing(:subject) << hlv_node
+    statement.outgoing(:object) << hlv_type
+    statement.outgoing(:contexts) << ctx_node
+    statement.outgoing(:created_by) << ctx_node
+    statement.save
+
+    #load label
+    label_node = RDF_Literal.create(:value => columns[0], :lang => "en")
+      
+    statement = RDF_Statement.new(:predicate_uri_esc => RDF::RDFS.label.uri_esc)
+    statement.outgoing(:subject) << hlv_node
+    statement.outgoing(:object) << label_node
+    statement.outgoing(:contexts) << ctx_node
+    statement.outgoing(:created_by) << ctx_node
+    statement.save
   end
   
   desc "Seed Neo4j store with GOLD and admins"
