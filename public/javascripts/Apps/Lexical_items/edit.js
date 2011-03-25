@@ -35,9 +35,10 @@ LexicalItems.Edit = Ext.extend(Desktop.App, {
         var langCombo = new Ext.form.ComboBox({
           fieldLabel: 'Language (Name / ISO 639-3 code)',
           store: langStore,
+          emptyText: 'Enter 3 letter code or >3 to search',
           allowBlank: false,
           requiredField: true,
-          minChars : 3,
+          minChars : 4,
           hideTrigger:true,
           hiddenName: 'gold:inLanguage',
           valueField : 'localname',
